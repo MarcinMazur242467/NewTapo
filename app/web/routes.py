@@ -40,12 +40,13 @@ def list_recordings():
 
     return render_template('recordings.html', files=files)
 
-# --- FIX 1: Specific route for PLAYING (Streaming) ---
 @web.route('/recordings/play/<path:filename>')
 def play_recording(filename):
     recordings_dir = os.path.join(os.getcwd(), 'recordings')
-    return send_from_directory(recordings_dir, filename)
+    # This sends the file with the correct headers for the browser
+    return send_from_directory(recordings_dir, filename, mimetype='video/mp4')
 
+    
 # --- FIX 2: Specific route for DOWNLOADING ---
 @web.route('/recordings/download/<path:filename>')
 def download_recording(filename):
