@@ -40,7 +40,7 @@ class TapoCamera:
                 return frame
         return None
 
-    def move(self, direction, step=5):
+    def move(self, direction, step=10):
         """Moves the camera. Step is the degrees to move."""
         if not self.admin:
             print("❌ Camera controls not connected.")

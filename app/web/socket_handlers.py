@@ -20,6 +20,4 @@ def handle_move_camera(data):
     step = data.get('step', 5) # Default to 5 if missing
     
     if shared.camera:
-        # We don't need to return a response like HTTP
-        # Just do the work.
         shared.camera.move(direction, step)
