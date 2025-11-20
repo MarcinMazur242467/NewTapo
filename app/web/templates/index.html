@@ -277,24 +277,7 @@
         const PTZ_INTERVAL = 80; // ms between commands
 
         function moveCamera(direction, step=PTZ_STEP) {
-            fetch('/move', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ direction: direction, step: step })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data && data.error && data.error.toLowerCase().includes('range')) {
-                    showPTZWarning();
-                } else {
-                    hidePTZWarning();
-                }
-            })
-            .catch(error => {
-                // Optionally show warning on error
-            });
+            socket.emit('move_camera', { direction: direction, step: step });
         }
 
         function startPTZ(direction) {

@@ -36,5 +36,4 @@ def create_app():
     
     return app
 
-# Import socket handlers AFTER app creation logic
 import app.web.socket_handlers

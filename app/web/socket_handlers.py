@@ -13,3 +13,13 @@ def handle_stop_recording():
     if shared.recorder:
         filename = shared.recorder.stop_recording()
         emit('recording_status', {'status': 'stopped', 'file': filename}, broadcast=True)
+
+@socketio.on('move_camera')
+def handle_move_camera(data):
+    direction = data.get('direction')
+    step = data.get('step', 5) # Default to 5 if missing
+    
+    if shared.camera:
+        # We don't need to return a response like HTTP
+        # Just do the work.
+        shared.camera.move(direction, step)

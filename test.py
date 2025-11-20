@@ -16,8 +16,9 @@ if cam.connect():
     
     # 3. Test a command
     try:
-        info = cam.admin.getBasicInfo()
-        print(f"✅ Camera Name: {info['device_info']['basic_info']['device_name']}")
+        # info = cam.admin.getBasicInfo()
+        cam.admin.moveMotor(0, 5)
+        # print(f"✅ Camera Name: {info['device_info']['basic_info']['device_name']}")
     except Exception as e:
         print(f"❌ Could not read info: {e}")
 

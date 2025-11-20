@@ -40,6 +40,33 @@ class TapoCamera:
                 return frame
         return None
 
+    def move(self, direction, step=5):
+        """Moves the camera. Step is the degrees to move."""
+        if not self.admin:
+            print("❌ Camera controls not connected.")
+            return
+
+        # Ensure step is an integer
+        step = int(step)
+
+        try:
+            if direction == "up":
+                self.admin.moveMotor(0, step)
+            elif direction == "down":
+                self.admin.moveMotor(0, -step)
+            elif direction == "left":
+                self.admin.moveMotor(-step, 0)
+            elif direction == "right":
+                self.admin.moveMotor(step, 0)
+            
+        except Exception as e:
+            print(f"❌ Error moving camera: {e}")
+            try:
+                self.admin = Tapo(self.ip, self.user, self.password)
+            except:
+                pass
+
+
     def release(self):
         if self.cap:
             self.cap.release()
