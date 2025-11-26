@@ -77,6 +77,11 @@ This Python application integrates with TP-Link Tapo cameras, allowing users to 
 
 ## Installation
 
+    Clone repository:
+    ```
+    git clone https://github.com/MarcinMazur242467/Tapo-Camera
+    ```
+    
     Build the Docker image:
     
     ```

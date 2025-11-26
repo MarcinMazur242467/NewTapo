@@ -217,37 +217,81 @@ VS Code Project:
 This is a Python-based web application for controlling and viewing TP-Link Tapo cameras.
 
 Project Summary
-Name: Tapo Camera Integration
-Objective: To provide a web interface for interacting with TP-Link Tapo cameras on a local network.
-Core Functionality:
-Live video streaming to a web browser.
-Pan/Tilt (PTZ) camera controls.
-Displaying motion detection status.
-Starting and stopping video recordings.
-A web page to browse saved recordings.
-Authentication: The application connects to the camera using credentials specified in a config.json file. The README.md notes two possible authentication methods: using local camera credentials or using admin with the TP-Link cloud password.
-Technical Stack
-Backend: Python 3.13, Flask
-Real-time Communication: Flask-SocketIO with Eventlet for handling the video stream.
-Camera Interaction:
-pytapo: A Python library for controlling Tapo cameras (PTZ, settings).
-opencv-python: Used for capturing and processing the RTSP video stream.
-Frontend: HTML templates managed by Flask (Jinja2), with JavaScript for SocketIO communication and UI interaction.
-Dependency Management: uv is used with pyproject.toml and a uv.lock file for reproducible dependency installation.
-Containerization: A Dockerfile is provided for building and running the application in a Docker container.
-Project Structure
-run.py: The main entry point to start the Flask application.
-app: The main Flask application module.
-__init__.py: Initializes the Flask app, Flask-SocketIO, and loads configuration.
-routes.py: Defines the main web routes, including the index page (/) and the video feed socket events.
-recordings_routes.py: Defines routes for viewing and managing recordings.
-camera.py: Contains the Camera class that interfaces with pytapo for controls and opencv for the video stream.
-config.py: Handles loading settings from config.json.
-templates/: Contains the Jinja2 HTML templates for the UI (index.html, recordings.html).
-config.json: A user-provided configuration file (ignored by git) containing camera credentials and IP address.
-pyproject.toml: Defines project metadata and dependencies.
-uv.lock: A lockfile for reproducible builds with uv.
-Dockerfile: Defines the steps to build a Docker image for the application.
-README.md: Contains detailed instructions for setup, configuration, and troubleshooting.
-video_stream.py: A standalone script that appears to be for reverse-engineering or directly accessing the camera's encrypted stream via HTTP, separate from the main Flask application's RTSP method. It uses pwntools and Crypto for decryption.
-Paper: Contains LaTeX source files for what appears to be a thesis or academic paper about this project.1
+# Project Structure: Classes and Methods
+
+This document outlines the classes, methods, and key functions used in the project, organized by their core functionality.
+
+### 1. Application Setup (`app/__init__.py`)
+
+This file contains the core function to initialize and configure the Flask application.
+
+*   **Function: `create_app()`**
+    *   Initializes the Flask app, loads configuration, connects to the camera, starts video/audio streams, and registers web routes.
+
+### 2. Camera Control (`app/camera/camera.py`)
+
+This class manages the connection and control of the Tapo camera.
+
+*   **Class: `TapoCamera`**
+    *   `__init__(self, ip, user, password, cloudPassword)`: Initializes the camera with connection details.
+    *   `connect(self)`: Establishes the RTSP video stream and administrative connection.
+    *   `read_frame(self)`: Reads a single video frame from the camera's stream.
+    *   `move(self, direction, step)`: Moves the camera's motor (pan/tilt).
+    *   `release(self)`: Releases the video capture resource.
+
+### 3. Streaming (`app/video/streamer.py` and `app/audio/streamer.py`)
+
+These classes handle the continuous streaming of video and audio from the camera to the web client via WebSockets.
+
+*   **Class: `VideoStreamer`**
+    *   `__init__(self, camera, socketio)`: Initializes the streamer with the camera and SocketIO instances.
+    *   `start_streaming(self)`: Starts the video capture and streaming thread.
+    *   `_capture_loop(self)`: The main loop that reads frames, runs motion detection, and emits them.
+*   **Class: `AudioStreamer`**
+    *   `__init__(self, camera, socketio)`: Initializes the audio streamer.
+    *   `start_streaming(self)`: Starts the audio capture and streaming thread.
+    *   `_stream_loop(self)`: The main loop that reads audio packets, processes, and emits them.
+
+### 4. Motion Detection (`app/detection/motion.py` and `app/detection/base.py`)
+
+These classes are responsible for detecting motion in the video stream.
+
+*   **Class: `BaseDetector` (Abstract)**
+    *   `detect(self, frame)`: Defines the required interface for any detector class.
+*   **Class: `MotionDetector`** (inherits from `BaseDetector`)
+    *   `__init__(self, min_area)`: Initializes the detector with a minimum contour area to reduce false positives.
+    *   `detect(self, frame)`: Compares the current frame to a running average to find differences indicating motion.
+
+### 5. Recording (`app/recording/recorder.py`)
+
+This class manages the recording of video and audio streams to a file.
+
+*   **Class: `Recorder`**
+    *   `__init__(self)`: Sets up the recorder and the save directory.
+    *   `start_recording(self)`: Begins capturing frames and audio chunks into memory.
+    *   `add_frame(self, frame)`: Adds a video frame to the current recording buffer.
+    *   `add_audio(self, audio_data)`: Adds an audio chunk to the current recording buffer.
+    *   `stop_recording(self)`: Stops recording and processes the buffered frames and audio, combining them into an `.mp4` file using `moviepy`.
+
+### 6. Web Interface (Routes and Sockets)
+
+These functions define the API endpoints and real-time WebSocket events for interacting with the application from the browser.
+
+*   **Web Routes (`app/web/routes.py`)**
+    *   `index()`: Renders the main camera control page.
+    *   `move_camera()`: Handles POST requests to move the camera.
+    *   `list_recordings()`: Renders the page listing all saved video files.
+    *   `play_recording(filename)`: Streams a saved recording to the browser for playback.
+    *   `download_recording(filename)`: Serves a recording file for download.
+    *   `delete_recording(filename)`: Deletes a specified recording file.
+*   **Socket Handlers (`app/web/socket_handlers.py`)**
+    *   `handle_start_recording()`: Triggered by a client to start recording.
+    *   `handle_stop_recording()`: Triggered by a client to stop recording.
+    *   `handle_move_camera(data)`: Triggered by a client to control camera movement.
+
+### 7. Configuration and Shared State
+
+*   **`app/settings.py`**
+    *   `load_config()`: Loads camera credentials and settings.
+*   **`app/shared.py`**
+    *   This module holds globally shared instances of the `TapoCamera`, `VideoStreamer`, `AudioStreamer`, and `Recorder` to make them accessible across different parts of the application.
