@@ -1,6 +1,6 @@
 {
-    "CAMERA_IP": "192.168.100.53",
-    "CAMERA_USER": "admin123",
-    "CAMERA_PASS": "admin123",
-    "CAMERA_CPASS": "TRELORhc10"
+    "camera_ip": "192.168.100.53",
+    "camera_user": "admin123",
+    "camera_pass": "admin123",
+    "camera_cpass": "trelorhc10"
 }
