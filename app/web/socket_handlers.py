@@ -17,7 +17,13 @@ def handle_stop_recording():
 @socketio.on('move_camera')
 def handle_move_camera(data):
     direction = data.get('direction')
-    step = data.get('step', 5) # Default to 5 if missing
+    step = data.get('step', 5)
     
     if shared.camera:
-        shared.camera.move(direction, step)
+        # 1. Attempt Move
+        result = shared.camera.move(direction, step)
+        
+        # 2. Check for Limits
+        if not result['success'] and result.get('error') == 'limit_reached':
+            # Tell the frontend to disable this specific button
+            emit('ptz_limit', {'direction': direction})

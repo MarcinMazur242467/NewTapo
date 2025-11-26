@@ -104,14 +104,16 @@ This Python application integrates with TP-Link Tapo cameras, allowing users to 
     http://localhost:5000
     ```
 
-## Technologies
+## 🛠️ Built With
 
-- **Python 3.13**: Porogramming language
-- **Flask**: Web framework for Python
-- **Flask-SocketIO**: WebSocket communication for real-time video
-- **OpenCV**: Video capture and processing
-- **pytapo**: Library to control Tapo cameras
-- **Docker**: Containerization for easy deployment
+* [Flask](https://flask.palletsprojects.com/) - Web Framework
+* [Socket.IO](https://socket.io/) - Real-time Engine
+* [OpenCV](https://opencv.org/) - Video Processing
+* [PyTapo](https://github.com/JurajNyiri/pytapo) - Camera Protocol Implementation
+* [MoviePy](https://zulko.github.io/moviepy/) - Video Editing & Saving
+* [PyAV](https://pyav.org/docs/stable/) - Audio Decoding
+* [NumPy](https://numpy.org/) - Audio Signal Processing
+
 
 ## Troubleshooting
 

@@ -40,13 +40,12 @@ class TapoCamera:
                 return frame
         return None
 
-    def move(self, direction, step=10):
-        """Moves the camera. Step is the degrees to move."""
+    def move(self, direction, step=5):
+        """Moves the camera. Returns dict with success/limit status."""
         if not self.admin:
             print("❌ Camera controls not connected.")
-            return
+            return {"success": False, "error": "not_connected"}
 
-        # Ensure step is an integer
         step = int(step)
 
         try:
@@ -59,13 +58,22 @@ class TapoCamera:
             elif direction == "right":
                 self.admin.moveMotor(step, 0)
             
+            return {"success": True}
+
         except Exception as e:
+            error_msg = str(e).lower()
+            # Check for common limit keywords in the error message
+            if "range" in error_msg or "limit" in error_msg:
+                print(f"⚠️ Limit Reached: {direction}")
+                return {"success": False, "error": "limit_reached"}
+            
             print(f"❌ Error moving camera: {e}")
+            # Try to reconnect if it was a connection error
             try:
                 self.admin = Tapo(self.ip, self.user, self.password)
             except:
                 pass
-
+            return {"success": False, "error": "unknown"}
 
     def release(self):
         if self.cap:

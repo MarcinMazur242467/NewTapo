@@ -120,6 +120,14 @@
             color: #181c24;
         }
 
+        button:disabled {
+            background: #444 !important;
+            color: #777 !important;
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none !important;
+        }
+
         /* --- Links --- */
         .browse-link {
             display: block;
@@ -305,9 +313,28 @@
         function startRecording() { socket.emit('start_recording'); }
         function stopRecording() { socket.emit('stop_recording'); }
 
-        // --- PTZ Logic (Press and Hold) ---
+// --- PTZ Logic with Limit Handling ---
         let ptzInterval = null;
-        const PTZ_DELAY = 100; // ms between commands
+        const PTZ_DELAY = 100;
+        
+        // Define opposites so we know what to unlock
+        const opposites = {
+            'up': 'down',
+            'down': 'up',
+            'left': 'right',
+            'right': 'left'
+        };
+
+        // 1. Listen for Limit Events from Server
+        socket.on('ptz_limit', (data) => {
+            console.log("Limit reached:", data.direction);
+            const btn = document.querySelector(`button[data-dir="${data.direction}"]`);
+            if (btn) {
+                btn.disabled = true;
+                btn.title = "Limit Reached";
+                stopMoving(); // Stop trying to move
+            }
+        });
 
         function move(direction) {
             socket.emit('move_camera', { direction: direction, step: 2 });
@@ -315,8 +342,20 @@
 
         function startMoving(direction) {
             if (ptzInterval) return;
-            move(direction); // Move immediately
-            ptzInterval = setInterval(() => move(direction), PTZ_DELAY); // Continue moving
+
+            // --- UNLOCK LOGIC ---
+            // If I am moving 'down', I am moving away from the 'up' limit.
+            // So, re-enable the 'up' button.
+            const oppositeDir = opposites[direction];
+            const oppositeBtn = document.querySelector(`button[data-dir="${oppositeDir}"]`);
+            if (oppositeBtn && oppositeBtn.disabled) {
+                oppositeBtn.disabled = false;
+                oppositeBtn.title = "";
+            }
+            // --------------------
+
+            move(direction); 
+            ptzInterval = setInterval(() => move(direction), PTZ_DELAY); 
         }
 
         function stopMoving() {
@@ -325,7 +364,6 @@
                 ptzInterval = null;
             }
         }
-
         // Attach listeners to all PTZ buttons
         document.querySelectorAll('.ptz-btn').forEach(btn => {
             const dir = btn.getAttribute('data-dir');
