@@ -4,8 +4,6 @@
 
 This Python application integrates with TP-Link Tapo cameras, allowing users to access camera feeds, control camera settings, and manage recordings. It provides a convenient web interface for monitoring and managing Tapo cameras on your network.
 
-![application](application.png)
-
 ## Features
 
 - Live camera feed streaming
@@ -13,6 +11,7 @@ This Python application integrates with TP-Link Tapo cameras, allowing users to 
 - Motion detection settings
 - Recording management
 - Camera settings configuration
+- Camera one way audio in live preview and in recordings
 
 ## Prerequisites
 
@@ -21,6 +20,7 @@ This Python application integrates with TP-Link Tapo cameras, allowing users to 
 - provisioned with TAPO Application,
 - TAPO Camera login credentials  ` <camera_username>` & ` <camera_passwd> `, 
 - Thirdparty Features enabled in application
+- TAPO Cloud account(password in particular)
 
 ## How to Connect and Provision Your Tapo Camera
 
@@ -64,7 +64,7 @@ This Python application integrates with TP-Link Tapo cameras, allowing users to 
 
 ## Configuration
 
-### Important, before using the software. TAPO Cameras let you use their API features after authentication, you can do it in two ways:
+### Important, before using the software. This application needs two you TAPO Camera password and TP Link TAPO Cloud password to function properly:
 
 * One way is to log using: <br>
  
@@ -76,45 +76,10 @@ This Python application integrates with TP-Link Tapo cameras, allowing users to 
     ` username: <camera-username> `  <br>
     ` password: <camera-passwd> `  <br>
 
-### Create the `config.json` file to set up your camera details:
-
-```json
-
-{
-    "camera_ip": "<camera_ip>",
-    "camera_user": "<camera_admin_username>",
-    "camera_pass": "<camera_admin_password>",
-    "camera_cpass": "<tp-link-cloud-password>"
-}
-
-```
-
 ## Installation
 
-1. Clone the repository:
-    ```
-    git clone https://github.com/MarcinMazur242467/Tapo-Camera
-    cd tapo-camera
-    ```
 
-2. Install dependencies using uv (install uv beforehand from this [link](https://docs.astral.sh/uv/getting-started/installation/)):
-    ```
-    uv sync --locked
-    ```
-
-3. Running with Python 
-
-    Start the application:
-    ```
-    uv run run.py
-    ```
-
-    Access the web interface at:
-    ```
-    http://localhost:5000
-    ```
-
-4. Running with Docker
+# Running with Docker
 
     Build the Docker image:
     
@@ -145,7 +110,6 @@ This Python application integrates with TP-Link Tapo cameras, allowing users to 
 - **Flask-SocketIO**: WebSocket communication for real-time video
 - **OpenCV**: Video capture and processing
 - **pytapo**: Library to control Tapo cameras
-- **Eventlet**: Concurrent networking for WebSockets
 - **Docker**: Containerization for easy deployment
 
 ## Troubleshooting
@@ -154,12 +118,29 @@ This Python application integrates with TP-Link Tapo cameras, allowing users to 
 - **Device temporary unavaliable**: If you tried to log in with incorect credentials, camera will block you for 30 minutes. 
 - **Third-Party Access**: Ensure Third Party Compatibilities are enabled in the Tapo app under Advanced Settings.
 - **Network Connectivity**: Verify your camera and computer are connected to the same local network.
-- **IP Address**: Confirm the camera's IP address in your config.json is correct and current.
+- **IP Address**: Confirm the camera's IP address is correct and current.
 - **Port Forwarding**: If accessing remotely, check that proper port forwarding is configured on your router.
 - **Firewall Settings**: Ensure your firewall allows communication on the required ports.
 - **Camera Reboot**: If the camera becomes unresponsive, try power cycling it (unplug for 10 seconds, then reconnect).
 - **RTSP Stream Test**: If you have problem with using application test RTSP connection wit tools like [VLC](https://www.videolan.org/vlc/)
 - **Log Files**: Check application logs for specific error messages that might indicate the source of problems.
+
+## 🤝 Credits & Acknowledgments
+
+This project wouldn't be possible without the amazing open-source community. Special thanks to the authors and contributors of the following libraries:
+
+* **[PyTapo](https://github.com/JurajNyiri/pytapo)** by **Juraj Nyiri**
+    * For the incredible work reverse-engineering the TP-Link Tapo communication protocol, allowing us to control PTZ and authentication programmatically.
+* **[MoviePy](https://github.com/Zulko/moviepy)** by **Zulko and Contributors**
+    * Used for the sophisticated backend recording logic, enabling us to mux audio and video streams, handle upsampling, and correct frame drift.
+* **[PyAV](https://github.com/PyAV-Org/PyAV)**
+    * For providing the Pythonic bindings for FFmpeg, which allowed us to extract and decode the specific RTSP audio tracks that OpenCV could not handle.
+* **[Flask-SocketIO](https://github.com/miguelgrinberg/Flask-SocketIO)** by **Miguel Grinberg**
+    * For enabling the real-time, low-latency WebSocket communication required for the live video feed and instant PTZ controls.
+* **[OpenCV](https://opencv.org/)**
+    * For the robust image processing and frame capture capabilities.
+* **[Uv](https://github.com/astral-sh/uv)**
+    * For the lightning-fast Python package management and dependency resolution used in the Docker build process.
 
 ## License
 
