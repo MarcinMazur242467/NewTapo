@@ -56,8 +56,9 @@ class Recorder:
                 ffmpeg_params=['-movflags', 'faststart'],
                 logger=None  # This still works to keep it silent
             )
+
+
             
-            print(f"✅ Saved: {self.filename}")
             self.frames = [] 
             return self.filename
         else:
