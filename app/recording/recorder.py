@@ -2,8 +2,6 @@ import os
 import cv2
 import time
 import numpy as np
-
-# Correct imports for MoviePy 2.0
 from moviepy.video.io.ImageSequenceClip import ImageSequenceClip 
 from moviepy.audio.AudioClip import AudioArrayClip
 
@@ -13,6 +11,7 @@ class Recorder:
         self.video_frames = [] 
         self.audio_chunks = [] 
         self.filename = None
+        self.start_time = 0 # Track exact time for FPS calculation
         self.save_dir = os.path.join(os.getcwd(), "recordings")
         
         if not os.path.exists(self.save_dir):
@@ -25,6 +24,7 @@ class Recorder:
         self.video_frames = []
         self.audio_chunks = [] 
         self.is_recording = True
+        self.start_time = time.time() # Start the clock
         
         timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
         self.filename = os.path.join(self.save_dir, f"recording_{timestamp}.mp4")
@@ -48,39 +48,35 @@ class Recorder:
             return
 
         self.is_recording = False
+        elapsed_time = time.time() - self.start_time # Calculate actual duration
         
         if len(self.video_frames) > 0:
-            print(f"💾 Processing {len(self.video_frames)} video frames...")
+            print(f"💾 Processing {len(self.video_frames)} frames over {elapsed_time:.2f}s...")
             
-            # 1. Create Video Clip
-            # Note: 20 FPS is an assumption. If your camera is faster/slower, 
-            # this might cause video speed drift.
-            video_clip = ImageSequenceClip(self.video_frames, fps=20)
-            video_duration = video_clip.duration
+            # 1. Calculate REAL FPS
+            # If we guess 20 but camera sent 15, audio desyncs. This fixes it.
+            real_fps = len(self.video_frames) / elapsed_time
+            if real_fps <= 0: real_fps = 20 # Safety fallback
             
-            # 2. Process Audio
+            print(f"   (Calculated FPS: {real_fps:.2f})")
+
+            # 2. Create Video Clip with Real FPS
+            video_clip = ImageSequenceClip(self.video_frames, fps=real_fps)
+            
+            # 3. Process Audio
             if len(self.audio_chunks) > 0:
-                print(f"   ...merging audio. Target duration: {video_duration}s")
                 try:
                     full_audio = np.concatenate(self.audio_chunks)
                     
-                    # Convert Int16 to Float
+                    # Int16 -> Float
                     audio_float = full_audio / 32768.0
                     
-                    # --- FIX: FORCE STEREO & DURATION ---
-                    # 1. Reshape to Mono Column
+                    # Force Stereo (Fixes compatibility)
                     audio_float = audio_float.reshape((-1, 1))
-                    
-                    # 2. Duplicate to Stereo (Left=Right)
-                    # This ensures maximum compatibility with players
                     audio_stereo = np.hstack((audio_float, audio_float))
                     
-                    # 3. Create Clip
+                    # Create Audio Clip (Source is still 16k)
                     audio_clip = AudioArrayClip(audio_stereo, fps=16000)
-                    
-                    # 4. Sync Duration (Cut audio to match video length)
-                    # This prevents the audio from stretching or dragging on
-                    audio_clip = audio_clip.with_duration(video_duration)
                     
                     # Attach
                     video_clip = video_clip.with_audio(audio_clip)
@@ -88,12 +84,14 @@ class Recorder:
                 except Exception as e:
                     print(f"⚠️ Audio Merge Failed: {e}")
 
-            # 3. Write File
+            # 4. Write File with UPSAMPLING
             video_clip.write_videofile(
                 self.filename, 
                 codec='libx264', 
                 audio_codec='aac', 
                 preset='ultrafast', 
+                audio_fps=44100,  # <--- CRITICAL FIX: Upsample to Standard
+                audio_bitrate='192k', # <--- CRITICAL FIX: Higher Quality
                 ffmpeg_params=['-movflags', 'faststart'],
                 logger=None
             )
