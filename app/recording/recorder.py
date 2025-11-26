@@ -3,10 +3,9 @@ import cv2
 import time
 import numpy as np
 
-# --- FIXED IMPORTS FOR MOVIEPY 2.0 ---
+# Correct imports for MoviePy 2.0
 from moviepy.video.io.ImageSequenceClip import ImageSequenceClip 
 from moviepy.audio.AudioClip import AudioArrayClip
-# -------------------------------------
 
 class Recorder:
     def __init__(self):
@@ -36,14 +35,12 @@ class Recorder:
     def add_frame(self, frame):
         if not self.is_recording or frame is None:
             return
-        # Convert BGR (OpenCV) to RGB (MoviePy)
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         self.video_frames.append(frame_rgb)
 
     def add_audio(self, audio_data):
         if not self.is_recording or audio_data is None:
             return
-        # Store raw numpy array (s16)
         self.audio_chunks.append(audio_data)
 
     def stop_recording(self):
@@ -56,26 +53,37 @@ class Recorder:
             print(f"💾 Processing {len(self.video_frames)} video frames...")
             
             # 1. Create Video Clip
+            # Note: 20 FPS is an assumption. If your camera is faster/slower, 
+            # this might cause video speed drift.
             video_clip = ImageSequenceClip(self.video_frames, fps=20)
+            video_duration = video_clip.duration
             
             # 2. Process Audio
             if len(self.audio_chunks) > 0:
-                print(f"   ...and merging {len(self.audio_chunks)} audio chunks.")
+                print(f"   ...merging audio. Target duration: {video_duration}s")
                 try:
-                    # Combine chunks
                     full_audio = np.concatenate(self.audio_chunks)
-                    full_audio = full_audio.reshape((-1, 1))
                     
-                    # Convert Int16 to Float (-1.0 to 1.0) for MoviePy
+                    # Convert Int16 to Float
                     audio_float = full_audio / 32768.0
                     
-                    # Create Audio Clip
-                    audio_clip = AudioArrayClip(audio_float, fps=16000)
+                    # --- FIX: FORCE STEREO & DURATION ---
+                    # 1. Reshape to Mono Column
+                    audio_float = audio_float.reshape((-1, 1))
                     
-                    # Attach to Video
-                    video_clip = video_clip.with_audio(audio_clip) 
-                    # Note: In v2.0 'set_audio' is often renamed to 'with_audio'
-                    # If 'with_audio' fails, try 'set_audio'
+                    # 2. Duplicate to Stereo (Left=Right)
+                    # This ensures maximum compatibility with players
+                    audio_stereo = np.hstack((audio_float, audio_float))
+                    
+                    # 3. Create Clip
+                    audio_clip = AudioArrayClip(audio_stereo, fps=16000)
+                    
+                    # 4. Sync Duration (Cut audio to match video length)
+                    # This prevents the audio from stretching or dragging on
+                    audio_clip = audio_clip.with_duration(video_duration)
+                    
+                    # Attach
+                    video_clip = video_clip.with_audio(audio_clip)
                     
                 except Exception as e:
                     print(f"⚠️ Audio Merge Failed: {e}")
