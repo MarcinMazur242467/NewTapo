@@ -149,6 +149,14 @@
 
     <div class="container">
         <canvas id="video-feed" width="1000" height="562"></canvas>
+
+        <div class="controls" style="margin-top: 10px;">
+            <button id="audio-toggle-btn" onclick="toggleAudio()" style="width: 100%; justify-content: center;">
+                <span id="audio-icon">🔇</span> 
+                <span id="audio-text" style="text-decoration: line-through; margin-left: 8px;">Audio</span>
+            </button>
+        </div>
+
         <div id="motion-status">No Motion Detected</div>
 
         <div class="section-title">Camera Controls</div>
@@ -194,6 +202,79 @@
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             };
             img.src = 'data:image/jpeg;base64,' + data.frame;
+        });
+
+        // --- Audio Logic ---
+        let audioCtx;
+        let nextStartTime = 0;
+        const audioBtn = document.getElementById('audio-toggle-btn');
+
+        function toggleAudio() {
+            // 1. Initialize Context if it doesn't exist
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+
+            // 2. Toggle State (Running <-> Suspended)
+            if (audioCtx.state === 'running') {
+                audioCtx.suspend().then(() => updateAudioUI());
+            } else {
+                audioCtx.resume().then(() => updateAudioUI());
+            }
+        }
+
+        function updateAudioUI() {
+            const btn = document.getElementById('audio-toggle-btn');
+            const icon = document.getElementById('audio-icon');
+            const text = document.getElementById('audio-text');
+
+            if (audioCtx && audioCtx.state === 'running') {
+                // STATE: AUDIO IS ON (Normal Font)
+                icon.innerHTML = "🔊";
+                text.innerHTML = "Audio";
+                text.style.textDecoration = "none";
+                text.style.opacity = "1.0";
+                
+                // Optional: visual cue that it is active (e.g. slight highlight)
+                btn.style.borderColor = "#7ecfff";
+            } else {
+                // STATE: AUDIO IS OFF (Crossed Out)
+                icon.innerHTML = "🔇";
+                text.innerHTML = "Audio";
+                text.style.textDecoration = "line-through";
+                text.style.opacity = "0.6"; // Dim it slightly to emphasize it is off
+                
+                btn.style.borderColor = "transparent";
+            }
+        }
+
+        socket.on('audio_chunk', (arrayBuffer) => {
+            // Only play if enabled
+            if (!audioCtx || audioCtx.state !== 'running') return;
+
+            // 1. Read as 16-bit Integers (Matches Python 's16')
+            const int16Data = new Int16Array(arrayBuffer);
+            
+            // 2. Convert to Float32 (-1.0 to 1.0)
+            const float32Data = new Float32Array(int16Data.length);
+            for (let i = 0; i < int16Data.length; i++) {
+                float32Data[i] = int16Data[i] / 32768.0;
+            }
+
+            // 3. Play it
+            const audioBuffer = audioCtx.createBuffer(1, float32Data.length, 16000);
+            audioBuffer.getChannelData(0).set(float32Data);
+            
+            const source = audioCtx.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(audioCtx.destination);
+
+            if (nextStartTime < audioCtx.currentTime) {
+                nextStartTime = audioCtx.currentTime;
+            }
+            source.start(nextStartTime);
+            nextStartTime += audioBuffer.duration;
         });
 
         // --- Motion Status ---

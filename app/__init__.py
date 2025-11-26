@@ -5,6 +5,7 @@ from app.settings import load_config
 from app.camera.camera import TapoCamera
 from app.video.streamer import VideoStreamer
 import app.shared as shared # Import the shared file
+from app.audio.streamer import AudioStreamer
 
 socketio = SocketIO(cors_allowed_origins="*")
 
@@ -27,8 +28,14 @@ def create_app():
 
     # 3. Start Streamer
     if shared.camera:
-        shared.streamer = VideoStreamer(shared.camera, socketio)
-        shared.streamer.start_streaming()
+        
+        print("▶ Starting Video Stream...")
+        shared.video_streamer = VideoStreamer(shared.camera, socketio)
+        shared.video_streamer.start_streaming()
+        
+        print("▶ Starting Audio Stream...")
+        shared.audio_streamer = AudioStreamer(shared.camera, socketio)
+        shared.audio_streamer.start_streaming()
 
     # 4. Register Routes
     from app.web.routes import web as web_blueprint
