@@ -66,20 +66,16 @@ This Python application integrates with TP-Link Tapo cameras, allowing users to 
 
 ### Important, before using the software. This application needs two you TAPO Camera password and TP Link TAPO Cloud password to function properly:
 
-* One way is to log using: <br>
+* Using PyTapo library requires TAPO Cloud Password: <br>
  
-    ` username: admin `  <br>
     ` password: <your_tp-link-cloud-password> `  <br>
 
-* The other one is to log in to your cammera locally using the camera credentials (created in Provisioning): <br>
+* Using the RTSP videostream requires Camera admin username and password: <br>
 
     ` username: <camera-username> `  <br>
     ` password: <camera-passwd> `  <br>
 
 ## Installation
-
-
-# Running with Docker
 
     Build the Docker image:
     
