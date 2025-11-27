@@ -60,38 +60,508 @@ Celem tego etapu jest zidentyfikowanie i precyzyjne zdefiniowanie kluczowego pro
 
 \subsection{Architektura rozwiązania}
 \label{subsec:architektura}
-Przedstawienie architektury opartej na trzech warstwach: dostępu do kamery, logiki biznesowej (Flask/SocketIO) i warstwie prezentacji.
-\subsubsection*{Wzorzec Klien-Server}
-\subsubsection*{Diagram komponentow }
-\subsubsection*{Diagram klas}
-\subsubsection*{Diagram komunikacji9}
+
+System został zaprojektowany jako \textbf{Real-Time IoT Gateway}, stanowiąca pomost między klientami internetowymi o wysokim opoznien a niskopoziomowymi protokołami sprzętowymi. U swej podstawy aplikacja opiera się na \textbf{Architekturze Trójwarstwowej} (\textit{Three-Tier Multitier Architecture}), ściśle oddzielając Warstwę Prezentacji (Klient), Logikę Aplikacji (Middleware) oraz Warstwę Danych/Sprzętową (Źródło). Taka separacja zapewnia, że złożoność własnościowych protokołów kamery zostaje całkowicie abstrahowana i ukryta przed interfejsem użytkownika końcowego.
+
+Kluczową decyzją projektową była implementacja aplikacji w języku Python jako inteligentnej \textbf{warstwy pośredniej} (\textit{Middleware}). Ponieważ nowoczesne przeglądarki internetowe nie są w stanie natywnie obsługiwać surowych strumieni wideo RTSP ani komunikować się bezpośrednio za pomocą protokołu ONVIF, warstwa pośrednia działa jako dwukierunkowy translator protokołów. Pobiera ona synchroniczne strumienie sprzętowe i przekształca je w asynchroniczne zdarzenia WebSocket. Pozwala to na uzyskanie responsywnego doświadczenia użytkownika bez konieczności ujawniania danych uwierzytelniających sprzętu czy jego adresu IP w sieci publicznej.
+
+W celu sprostania specyficznym wymaganiom przetwarzania audiowizualnego, system wykorzystuje hybrydę 2 wzorców architektonicznych. Pierwszym z nich jest wzorzec 
+\textbf{Architektury Potokowej} (\textit{ ang. Pipe and Filter}). Zastosowany w warstwie przetwarzania do sekwencyjnej obsługi klatek wideo i fragmentów audio (Akwizycja $\rightarrow$ Przetwarzanie $\rightarrow$ Kodowanie $\rightarrow$ Emisja).
+
+Kolejnym wzorcem  architektonicznym jest \textbf{Architektura Sterowana Zdarzeniami} (\textit{Event-Driven Architecture}), która umożliwia komunikację w czasie rzeczywistym między klientem a serwerem. Akcje użytkownika (takie jak sterowanie PTZ) oraz zmiany stanu systemu (np. wykrycie ruchu) są propagowane natychmiastowo poprzez magistralę zdarzeń (WebSockets), zamiast polegać na cyklicznym odpytywaniu (\textit{polling}).
 
 
+Ze względu na ciągły charakter strumieniowania wideo, architektura systemu w znacznym stopniu polega na \textbf{wielowątkowości} (\textit{threaded concurrency}). Aplikacja utrzymuje współdzielony stan w pamięci operacyjnej (\textit{shared in-memory state}), co pozwala na odseparowanie szybkich pętli wejściowych (odczyt ze sprzętu) od obsługi żądań wyjściowych (obsługa klientów webowych). Gwarantuje to, że obciążające procesor zadania, takie jak detekcja ruchu czy muksowanie wideo, nie blokują interfejsu użytkownika.
+
+W kolejnych sekcjach szczegółowo omówiono odpowiedzialności poszczególnych warstw (Prezentacji, Logiki i Danych), przeanalizowano wewnętrzny przepływ danych w potokach medialnych oraz przedstawiono strukturę klas wykorzystaną do implementacji powyższej architektury.
+
+% Miejsce na diagram architektury (jeśli posiadasz plik graficzny)
+\begin{figure}[h]
+    \centering
+    % \includegraphics[width=0.9\textwidth]{architektura_diagram.png}
+    \caption{Schemat architektury rozwiązania (Klient - Middleware - Sprzęt)}
+    \label{fig:architektura_diagram}
+\end{figure}
+
+\subsubsection{Architektura Wielowarstwowa}
+\label{subsubsec:architektura_wielowarstwowa}
+
+Współczesna inżynieria systemów \textbf{Internetu Rzeczy} (\textit{IoT}), a w szczególności projektowanie bram sieciowych (\textit{IoT Gateways}) obsługujących strumieniowanie multimediów w czasie rzeczywistym, wymaga rygorystycznego podejścia do strukturalizacji kodu oraz zarządzania przepływem danych. W ramach niniejszej pracy inżynierskiej, jako fundament logiczny i fizyczny rozwiązania, przyjęto \textbf{Architekturę Trójwarstwową}.
+
+Architektura warstwowa jest powszechnie uznawana w literaturze przedmiotu za \textit{de facto} standard w projektowaniu aplikacji korporacyjnych i systemów rozproszonych, umożliwiając dekompozycję złożonego problemu na separowalne, zarządzalne poziomy abstrakcji. W kontekście systemów IoT, model ten ewoluuje w kierunku struktur typu \textbf{Edge-Fog-Cloud}, gdzie brama (\textit{Gateway}) pełni rolę kluczowego węzła pośredniczącego. Zastosowany w projekcie model trójwarstwowy dokonuje ścisłej separacji odpowiedzialności (\textit{Separation of Concerns - SoC}) pomiędzy interakcją z użytkownikiem, logiką biznesową przetwarzania sygnału oraz fizycznym dostępem do urządzenia.
+
+Poniższa tabela (Tabela \ref{tab:warstwy_architektury}) przedstawia szczegółowy podział odpowiedzialności oraz stos technologiczny wykorzystany w poszczególnych warstwach systemu.
+
+\begin{table}[h]
+    \centering
+    \small % Zmniejszenie czcionki dla lepszej czytelności dużej tabeli
+    \renewcommand{\arraystretch}{1.5} % Zwiększenie odstępów między wierszami
+    \caption{Podział warstw architektury systemu IoT}
+    \label{tab:warstwy_architektury}
+    
+    % Tabela rozciągnięta na całą szerokość tekstu
+    \begin{tabularx}{\textwidth}{@{} p{3cm} L L L @{}}
+        \toprule
+        \textbf{Poziom Architektury (Tier)} & 
+        \textbf{Rola w Systemie IoT} & 
+        \textbf{Implementacja (Stack Technologiczny)} & 
+        \textbf{Odpowiedzialność Funkcjonalna} \\
+        \midrule
+        
+        \textbf{Tier 1:} \newline Warstwa Prezentacji (\textit{Presentation Layer}) & 
+        Interfejs Użytkownika (GUI), wizualizacja danych, obsługa zdarzeń wejściowych. & 
+        \textbf{Klient Webowy (SPA):} HTML5, JavaScript, Socket.IO Client, HTML5 Canvas. & 
+        Renderowanie strumienia wideo (MJPEG/Canvas), panel sterowania PTZ, wyświetlanie alertów detekcji ruchu. \\
+        \midrule
+        
+        \textbf{Tier 2:} \newline Warstwa Logiki (\textit{Business Logic / Middleware}) & 
+        Przetwarzanie reguł, koordynacja procesów, analiza danych, translacja protokołów. & 
+        \textbf{Serwer Aplikacyjny:} Python 3.13, Flask, Flask-SocketIO, OpenCV (\textit{Computer Vision}), Multiprocessing. & 
+        Detekcja ruchu (\textit{Background Subtraction}), obsługa sesji WebSocket, buforowanie klatek, orkiestracja wątków. \\
+        \midrule
+        
+        \textbf{Tier 3:} \newline Warstwa Danych i Sprzętu (\textit{Data/Hardware Layer}) & 
+        Fizyczny dostęp do danych, abstrakcja sprzętowa, trwała pamięć masowa. & 
+        \textbf{HAL \& DAO:} PyTapo (Driver), FFmpeg (Video Capture), System Plików (Storage). & 
+        Komunikacja z API Tapo, obsługa strumienia RTSP, zapis nagrań na dysk, zarządzanie poświadczeniami. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+W dalszej części rozdziału przeprowadzona zostanie szczegółowa analiza każdej z warstw, z naciskiem na uzasadnienie doboru technologii oraz analizę wydajnościową przyjętych rozwiązań.
 
 
+\paragraph{Warstwa Prezentacji}
+\label{par:warstwa_prezentacji}
+
+Warstwa Prezentacji stanowi najwyższy poziom abstrakcji w systemie, będąc jedynym punktem styku użytkownika z infrastrukturą monitoringu. Zaproponowane rozwiązanie opiera się na modelu \textbf{cienkiego klienta} (\textit{thin client}). Podejście to zakłada, że przeglądarka internetowa odpowiada wyłącznie za renderowanie obrazu i przesyłanie zdarzeń sterujących, podczas gdy ciężar obliczeniowy związany z dekodowaniem, analizą wizyjną i zarządzaniem bezpieczeństwem spoczywa na serwerze.
+
+Wybór architektury \textit{thin client} dla warstwy prezentacji jest podyktowany specyfiką środowiska IoT oraz dążeniem do uniwersalności. Klienci ,,ciency'' charakteryzują się mniejszymi wymaganiami sprzętowymi po stronie użytkownika, co umożliwia dostęp do systemu monitoringu z szerokiego spektrum urządzeń – od wydajnych stacji roboczych, po budżetowe smartfony i tablety, bez konieczności instalacji dedykowanego oprogramowania. Co więcej, centralizacja logiki na serwerze ułatwia zarządzanie bezpieczeństwem – wrażliwe algorytmy detekcji oraz bezpośrednie poświadczenia do kamery nigdy nie opuszczają bezpiecznej strefy serwera, co drastycznie redukuje wektor ataku.
+
+W omawianym rozwiązaniu Warstwa Prezentacji została zaimplementowana jako responsywna aplikacja internetowa, wykorzystująca standardowe technologie webowe (HTML5, CSS3, JavaScript), co eliminuje konieczność instalacji dodatkowych wtyczek po stronie klienta. Architektura interfejsu została podzielona na dwa funkcjonalne moduły, różniące się sposobem obsługi mediów:
+
+\begin{enumerate}
+    \item \textbf{Moduł czasu rzeczywistego (Live Dashboard)}
+    
+    W przypadku podglądu na żywo zrezygnowano z tradycyjnego podejścia opartego na znaczniku wideo HTML5 (\texttt{<video>}), który ze względu na wewnętrzne mechanizmy buforowania przeglądarki wprowadza opóźnienia nieakceptowalne przy sterowaniu kamerą. Zamiast tego zastosowano renderowanie imperatywne na elemencie \textbf{Canvas}. Mechanizm ten działa w ścisłej symbiozie z warstwą logiczną serwera:
+    
+    \begin{description}
+        \item[Wizualizacja:] Przeglądarka traktowana jest jako dynamiczne płótno, na którym rysowane są poszczególne ramki obrazu otrzymywane asynchronicznie poprzez kanał \textbf{WebSocket}. Pozwala to na zachowanie płynności i minimalizację opóźnień (\textit{low-latency}), gdyż pomijany jest narzut związany z konteneryzacją strumienia wideo.
+        
+        \item[Interakcja:] Sterowanie mechaniką kamery (PTZ) oraz procesem nagrywania zrealizowano w oparciu o model zdarzeniowy. Akcje użytkownika nie powodują przeładowania strony, lecz generują natychmiastowe sygnały sterujące wysyłane do serwera.
+        
+        \item[Audio:] Warstwa Prezentacji przejmuje również odpowiedzialność za rekonstrukcję dźwięku. Surowe dane audio są buforowane i odtwarzane przy użyciu \textbf{Web Audio API}, co pozwala na synchronizację ścieżki dźwiękowej z obrazem bez obciążania łącza przesyłaniem ciężkich plików multimedialnych.
+    \end{description}
+
+    \item \textbf{Moduł archiwizacji}
+    
+    Dla funkcjonalności przeglądania nagrań historycznych zastosowano odmienną strategię. Ponieważ w tym przypadku priorytetem jest stabilność odtwarzania i możliwość przewijania materiału, a nie czas reakcji, warstwa prezentacji wykorzystuje natywne możliwości przeglądarki do odtwarzania plików wideo (MP4) serwowanych standardowym protokołem HTTP.
+\end{enumerate}
+
+Całość interfejsu została zaprojektowana zgodnie z zasadami \textbf{Responsive Web Design} (RWD), co zapewnia spójne doświadczenie użytkownika niezależnie od tego, czy system obsługiwany jest na monitorze stacji roboczej, czy na ekranie dotykowym urządzenia mobilnego. Rolę medium transportowego dla danych dynamicznych pełni tutaj biblioteka klienta WebSocket, która zarządza stabilnością połączenia z warstwą pośrednią (\textit{Middleware}).
+
+\paragraph{Warstwa Logiki}
+\label{par:warstwa_logiki}
+
+Warstwa Logiki, umiejscowiona centralnie w architekturze trójwarstwowej, pełni rolę ,,mózgu'' systemu, orkiestrując przepływ danych pomiędzy użytkownikiem a sprzętem. W literaturze dotyczącej IoT warstwa ta jest często definiowana jako \textit{Middleware}, którego zadaniem jest ukrycie heterogeniczności urządzeń końcowych i udostępnienie ujednoliconych usług dla warstwy aplikacji. W niniejszym projekcie warstwa ta została zaimplementowana w języku \textbf{Python 3.13} z wykorzystaniem frameworka \textbf{Flask}, działając jako inteligentna brama (\textit{Smart Gateway}) realizująca nie tylko routing, ale i zaawansowane przetwarzanie danych na brzegu sieci (\textit{Edge Computing}).
+
+\subparagraph{Middleware jako Translator Protokołów i Agregator}
+
+Głównym zadaniem Warstwy Logiki jest integracja różnorodnych standardów komunikacyjnych. Kamera Tapo C200 operuje na dwóch niezależnych kanałach: standardowym strumieniu wideo RTSP (port 554) oraz zamkniętym, szyfrowanym protokole sterowania HTTP (\textit{proprietary API}). Warstwa Logiki działa tutaj jako \textbf{Translator Protokołów}, konwertując te niespójne interfejsy na jednolity strumień zdarzeń WebSocket zrozumiałych dla klienta webowego. \textit{Middleware} realizuje następujące funkcje kluczowe:
+
+\begin{description}
+    \item[Ingestia i Transkodowanie:] Pobiera strumień H.264 z kamery, dekoduje go i transkoduje do formatu MJPEG/JPEG w czasie rzeczywistym, co jest niezbędne, gdyż przeglądarki nie obsługują natywnie surowego RTSP.
+    
+    \item[Abstrakcja Sterowania:] Tłumaczy wysokopoziomowe polecenia (np. \texttt{move\_camera('left')}) na specyficzne, zaszyfrowane payloady wymagane przez API Tapo, wykorzystując biblioteki warstwy niższej.
+    
+    \item[Zarządzanie Sesjami:] Monitoruje stan połączeń klientów. Dzięki architekturze stanowej (\textit{Stateful}), system może wstrzymać pobieranie strumienia z kamery, gdy żaden użytkownik nie jest podłączony, co znacząco oszczędza zasoby sieciowe i obliczeniowe bramy.
+\end{description}
+
+\subparagraph{Wyzwanie Współbieżności: Python GIL i Model Przetwarzania}
+
+Krytycznym aspektem projektowym w Warstwie Logiki był wybór modelu współbieżności. Język Python, mimo swojej elastyczności i bogatego ekosystemu bibliotek (\texttt{OpenCV}, \texttt{NumPy}), posiada istotne ograniczenie w postaci \textbf{Global Interpreter Lock} (GIL). GIL to mechanizm w referencyjnej implementacji CPython, który wymusza, aby w danym momencie tylko jeden wątek wykonywał kod bajtowy Pythona. W systemie przetwarzania wideo, który musi jednocześnie odbierać dane z sieci (I/O), analizować obraz (CPU) i wysyłać go do klientów (I/O), GIL staje się poważnym wąskim gardłem, uniemożliwiającym pełne wykorzystanie procesorów wielordzeniowych w modelu wielowątkowym.
+
+Aby rozwiązać ten problem i zapewnić wysoką wydajność (wysoki FPS, niskie opóźnienia), w projekcie zastosowano hybrydowy model współbieżności, oparty na analizie charakterystyki zadań:
+
+\begin{description}
+    \item[Wielowątkowość (\texttt{threading}) dla zadań I/O-bound:] Obsługa serwera WWW, gniazd WebSocket oraz komunikacji sieciowej z kamerą jest realizowana za pomocą wątków (przy użyciu biblioteki \texttt{eventlet} lub \texttt{gevent} zintegrowanej z Flask-SocketIO). Operacje wejścia/wyjścia w Pythonie zwalniają blokadę GIL, co pozwala na efektywną obsługę wielu równoległych połączeń sieciowych w jednym procesie.
+    
+    \item[Wieloprocesowość (\texttt{multiprocessing}) dla zadań CPU-bound:] Kluczowe zadania obliczeniowe, takie jak dekodowanie klatek wideo i algorytmy detekcji ruchu (\textit{Computer Vision}), zostały wydzielone do osobnych procesów systemowych. Każdy proces posiada własną instancję interpretera Python i własny GIL, co pozwala na rzeczywiste równoległe wykonywanie kodu na dostępnych rdzeniach procesora (np. 4 rdzenie w Raspberry Pi). Badania wskazują, że dla zadań przetwarzania obrazu w \texttt{OpenCV}, model wieloprocesowy oferuje liniowy wzrost wydajności, podczas gdy model wątkowy jest ograniczony przez GIL i nie skaluje się.
+\end{description}
+
+\subparagraph{Implementacja Wzorca Producent-Konsument}
+
+Przepływ danych wideo wewnątrz Warstwy Logiki został zorganizowany zgodnie z asynchronicznym wzorcem projektowym \textbf{Producent-Konsument} (\textit{Producer-Consumer Pattern}), co zapewnia separację procesu akwizycji danych od ich dystrybucji.
+
+\begin{description}
+    \item[Proces Producenta:] Dedykowany proces, który w pętli nieskończonej pobiera klatki ze strumienia RTSP (używając \texttt{cv2.VideoCapture}). Jego wyłącznym zadaniem jest utrzymanie stabilnego połączenia z kamerą i umieszczanie najnowszej klatki w pamięci współdzielonej (kolejce).
+    
+    \item[Bufor (Kolejka):] Zastosowano kolejkę o bardzo małym rozmiarze (np. \texttt{maxsize=1}). Jest to celowy zabieg inżynierski wynikający ze specyfiki \textit{live streamingu}: w systemie monitoringu ważniejsza jest minimalizacja opóźnienia (\textit{latency}) niż zachowanie każdej klatki. Jeśli proces konsumenta (serwer wysyłający) jest zbyt wolny, kolejka automatycznie odrzuca stare klatki, zapewniając, że klient zawsze otrzymuje najbardziej aktualny obraz (,,gubienie klatek'' zamiast ,,buforowania opóźnień'').
+    
+    \item[Proces Konsumenta:] Wątek serwera Flask, który pobiera klatkę z kolejki, aplikuje na nią logikę biznesową (np. detekcję ruchu) i emituje do klientów WebSocket.
+\end{description}
+
+Taka architektura zapewnia izolację błędów – awaria lub spowolnienie po stronie klienta webowego nie wpływa na stabilność połączenia z kamerą, a chwilowe problemy z siecią kamery nie blokują interfejsu użytkownika.
 
 
+\paragraph{Warstwa Danych}
+\label{par:warstwa_danych}
 
+Najniższy poziom architektury stanowi fundament integrujący system cyfrowy ze światem fizycznym. W klasycznej inżynierii oprogramowania warstwa ta (\textit{Data Access Layer} - DAL) odpowiada za komunikację z bazą danych. W systemach IoT pojęcie to ulega rozszerzeniu o \textbf{Warstwę Abstrakcji Sprzętu} (\textit{Hardware Abstraction Layer} - HAL). W projekcie przyjęto założenie, że kamera IP jest specyficznym rodzajem ,,bazy danych'', która dostarcza strumienie informacji (wideo, audio, telemetria) i przyjmuje polecenia modyfikacji stanu (PTZ, konfiguracja).
 
-\subsection{Zastosowane narzędzia i technologie}
-\label{subsec:narzedzia}
-\subsubsection{Język Programowania: Python 3.13}
-\subsubsection{Konteneryzacja: Docker}
-\subsubsection{Package Manager: uv}
-\subsubsection{Audio, Video i Streaming}
+\subparagraph{Warstwa Abstrakcji Sprzętu (HAL) jako Izolator}
+
+Podstawowym celem implementacji HAL jest uniezależnienie wyższych warstw systemu od konkretnego modelu sprzętowego. Warstwa Logiki nie powinna operować na niskopoziomowych szczegółach, takich jak adresy URL strumieni RTSP, algorytmy szyfrowania haseł czy specyficzne kody błędów HTTP zwracane przez kamerę. Zamiast tego, HAL udostępnia ujednolicony interfejs programistyczny (API wewnętrzne), np. metodę \texttt{camera.move\_left()}, która ,,pod spodem'' wykonuje całą komunikacyjną ,,brudną robotę''.
+
+W projekcie HAL realizowany jest poprzez wzorzec \textbf{Adapter}, który ,,opakowuje'' zewnętrzną bibliotekę \texttt{PyTapo}. \texttt{PyTapo} jest efektem inżynierii wstecznej społeczności \textit{Open Source} i służy do komunikacji z zamkniętym API Tapo. Bezpośrednie użycie \texttt{PyTapo} w kontrolerach frameworka Flask naruszyłoby zasadę separacji odpowiedzialności. Stworzenie własnej klasy typu \textit{wrapper} (\texttt{TapoCameraDriver}) w warstwie HAL pozwala na:
+
+\begin{description}
+    \item[Łatwą wymianę sterownika:] Jeśli w przyszłości biblioteka \texttt{PyTapo} przestanie być rozwijana, wystarczy podmienić implementację wewnątrz klasy \texttt{TapoCameraDriver} na inną, bez konieczności przepisywania setek linii kodu w Warstwie Logiki.
+    
+    \item[Centralizację obsługi błędów:] HAL tłumaczy specyficzne wyjątki sieciowe (np. \texttt{ConnectionRefusedError} czy kody błędów z serwera \texttt{uhttpd} kamery) na zrozumiałe wyjątki domenowe (np. \texttt{CameraOfflineException}), upraszczając logikę obsługi błędów w wyższych warstwach.
+    
+    \item[Bezpieczeństwo:] HAL odpowiada za bezpieczne przechowywanie i wstrzykiwanie poświadczeń (login/hasło) do żądań. Dzięki temu dane uwierzytelniające nigdy nie ,,wyciekają'' do warstwy prezentacji. Jest to kluczowe w kontekście znanych podatności kamer Tapo, takich jak \texttt{CVE-2021-4045} (luka RCE w serwerze \texttt{uhttpd}), która wymusza traktowanie urządzenia jako potencjalnie niebezpiecznego i izolowanie interakcji z nim.
+\end{description}
+\subsubsection{Wzorzec Architektury Potokowej}
+\label{subsubsec:architektura_potokowa}
+
+Uzupełnieniem struktury warstwowej w warstwie logiki biznesowej jest zastosowanie \textbf{Architektury Potokowej} (ang. \textit{Pipe and Filter}). Wzorzec ten jest standardem w systemach przetwarzających strumienie danych multimedialnych, gdzie kluczowe jest zachowanie ciągłości i niskiego opóźnienia przetwarzania.
+
+\paragraph{Zasada działania}
+
+Istotą tego wzorca jest dekompozycja złożonego procesu przetwarzania danych na serię niezależnych, sekwencyjnych kroków (filtrów), połączonych kanałami komunikacyjnymi (potokami). Dane wejściowe wchodzą do systemu, przechodzą przez szereg transformacji, a następnie są przekazywane do wyjścia (ujścia). Kluczową cechą tej architektury jest izolacja poszczególnych filtrów – każdy z nich wykonuje tylko jedną, specyficzną operację (np. skalowanie obrazu, detekcja ruchu) i przekazuje zmodyfikowane dane do następnego elementu w łańcuchu. Takie podejście sprzyja modularności, ułatwia testowanie oraz pozwala na łatwą wymianę algorytmów bez naruszania struktury całego systemu.
+
+\paragraph{Zastosowanie w projekcie}
+
+W zrealizowanym systemie wzorzec ten stanowi fundament działania klas \texttt{VideoStreamer} oraz \texttt{AudioStreamer}, które operują w nieskończonych pętlach wątków tła. Ponieważ dane z kamery (protokół RTSP) napływają w sposób ciągły, każda jednostka danych (klatka wideo lub pakiet audio) musi zostać przetworzona w czasie rzeczywistym, zanim zostanie nadpisana przez kolejną. Architektura potokowa zapewnia tutaj deterministyczny przepływ danych od momentu ich akwizycji ze sprzętu aż do momentu wysłania do klienta webowego lub zapisu na dysku.
+
+Wzorzec ten został zaimplementowany w następujących obszarach systemu:
+
 \begin{itemize}
-    \item ffmpeg
-    \item OpenCV
-    \item MoviePy
+    \item \textbf{Potok Wideo:} Przekształcanie surowych macierzy pikseli w obrazy JPEG wyświetlane w przeglądarce.
+    \item \textbf{Potok Audio:} Dekodowanie, resampling i miksowanie kanałów dźwiękowych.
+    \item \textbf{Potok Rejestracji:} Buforowanie ramek w pamięci RAM i ich finalna kompozycja do pliku MP4 (realizowana przez bibliotekę \texttt{MoviePy}).
 \end{itemize}
-\subsubsection{Web Server}
-\begin{itemize}
-    \item Flask
-    \item WebSocket's
-\end{itemize}
-\subsubsection{Kontrola Kamery: PyTapo}
 
-\subsection{Proces implementacji}
+\paragraph{Przykład implementacji: Potok przetwarzania wideo}
+
+Najbardziej reprezentatywnym przykładem wykorzystania tego wzorca w projekcie jest pętla przetwarzania obrazu zaimplementowana w klasie \texttt{VideoStreamer}. Proces ten można przedstawić jako sekwencję pięciu filtrów:
+
+\begin{enumerate}
+    \item \textbf{Źródło (\textit{Source}):} Metoda \texttt{camera.read\_frame()} dokonuje akwizycji surowej klatki obrazu bezpośrednio ze sterownika sprzętowego.
+    
+    \item \textbf{Filtr Optymalizacyjny:} Surowy obraz, często o wysokiej rozdzielczości natywnej, jest poddawany operacji skalowania (\texttt{cv2.resize}). Zmniejszenie rozdzielczości na tym etapie jest krytyczne dla wydajności kolejnych kroków analizy i transmisji.
+    
+    \item \textbf{Filtr Analityczny (\textit{Motion Detection}):} Przeskalowana klatka trafia do modułu \texttt{MotionDetector}. Jest ona porównywana z modelem tła (średnią kroczącą z poprzednich klatek). Wynikiem tego filtra nie jest modyfikacja obrazu, lecz wygenerowanie metadanych (flaga \texttt{is\_motion}), które sterują logiką powiadomień.
+    
+    \item \textbf{Filtr Kodujący:} Obraz będący macierzą pikseli (format BGR) jest kompresowany do formatu JPEG (\texttt{cv2.imencode}). Jest to niezbędny krok transformacji danych do formatu zrozumiałego dla przeglądarek internetowych.
+    
+    \item \textbf{Ujście (\textit{Sink}):} Zakodowany obraz, wraz z metadanymi o detekcji ruchu, jest przekazywany do warstwy transportowej (\texttt{socketio.emit}), która dystrybuuje go do wszystkich podłączonych klientów.
+\end{enumerate}
+
+Dzięki zastosowaniu architektury potokowej, dodanie nowej funkcjonalności – np. rozpoznawania twarzy – sprowadzałoby się jedynie do wpięcia nowego ,,filtra'' pomiędzy etap skalowania a kodowania, bez konieczności modyfikacji logiki pobierania obrazu czy komunikacji sieciowej.
+
+
+\subsubsection{Wzorzec Architektury Opartej na Zdarzeniach}
+\label{subsubsec:architektura_zdarzen}
+
+Trzecim filarem architektonicznym omawianego systemu, odpowiedzialnym za interaktywność i komunikację między warstwami, jest \textbf{Architektura Oparta na Zdarzeniach} (ang. \textit{Event-Driven Architecture} – EDA). W przeciwieństwie do klasycznego modelu żądanie-odpowiedź (\textit{Request-Response}), typowego dla statycznych stron WWW, model ten zakłada, że przepływ sterowania w systemie jest determinowany przez wystąpienie określonych zdarzeń (akcji użytkownika, zmian stanu czujników), a nie przez sekwencyjny kod proceduralny.
+
+\paragraph{Zasada działania}
+
+Istotą EDA jest odwrócenie zależności komunikacyjnych. Komponenty systemu nie odpytują się wzajemnie o zmianę stanu (co generowałoby zbędny ruch sieciowy i opóźnienia), lecz oczekują na nadejście sygnału. Wzorzec ten składa się z trzech głównych elementów:
+
+\begin{description}
+    \item[Producent Zdarzenia (\textit{Event Producer}):] Komponent, który wykrywa zmianę (np. naciśnięcie przycisku, wykrycie ruchu) i emituje komunikat. Producent nie musi wiedzieć, kto i w jaki sposób obsłuży to zdarzenie.
+    
+    \item[Kanał Zdarzeń (\textit{Event Channel}):] Medium transportowe, które przekazuje zdarzenie od producenta do konsumenta. W projekcie rolę tę pełni biblioteka \texttt{Flask-SocketIO} działająca na protokole \textbf{WebSocket}.
+    
+    \item[Konsument Zdarzenia (\textit{Event Consumer}):] Komponent, który nasłuchuje na określony typ zdarzenia i w reakcji na nie uruchamia odpowiednią logikę biznesową.
+\end{description}
+
+\paragraph{Zastosowanie w projekcie}
+
+W zrealizowanym systemie bramy IoT, architektura sterowana zdarzeniami została wykorzystana jako główny mechanizm komunikacji dwukierunkowej (\textit{Full-Duplex}) między Warstwą Prezentacji (przeglądarką) a Warstwą Logiki (serwerem Python). Zastosowanie tego wzorca było niezbędne do osiągnięcia niskiej latencji (opóźnienia) wymaganej przy zdalnym sterowaniu mechanicznym oraz do natychmiastowego powiadamiania użytkownika o zagrożeniach.
+Wzorzec ten obsługuje trzy kluczowe obszary funkcjonalne:
+
+\begin{itemize}
+    \item \textbf{Sterowanie PTZ (\textit{Uplink}):} Zdarzenia płynące od użytkownika do serwera, sterujące silnikami kamery.
+    \item \textbf{Powiadomienia o Alarmach (\textit{Downlink}):} Zdarzenia płynące z serwera do użytkownika, informujące o wykryciu ruchu przez algorytm analizy obrazu.
+    \item \textbf{Zarządzanie Stanem Nagrywania:} Synchronizacja interfejsu użytkownika (np. zmiana koloru diody nagrywania) ze stanem procesu rejestracji wideo na serwerze.
+\end{itemize}
+
+\paragraph{Przykład implementacji: Sterowanie pozycją kamery}
+
+Najbardziej obrazowym przykładem zastosowania EDA w projekcie jest mechanizm sterowania ruchem kamery (\textit{Pan/Tilt}). W tradycyjnym modelu HTTP, naciśnięcie przycisku musiałoby wysłać żądanie \texttt{POST}, a serwer musiałby odesłać odpowiedź, co przy szybkim klikaniu powodowałoby ,,zatykanie'' się kolejki żądań. W modelu zdarzeniowym proces ten przebiega asynchronicznie:
+
+\begin{enumerate}
+    \item \textbf{Produkcja (Klient):} Użytkownik naciska przycisk ,,W Lewo'' w interfejsie przeglądarki. Warstwa Prezentacji (JavaScript) przechwytuje zdarzenie \texttt{mousedown} i natychmiast emituje zdarzenie WebSocket o nazwie \texttt{'move\_camera'} z ładunkiem danych \texttt{\{'direction': 'left', 'step': 2\}}. Interfejs nie czeka na potwierdzenie, pozostając responsywnym.
+    
+    \item \textbf{Transport:} Zdarzenie jest przesyłane otwartym kanałem TCP do serwera, bez narzutu nagłówków HTTP.
+    
+    \item \textbf{Konsumpcja (Serwer):} Funkcja \texttt{handle\_move\_camera} w pliku \texttt{socket\_handlers.py}, która nasłuchuje na ten konkretny typ zdarzenia (\texttt{@socketio.on}), zostaje wybudzona. Przekazuje ona komendę do sterownika sprzętowego \texttt{camera.py}, który wykonuje fizyczny obrót urządzenia.
+    
+    \item \textbf{Sprzężenie zwrotne (Opcjonalne):} Jeśli kamera osiągnie fizyczny limit obrotu, warstwa logiki staje się nowym producentem zdarzenia. Emituje ona zdarzenie \texttt{'ptz\_limit'}, na które nasłuchuje przeglądarka, aby zablokować odpowiedni przycisk w interfejsie graficznym.
+\end{enumerate}
+
+Dzięki luźnemu powiązaniu komponentów (\textit{loose coupling}), serwer może obsłużyć setki takich zdarzeń na sekundę, zapewniając płynne sterowanie ,,oko-ręka'', niemożliwe do osiągnięcia w architekturze synchronicznej.
+
+
+\subsection{Diagramy}
+\subsection*{Diagram komponentow }
+\subsection*{Diagram klas}
+\subsection*{Diagram komunikacji}
+
+
+\section{Zastosowane narzędzia i technologie}
+\label{sec:narzedzia_i_technologie}
+
+Niniejszy rozdział stanowi dogłębną analizę techniczną \textbf{stosu technologicznego} (\textit{technology stack}) dobranego do realizacji projektu inżynierskiego, którego celem jest stworzenie otwartego systemu obsługi kamer IoT, na przykładzie modelu TP-Link Tapo C200. Wybór poszczególnych komponentów nie był procesem arbitralnym, lecz wynikiem wieloaspektowej analizy wymagań funkcjonalnych i niefunkcjonalnych, ze szczególnym uwzględnieniem ograniczeń zasobowych urządzeń brzegowych (\textit{Edge Computing}), konieczności minimalizacji opóźnień (\textit{low-latency}) w przetwarzaniu strumienia audiowizualnego oraz imperatywu przełamania barier interoperacyjności narzuconych przez producenta (\textit{vendor lock-in}).
+
+W poniższych podrozdziałach dokonano dekonstrukcji architektury systemu na poziomie narzędziowym, omawiając zarówno warstwę językową, środowiskową, jak i biblioteki specyficzne dla domeny przetwarzania sygnałów. Każda decyzja projektowa została osadzona w kontekście aktualnego stanu wiedzy (\textit{State of the Art}), odnosząc się do literatury przedmiotu w zakresie strumieniowania wideo, inżynierii wstecznej oraz optymalizacji systemów wbudowanych.
+
+\subsection{Język Programowania: Python 3.13}
+\label{subsec:python}
+
+Fundamentem warstwy logicznej (\textit{backendu}) oraz orkiestratorem procesów przetwarzania danych w projektowanym systemie jest język programowania \textbf{Python} w wersji \textbf{3.13}. Decyzja o wyborze tego języka, a w szczególności jego najnowszej, stabilnej wersji wydanej w październiku 2024 roku, jest podyktowana szeregiem czynników wykraczających poza standardową łatwość składniową. W kontekście inżynierii systemów czasu rzeczywistego (\textit{Real-Time Systems}), Python 3.13 wprowadza paradygmatyczne zmiany w architekturze interpretera CPython, które bezpośrednio adresują historyczne ograniczenia wydajnościowe w zastosowaniach wielowątkowych.\textsuperscript{1}
+
+\subsubsection{Ewolucja Modelu Współbieżności: Free-threaded CPython}
+
+Tradycyjna krytyka języka Python w zastosowaniach inżynierskich, szczególnie tych wymagających intensywnych obliczeń (\textit{CPU-bound}), takich jak analiza obrazu czy transkodowanie wideo, koncentrowała się wokół mechanizmu \textbf{Global Interpreter Lock} (GIL). GIL to muteks chroniący wewnętrzny stan interpretera przed uszkodzeniem w środowisku wielowątkowym, co w praktyce oznaczało, że w danym momencie tylko jeden wątek mógł wykonywać kod bajtowy Pythona, niezależnie od liczby dostępnych rdzeni procesora.\textsuperscript{3} W systemach NVR (\textit{Network Video Recorder}), gdzie równolegle muszą zachodzić procesy akwizycji klatek, ich analizy (\textit{Computer Vision}), obsługi zapytań sieciowych i zapisu na dysk, GIL stanowił krytyczne wąskie gardło, wprowadzając nieprzewidywalne opóźnienia i uniemożliwiając liniowe skalowanie wydajności.
+
+Wersja 3.13 wprowadza eksperymentalny tryb \textbf{free-threaded} (zgodnie z PEP 703), który umożliwia całkowite wyłączenie GIL.\textsuperscript{5} Wybór tej wersji języka dla projektu inżynierskiego jest strategiczny: pozwala na osiągnięcie \textbf{rzeczywistego paralelizmu} (\textit{true parallelism}) na poziomie wątków systemowych. W zaimplementowanym rozwiązaniu oznacza to, że wątek odpowiedzialny za dekodowanie strumienia wideo (wykorzystujący biblioteki C++ poprzez wrappery) nie blokuje wątku obsługującego serwer WebSocket czy logikę sterowania PTZ. Badania wskazują, że w scenariuszach intensywnie korzystających z wielowątkowości, eliminacja GIL może przynieść znaczący wzrost przepustowości systemu, co jest kluczowe dla utrzymania stabilnego klatkażu (FPS) na urządzeniach wielordzeniowych o niskim taktowaniu, takich jak Raspberry Pi.\textsuperscript{2}
+
+\subsubsection{Kompilacja JIT (\textit{Just-In-Time}) i Optymalizacja}
+
+Kolejnym argumentem przemawiającym za adopcją Pythona 3.13 jest wprowadzenie wstępnej implementacji kompilatora \textbf{JIT} (PEP 744).\textsuperscript{2} Choć w obecnej fazie jest to technologia dojrzewająca, jej obecność pozwala na optymalizację tzw. \textbf{gorących ścieżek kodu} (\textit{hot paths}) – fragmentów programu wykonywanych wielokrotnie w pętli przetwarzania wideo. Architektura JIT typu ,,copy-and-patch'' umożliwia transformację kodu bajtowego do kodu maszynowego w czasie wykonywania, redukując narzut interpretera.\textsuperscript{7} W systemie analizującym 30 klatek na sekundę, nawet mikrosekundowe zyski na pojedynczej operacji przetwarzania macierzy pikseli sumują się, wpływając na redukcję opóźnienia całkowitego (\textit{end-to-end latency}).\textsuperscript{1}
+
+\subsubsection{Ulepszony Ekosystem Deweloperski (DX)}
+
+Z perspektywy inżynierii oprogramowania, Python 3.13 oferuje znacząco usprawniony interfejs REPL (\textit{Read-Eval-Print Loop}) oraz system raportowania błędów.\textsuperscript{1} W fazie inżynierii wstecznej protokołów kamery, możliwość interaktywnego testowania fragmentów kodu z obsługą kolorowania składni i edycji blokowej w terminalu\textsuperscript{9} drastycznie przyspieszyła proces prototypowania sterowników. Precyzyjne komunikaty błędów pozwalają na szybszą diagnozę problemów z typami danych w dynamicznie typowanym środowisku, co jest kluczowe przy obsłudze binarnych payloadów strumieni wideo.
+
+\begin{table}[h]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.3}
+    \caption{Porównanie kluczowych cech wersji Python w kontekście projektu.}
+    \label{tab:python_porownanie}
+    
+    \begin{tabularx}{\textwidth}{@{} p{3cm} L L L @{}}
+        \toprule
+        \textbf{Cecha} & 
+        \textbf{Python 3.11/3.12} & 
+        \textbf{Python 3.13 (Zastosowany)} & 
+        \textbf{Implikacja dla Projektu} \\
+        \midrule
+        
+        \textbf{Model GIL} & 
+        Obecny, wymuszona serializacja wątków & 
+        Eksperymentalny \textit{Free-threaded} (No-GIL) & 
+        Możliwość pełnego wykorzystania wielordzeniowości CPU przy przetwarzaniu wideo.\textsuperscript{3} \\
+        \midrule
+        
+        \textbf{Kompilacja} & 
+        Tylko do Bytecode (\texttt{.pyc}) & 
+        Wstępny JIT Compiler & 
+        Potencjał zwiększenia wydajności pętli analitycznych.\textsuperscript{7} \\
+        \midrule
+        
+        \textbf{REPL} & 
+        Standardowy & 
+        Ulepszony, kolorowany, wieloliniowy & 
+        Szybsze prototypowanie i debugowanie interakcji z API kamery.\textsuperscript{9} \\
+        \midrule
+        
+        \textbf{Zarządzanie Pamięcią} & 
+        Standardowe & 
+        Ulepszony GC (\textit{Garbage Collection}) & 
+        Mniejsze ryzyko wycieków pamięci przy długotrwałym strumieniowaniu.\textsuperscript{1} \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Konteneryzacja: Docker}
+\label{subsec:docker}
+
+W celu zapewnienia determinizmu środowiska uruchomieniowego, izolacji procesów oraz łatwości wdrażania (\textit{deployment}) na zróżnicowanych platformach sprzętowych, projekt wykorzystuje technologię konteneryzacji \textbf{Docker}. Decyzja ta jest odpowiedzią na typowe w inżynierii IoT wyzwanie znane jako ,,works on my machine'', wynikające z różnic w wersjach bibliotek systemowych, kodeków i konfiguracji sieciowej między środowiskiem deweloperskim a docelowym.\textsuperscript{10}
+
+\subsubsection{Architektura Wielowarstwowa (\textit{Multi-stage Builds})}
+
+Zastosowany w projekcie plik \texttt{Dockerfile} opiera się na wzorcu \textbf{\textit{Multi-stage Builds}}.\textsuperscript{11} Jest to zaawansowana technika optymalizacji obrazów, polegająca na podziale procesu budowania na odrębne etapy:
+
+\begin{itemize}
+    \item \textbf{Etap Budowania (\textit{Builder Stage}):} W tej fazie wykorzystywany jest obraz bazowy wyposażony w pełny zestaw narzędzi kompilacji (kompilatory C/C++, nagłówki systemowe, narzędzia budowania Rust dla \texttt{uv}). Służy on do skompilowania zależności, które wymagają natywnych rozszerzeń (np. \texttt{numpy}, \texttt{opencv-python-headless}). Dzięki temu procesor hosta nie jest obciążany kompilacją w czasie uruchamiania, a środowisko budowania nie zanieczyszcza środowiska produkcyjnego.\textsuperscript{11}
+    
+    \item \textbf{Etap Uruchomieniowy (\textit{Runtime Stage}):} Do finalnego obrazu kopiowane są wyłącznie niezbędne artefakty (skompilowane biblioteki, wirtualne środowisko, kod źródłowy) z etapu budowania. Jako baza wykorzystywany jest obraz \texttt{python:3.13-slim} (oparty na Debian Slim), co pozwala na drastyczną redukcję rozmiaru końcowego kontenera (często z $>$1\,GB do $<$200\,MB). Mniejszy rozmiar obrazu jest kluczowy przy wdrażaniu aktualizacji na urządzenia brzegowe o ograniczonej przepustowości sieci i pojemności pamięci masowej.\textsuperscript{11}
+\end{itemize}
+
+\subsubsection{Izolacja i Bezpieczeństwo}
+
+Docker zapewnia izolację procesów wykorzystując mechanizmy jądra Linux, takie jak \texttt{cgroups} (\textit{control groups}) i \textit{namespaces}. W kontekście bezpieczeństwa kamer IoT jest to funkcja krytyczna. Aplikacja działa w odseparowanym środowisku z własnym systemem plików (\textit{OverlayFS}), co ogranicza skutki ewentualnego przejęcia kontroli nad aplikacją przez atakującego – nie ma on bezpośredniego dostępu do systemu operacyjnego hosta.\textsuperscript{14} Ponadto, konteneryzacja umożliwia precyzyjne limitowanie zasobów (CPU, RAM) przydzielanych procesowi analizy wideo, co zapobiega zawieszeniu całego systemu w przypadku wycieku pamięci w bibliotece przetwarzania obrazu.
+
+\subsubsection{Sieć i Host Networking}
+
+Dla zapewnienia niskich opóźnień w transmisji strumienia RTSP (opartego na UDP) oraz poprawnego działania mechanizmów wykrywania urządzeń w sieci lokalnej (\textit{Discovery Protocols}), kontener Docker może być skonfigurowany w trybie \textbf{host networking} (\texttt{--network host}). Eliminuje to narzut związany z translacją adresów sieciowych (NAT) wewnątrz silnika Dockera, co jest zalecane w systemach strumieniowania wideo czasu rzeczywistego.\textsuperscript{11}
+
+\subsection{Package Manager: uv}
+\label{subsec:package_manager}
+
+Zarządzanie zależnościami w ekosystemie Pythona tradycyjnie opierało się na narzędziach \texttt{pip} i \texttt{virtualenv}. Jednak w projekcie inżynierskim o wysokich wymaganiach co do powtarzalności i wydajności procesu budowania (CI/CD), narzędzia te okazują się niewystarczające. W niniejszej pracy zastosowano \textbf{\texttt{uv}} – nowoczesny menedżer pakietów napisany w języku \textbf{Rust}, który redefiniuje standardy wydajności w ekosystemie Pythona.\textsuperscript{15}
+
+\subsubsection{Wydajność i Architektura Rust}
+
+\texttt{uv} charakteryzuje się ekstremalną wydajnością, oferując czasy instalacji i rozwiązywania zależności (\textit{dependency resolution}) rzędu 10-100 razy krótsze niż \texttt{pip}.\textsuperscript{15} Wynika to z natury języka Rust (brak \textit{Garbage Collectora}, efektywne zarządzanie pamięcią) oraz agresywnego wykorzystania wielowątkowości przy pobieraniu i rozpakowywaniu paczek. W cyklu deweloperskim, gdzie obraz Docker jest przebudowywany wielokrotnie, skrócenie czasu instalacji zależności z kilku minut do kilku sekund\textsuperscript{17} przekłada się na znaczący wzrost efektywności pracy inżyniera.
+
+\subsubsection{Determinizm poprzez \texttt{uv.lock}}
+
+Kluczowym elementem zapewniającym stabilność systemu jest plik blokady \textbf{\texttt{uv.lock}}. W przeciwieństwie do standardowego \texttt{requirements.txt}, który często specyfikuje tylko bezpośrednie zależności, \texttt{uv.lock} zamraża całe drzewo zależności (włącznie z zależnościami przechodnimi) wraz z ich sumami kontrolnymi (\textit{hashes}).\textsuperscript{15} Gwarantuje to, że środowisko zbudowane na komputerze dewelopera jest matematycznie identyczne ze środowiskiem wdrożonym na urządzeniu końcowym. Jest to krytyczne przy pracy z bibliotekami takimi jak \texttt{PyTapo} czy \texttt{OpenCV}, gdzie nawet drobna różnica w wersji podrzędnej zależności mogłaby wpłynąć na stabilność dekodowania strumienia czy poprawność szyfrowania komunikacji.\textsuperscript{19}
+
+\subsubsection{Integracja z Cache'owaniem Docker}
+
+W \texttt{Dockerfile} zastosowano zaawansowane mechanizmy \textit{cache'owania} specyficzne dla \texttt{uv}. Użycie instrukcji \texttt{RUN --mount=type=cache,target=/root/.cache/uv} pozwala na współdzielenie pamięci podręcznej pakietów pomiędzy kolejnymi budowaniami obrazu.\textsuperscript{10} Dodatkowo, strategia instalacji zależności w warstwie poprzedzającej kopiowanie kodu źródłowego (\texttt{COPY uv.lock pyproject.toml./, następnie uv sync}) zapewnia, że zmiany w kodzie aplikacji nie powodują inwalidacji \textit{cache'u} warstwy z bibliotekami. To podejście, w połączeniu z flagą \texttt{--compile-bytecode} (wymuszającą prekompilację do plików \texttt{.pyc}), optymalizuje zarówno czas budowania, jak i czas startu kontenera.\textsuperscript{11}
+
+\begin{table}[h]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.3}
+    \caption{Porównanie menedżerów pakietów Python w kontekście projektu.}
+    \label{tab:package_manager_porownanie}
+    
+    \begin{tabularx}{\textwidth}{@{} p{3cm} L L L @{}}
+        \toprule
+        \textbf{Cecha} & 
+        \textbf{pip + virtualenv} & 
+        \textbf{Poetry} & 
+        \textbf{uv (Zastosowany)} \\
+        \midrule
+        
+        \textbf{Język implementacji} & 
+        Python & 
+        Python & 
+        Rust\textsuperscript{15} \\
+        \midrule
+        
+        \textbf{Prędkość instalacji} & 
+        Bazowa & 
+        Wolniejsza (rozbudowany \textit{resolver}) & 
+        10-100x szybsza\textsuperscript{15} \\
+        \midrule
+        
+        \textbf{Plik blokady (\textit{Lockfile})} & 
+        Brak (tylko \texttt{requirements.txt}) & 
+        \texttt{poetry.lock} & 
+        \texttt{uv.lock} (uniwersalny)\textsuperscript{18} \\
+        \midrule
+        
+        \textbf{Zarządzanie Pythonem} & 
+        Zewnętrzne & 
+        Wbudowane & 
+        Kompleksowe (instaluje wersje Pythona)\textsuperscript{16} \\
+        \midrule
+        
+        \textbf{Wsparcie Docker} & 
+        Standardowe & 
+        Wymaga konfiguracji & 
+        Dedykowane obrazy i \textit{cache}\textsuperscript{10} \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Audio: FFmpeg i Kodek AAC}
+\label{subsec:audio}
+
+Obsługa warstwy audio w systemie monitoringu stawia przed inżynierem wyzwania związane z synchronizacją, kompresją i kompatybilnością formatów. Kamera Tapo C200 wykorzystuje kodek \textbf{AAC} (\textit{Advanced Audio Coding}) do transmisji dźwięku, co wymaga zastosowania zaawansowanych narzędzi dekodujących.
+
+\subsubsection{Rola FFmpeg: Uniwersalny Silnik Przetwarzania}
+
+W projekcie wykorzystano bibliotekę \textbf{FFmpeg} jako główny silnik (\textit{backend}) przetwarzania mediów. FFmpeg jest \textit{de facto} standardem przemysłowym w dziedzinie manipulacji danymi A/V, oferującym wsparcie dla niemal wszystkich istniejących kodeków i kontenerów.\textsuperscript{21} Choć warstwa sterująca napisana jest w Pythonie, to FFmpeg wykonuje ,,ciężką pracę'' (\textit{heavy lifting}) związaną z demultipleksowaniem (\textit{demuxing}) strumienia transportowego (często RTP/RTSP) i dekodowaniem ramek audio.
+
+Badania Li i in. (2015) dotyczące systemów analizy wideo opartych na FFmpeg wskazują, że jego modułowa architektura pozwala na efektywne zarządzanie buforami i redukcję zatorów sieciowych, co jest kluczowe w systemach czasu rzeczywistego.\textsuperscript{23} W projekcie wykorzystano te mechanizmy do implementacji potoku audio, który jest odporny na wahania przepustowości sieci (\textit{jitter}).
+
+\subsubsection{Biblioteka PyAV: Wiązanie Python-FFmpeg}
+
+Zamiast polegać na wywoływaniu procesów zewnętrznych (poprzez \texttt{subprocess}), co jest nieefektywne i trudne w zarządzaniu, projekt wykorzystuje bibliotekę \textbf{PyAV}. Jest to bezpośrednie wiązanie (\textit{binding}) do bibliotek C projektu FFmpeg (\texttt{libavcodec}, \texttt{libavformat}, \texttt{libavutil}). \texttt{PyAV} umożliwia precyzyjną, niskopoziomową kontrolę nad procesem dekodowania wewnątrz interpretera Pythona.\textsuperscript{25}
+Zastosowanie \texttt{PyAV} pozwala na:
+
+\begin{itemize}
+    \item Dostęp do surowych danych audio (PCM) bezpośrednio w pamięci RAM, bez konieczności zapisu plików tymczasowych (\textit{operacje zero-copy}).
+    \item Precyzyjną ekstrakcję znaczników czasu (PTS/DTS), co jest niezbędne do synchronizacji dźwięku z obrazem (\textit{Lip Sync}) w kliencie webowym.\textsuperscript{21}
+    \item Elastyczne transkodowanie ,,w locie'' do formatów akceptowalnych przez przeglądarki (np. WebM/Opus lub PCM dla \textit{Web Audio API}).
+\end{itemize}
+
+\subsubsection{Optymalizacja Latencji w AAC}
+
+Kodek AAC, mimo wysokiej efektywności kompresji, wprowadza algorytmiczne opóźnienie. W pracy zaimplementowano optymalizacje sugerowane w literaturze dla strumieniowania o niskim opóźnieniu\textsuperscript{27}, takie jak wymuszenie flagi \texttt{fflags nobuffer} w FFmpeg, co nakazuje dekoderowi natychmiastowe przetwarzanie nadchodzących pakietów bez oczekiwania na wypełnienie bufora. Jest to kluczowe dla funkcji dwukierunkowego audio, gdzie opóźnienia powyżej 200--300\,ms degradują jakość komunikacji.
+
+\subsection{Video: OpenCV i FFmpeg}
+\label{subsec:video}
+
+Warstwa wideo stanowi najbardziej zasobochłonny element systemu. Musi ona realizować odbiór strumienia H.264 o wysokiej rozdzielczości (1080p), jego dekodowanie oraz analizę w czasie rzeczywistym. W tym celu zastosowano hybrydowe podejście łączące \textbf{OpenCV} i \textbf{FFmpeg}.
+
+\subsubsection{OpenCV: Komputerowa Analiza Obrazu}
+
+Biblioteka \textbf{OpenCV} (\textit{Open Source Computer Vision Library}) stanowi standard w dziedzinie wizji komputerowej. W projekcie wykorzystano wersję \texttt{opencv-python-headless}, która jest pozbawiona zależności od bibliotek GUI (takich jak GTK czy Qt), co czyni ją idealną do zastosowań serwerowych i w kontenerach Docker.\textsuperscript{29}
+OpenCV pełni w systemie dwie funkcje:
+
+\begin{itemize}
+    \item \textbf{Interfejs Akwizycji:} Poprzez klasę \texttt{cv2.VideoCapture}, biblioteka łączy się ze źródłem RTSP. Pod maską OpenCV wykorzystuje FFmpeg jako \textit{backend} do obsługi protokołu sieciowego i dekodowania strumienia H.264.\textsuperscript{30}
+    
+    \item \textbf{Detekcja Ruchu:} Zaimplementowano algorytmy różnicowe (\textit{Background Subtraction}), takie jak MOG2 lub KNN, dostępne w OpenCV. Pozwalają one na tworzenie modelu tła i wykrywanie zmian (ruchomych obiektów) poprzez analizę różnic między kolejnymi klatkami. Podejście to, opisane m.in. przez Samantę i in. (2016) w kontekście Raspberry Pi, pozwala na efektywną detekcję przy minimalnym zużyciu procesora.\textsuperscript{32}
+\end{itemize}
+
+\subsubsection{FFmpeg: Bezpośrednia Manipulacja Strumieniem}
+
+Mimo wygody OpenCV, interfejs \texttt{VideoCapture} posiada ograniczenia, w tym tendencję do buforowania klatek, co prowadzi do narastania opóźnień (\textit{latency buildup}) w długotrwałych sesjach.\textsuperscript{34} Aby temu zaradzić, w krytycznych sekcjach (np. zapis wideo) wykorzystano bezpośrednią integrację z FFmpeg.
+Pozwala to na realizację funkcji \textbf{\textit{Direct Stream Copy}} – zapisu strumienia wideo na dysk w oryginalnym formacie skompresowanym (H.264), bez kosztownego procesu dekodowania i ponownego kodowania. Takie podejście drastycznie redukuje obciążenie CPU, co jest zgodne z wnioskami z badań nad systemami IoT o niskim opóźnieniu.\textsuperscript{31} Samanta i in. (2016) wykazali, że to właśnie proces kodowania wideo odpowiada za 90\% opóźnień w systemach IoT; ominięcie tego etapu przy zapisie jest zatem kluczową optymalizacją.\textsuperscript{36}
+
+\subsubsection{Strategie Niskich Opóźnień (\textit{Low-Latency})}
+
+Osiągnięcie niskich opóźnień (\textit{glass-to-glass latency}) jest priorytetem. W projekcie zastosowano konfigurację preferującą protokół transportowy UDP (mniejszy narzut niż TCP) oraz flagi tuningu FFmpeg takie jak \texttt{-tune zerolatency} i \texttt{-preset ultrafast}.\textsuperscript{28} Implementacja wykorzystuje również architekturę wielowątkową ,,producent-konsument'', gdzie wątek odbiorczy zawsze pobiera najnowszą klatkę, odrzucając starsze, jeśli wątek przetwarzający nie nadąża (strategia \textbf{\textit{leaky bucket}}), co zapobiega desynchronizacji czasu rzeczywistego.
+
+\subsection{Web Server: Flask i WebSocket's}
+\label{subsec:web_server}
+
+W tradycyjnym modelu webowym opartym na HTTP (\textit{Request-Response}) realizacja płynnego sterowania kamerą (PTZ) i podglądu wideo jest nieefektywna ze względu na narzut związany z nawiązywaniem połączeń. Rozwiązaniem tego problemu jest zastosowanie architektury opartej na zdarzeniach i stałym połączeniu.
+
+\subsubsection{Flask: Mikro-framework Aplikacyjny}
+
+Jako rdzeń serwera wybrano \textbf{Flask}. Jest to lekki, elastyczny mikro-framework dla Pythona, który nie narzuca sztywnej struktury projektu, co ułatwia integrację z niestandardowymi bibliotekami takimi jak \texttt{PyTapo} czy \texttt{OpenCV}.\textsuperscript{29} Flask odpowiada za serwowanie interfejsu użytkownika (SPA), obsługę API konfiguracyjnego oraz zarządzanie cyklem życia aplikacji.
+
+\subsubsection{WebSocket's: Komunikacja Pełnodupleksowa}
+
+Kluczową technologią komunikacyjną jest protokół \textbf{WebSocket}, zaimplementowany przy użyciu biblioteki \texttt{Flask-SocketIO}. Umożliwia on utrzymywanie otwartego, dwukierunkowego kanału komunikacji między przeglądarką a serwerem.\textsuperscript{38}
+Zastosowanie WebSocket'ów realizuje dwa cele:
+
+\begin{itemize}
+    \item \textbf{Transmisja Wideo (\textit{Low-Latency Streaming}):} Zamiast przestarzałego HTTP MJPEG, klatki wideo są kodowane do formatu JPEG i wysyłane jako binarne wiadomości WebSocket bezpośrednio do klienta. Pozwala to na większą kontrolę nad przepływem danych i redukcję opóźnień.\textsuperscript{40}
+    \item \textbf{Sterowanie Czasu Rzeczywistego:} Komendy PTZ (\textit{Pan/Tilt/Zoom}) są przesyłane jako lekkie wiadomości JSON. Dzięki brakowi narzutu HTTP \textit{handshake} dla każdego kliknięcia, reakcja kamery na sterowanie użytkownika jest niemal natychmiastowa ($<$100\,ms), co jest kluczowe dla \textit{User Experience} (UX).
+\end{itemize}
+
+\subsubsection{Asynchroniczność: Eventlet/Gevent}
+
+Standardowy serwer deweloperski Flaska jest jednowątkowy i blokujący. Aby obsłużyć wiele równoległych połączeń WebSocket (np. wielu widzów) oraz procesy w tle (analiza wideo) bez blokowania głównej pętli zdarzeń, zastosowano biblioteki asynchroniczne takie jak \texttt{Eventlet} lub \texttt{Gevent}.\textsuperscript{29} Wykorzystują one tzw. \textbf{\textit{green threads}} (wątki poziomu użytkownika), które pozwalają na kooperatywną wielozadaniowość i efektywną obsługę operacji wejścia/wyjścia (I/O), co jest niezbędne w systemie strumieniowania.
+
+\subsection{Kontrola Kamery: PyTapo i Inżynieria Wsteczna}
+\label{subsec:kontrola_kamery}
+
+Najbardziej krytycznym elementem technologicznym, umożliwiającym realizację celu głównego pracy – uniezależnienia od chmury producenta – jest biblioteka \textbf{PyTapo}. Kamera TP-Link Tapo C200 nie posiada publicznie udokumentowanego lokalnego API do sterowania funkcjami takimi jak obrót (PTZ), zmiana trybu nocnego czy formatowanie karty SD. Funkcje te są oficjalnie dostępne jedynie przez zamkniętą aplikację mobilną.
+
+\subsubsection{Mechanizm Działania: Reverse Engineering}
+
+\texttt{PyTapo} jest rezultatem \textbf{inżynierii wstecznej} protokołu komunikacyjnego kamery. Analiza ruchu sieciowego (przeprowadzona m.in. przy użyciu narzędzi takich jak \texttt{Wireshark} i \textit{MITM proxy} z obejściem \textit{SSL Pinning}) wykazała, że kamera wykorzystuje własnościowy protokół oparty na HTTP, w którym payloady JSON są szyfrowane.\textsuperscript{42}
+Biblioteka \texttt{PyTapo} implementuje\textsuperscript{44}:
+
+\begin{itemize}
+    \item \textbf{Handshake i Uwierzytelnianie:} Proces wymiany kluczy sesyjnych i tokenów (\textit{stok}), który symuluje zachowanie oficjalnej aplikacji. Wykorzystywane jest uwierzytelnianie oparte na skrótach MD5 i wymianie \textit{nonce}.\textsuperscript{45}
+    \item \textbf{Szyfrowanie Payloadu:} Implementacja algorytmów szyfrujących (często warianty AES) pozwala na konstruowanie poprawnych zapytań sterujących, które są akceptowane przez serwer \texttt{uhttpd} kamery.
+    \item \textbf{Sterowanie Funkcjami Ukrytymi:} Dzięki PyTapo możliwe jest wywoływanie metod API niedostępnych przez standard ONVIF Profile S (który w tanich kamerach często ogranicza się tylko do strumieniowania). Obejmuje to pełną kontrolę nad silnikami krokowymi, diodami IR oraz konfiguracją detekcji ruchu po stronie kamery.\textsuperscript{46}
+\end{itemize}
+
+\subsubsection{Bezpieczeństwo i Implikacje}
+
+Wykorzystanie biblioteki opartej na inżynierii wstecznej wymaga świadomości aspektów bezpieczeństwa. Badania nad \textit{firmwarem} Tapo ujawniły w przeszłości podatności, takie jak \texttt{CVE-2021-4045} (zdalne wykonanie kodu - RCE), wynikające z błędów w obsłudze zapytań przez wbudowany serwer kamery.\textsuperscript{48} Zastosowanie \texttt{PyTapo} w architekturze lokalnej (bez dostępu do Internetu dla kamery) pozwala na mitygację tych zagrożeń poprzez izolację urządzenia w wydzielonym VLANie i pośredniczenie w komunikacji przez bezpieczny serwer aplikacyjny (\textit{proxy}), co paradoksalnie podnosi poziom bezpieczeństwa względem domyślnej konfiguracji chmurowej.\textsuperscript{49}
+
+\subsection{Proces implementacji rozwiazania}
 \label{subsec:proces_implementacji}
 \subsubsection{Serwer http}
 \subsubsection{Implementacja połączenia z kamerą}

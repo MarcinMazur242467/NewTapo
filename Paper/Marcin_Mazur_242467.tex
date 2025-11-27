@@ -12,6 +12,14 @@
 \usepackage[normalem]{ulem}
 \usepackage[nottoc]{tocbibind}
 
+\usepackage{tabularx}   % Pozwala na kolumny typu X (automatyczna szerokość)
+\usepackage{ragged2e}   % Pozwala na ładne łamanie tekstu (RaggedRight)
+\usepackage{booktabs}   % Ładniejsze linie poziome (\toprule, \midrule)
+
+% Definicja niestandardowego typu kolumny 'L'
+% Wyrównuje tekst do lewej (RaggedRight) wewnątrz kolumny typu X
+\newcolumntype{L}{>{\RaggedRight\arraybackslash}X}
+
 %\hypersetup{colorlinks=true}
 
 \usepackage[T1]{fontenc} % Użyj kodowania czcionek T1
