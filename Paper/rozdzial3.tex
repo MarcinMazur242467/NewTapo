@@ -306,260 +306,208 @@ Najbardziej obrazowym przykładem zastosowania EDA w projekcie jest mechanizm st
 
 Dzięki luźnemu powiązaniu komponentów (\textit{loose coupling}), serwer może obsłużyć setki takich zdarzeń na sekundę, zapewniając płynne sterowanie ,,oko-ręka'', niemożliwe do osiągnięcia w architekturze synchronicznej.
 
-
 \subsection{Diagramy}
 \subsection*{Diagram komponentow }
 \subsection*{Diagram klas}
 \subsection*{Diagram komunikacji}
 
-
-\section{Zastosowane narzędzia i technologie}
+\subsection{Zastosowane narzędzia i technologie}
 \label{sec:narzedzia_i_technologie}
 
 Niniejszy rozdział stanowi dogłębną analizę techniczną \textbf{stosu technologicznego} (\textit{technology stack}) dobranego do realizacji projektu inżynierskiego, którego celem jest stworzenie otwartego systemu obsługi kamer IoT, na przykładzie modelu TP-Link Tapo C200. Wybór poszczególnych komponentów nie był procesem arbitralnym, lecz wynikiem wieloaspektowej analizy wymagań funkcjonalnych i niefunkcjonalnych, ze szczególnym uwzględnieniem ograniczeń zasobowych urządzeń brzegowych (\textit{Edge Computing}), konieczności minimalizacji opóźnień (\textit{low-latency}) w przetwarzaniu strumienia audiowizualnego oraz imperatywu przełamania barier interoperacyjności narzuconych przez producenta (\textit{vendor lock-in}).
 
 W poniższych podrozdziałach dokonano dekonstrukcji architektury systemu na poziomie narzędziowym, omawiając zarówno warstwę językową, środowiskową, jak i biblioteki specyficzne dla domeny przetwarzania sygnałów. Każda decyzja projektowa została osadzona w kontekście aktualnego stanu wiedzy (\textit{State of the Art}), odnosząc się do literatury przedmiotu w zakresie strumieniowania wideo, inżynierii wstecznej oraz optymalizacji systemów wbudowanych.
 
-\subsection{Język Programowania: Python 3.13}
-\label{subsec:python}
+\subsubsection{Język Programowania}
+\label{subsubsec:python_3_13}
 
-Fundamentem warstwy logicznej (\textit{backendu}) oraz orkiestratorem procesów przetwarzania danych w projektowanym systemie jest język programowania \textbf{Python} w wersji \textbf{3.13}. Decyzja o wyborze tego języka, a w szczególności jego najnowszej, stabilnej wersji wydanej w październiku 2024 roku, jest podyktowana szeregiem czynników wykraczających poza standardową łatwość składniową. W kontekście inżynierii systemów czasu rzeczywistego (\textit{Real-Time Systems}), Python 3.13 wprowadza paradygmatyczne zmiany w architekturze interpretera CPython, które bezpośrednio adresują historyczne ograniczenia wydajnościowe w zastosowaniach wielowątkowych.\textsuperscript{1}
+Wybór języka \textbf{Python} w wersji \textbf{3.13} jako fundamentu warstwy logicznej projektu stanowił decyzję strategiczną, wynikającą z analizy wymagań stawianych współczesnym systemom IoT oraz aplikacjom przetwarzającym multimedia. W kontekście inżynierii oprogramowania, dobór technologii musi uwzględniać wypadkową dostępnych narzędzi oraz skalowalności rozwiązania. Python, dzięki swojemu dojrzałemu ekosystemowi, pełni w projektowanym systemie rolę \textbf{warstwy orkiestracji} (ang. \textit{glue code}).
 
-\subsubsection{Ewolucja Modelu Współbieżności: Free-threaded CPython}
+\subsubsection*{Bogactwo ekosystemu bibliotecznego i interoperacyjność}
+\label{par:python_ekosystem}
 
-Tradycyjna krytyka języka Python w zastosowaniach inżynierskich, szczególnie tych wymagających intensywnych obliczeń (\textit{CPU-bound}), takich jak analiza obrazu czy transkodowanie wideo, koncentrowała się wokół mechanizmu \textbf{Global Interpreter Lock} (GIL). GIL to muteks chroniący wewnętrzny stan interpretera przed uszkodzeniem w środowisku wielowątkowym, co w praktyce oznaczało, że w danym momencie tylko jeden wątek mógł wykonywać kod bajtowy Pythona, niezależnie od liczby dostępnych rdzeni procesora.\textsuperscript{3} W systemach NVR (\textit{Network Video Recorder}), gdzie równolegle muszą zachodzić procesy akwizycji klatek, ich analizy (\textit{Computer Vision}), obsługi zapytań sieciowych i zapisu na dysk, GIL stanowił krytyczne wąskie gardło, wprowadzając nieprzewidywalne opóźnienia i uniemożliwiając liniowe skalowanie wydajności.
+Kluczowym argumentem przemawiającym za wyborem tego środowiska jest dostępność i stabilność zaawansowanych bibliotek dedykowanych przetwarzaniu sygnałów. W ekosystemie Pythona możliwe jest wykorzystanie gotowych, wysoce zoptymalizowanych \textit{wrapperów} na biblioteki natywne. Moduły takie jak \texttt{threading} oraz \texttt{multiprocessing} pozwalają na efektywne zarządzanie operacjami wejścia/wyjścia (\textit{I/O bound}), co jest krytyczne dla zachowania płynności strumieniowania w czasie rzeczywistym.
 
-Wersja 3.13 wprowadza eksperymentalny tryb \textbf{free-threaded} (zgodnie z PEP 703), który umożliwia całkowite wyłączenie GIL.\textsuperscript{5} Wybór tej wersji języka dla projektu inżynierskiego jest strategiczny: pozwala na osiągnięcie \textbf{rzeczywistego paralelizmu} (\textit{true parallelism}) na poziomie wątków systemowych. W zaimplementowanym rozwiązaniu oznacza to, że wątek odpowiedzialny za dekodowanie strumienia wideo (wykorzystujący biblioteki C++ poprzez wrappery) nie blokuje wątku obsługującego serwer WebSocket czy logikę sterowania PTZ. Badania wskazują, że w scenariuszach intensywnie korzystających z wielowątkowości, eliminacja GIL może przynieść znaczący wzrost przepustowości systemu, co jest kluczowe dla utrzymania stabilnego klatkażu (FPS) na urządzeniach wielordzeniowych o niskim taktowaniu, takich jak Raspberry Pi.\textsuperscript{2}
+\subsubsection*{Szybkie prototypowanie i paradygmat Rapid Application Development (RAD)}
+\label{par:python_rad}
 
-\subsubsection{Kompilacja JIT (\textit{Just-In-Time}) i Optymalizacja}
+Specyfika pracy inżynierskiej wymaga narzędzi umożliwiających szybką iterację i weryfikację hipotez. Python, jako język dynamicznie typowany o wysokiej ekspresywności składni, drastycznie skraca cykl wytwórczy oprogramowania. W kontekście integracji z urządzeniami IoT, pozwala to na elastyczne dostosowywanie protokołów komunikacyjnych i logiki sterowania bez konieczności długotrwałej rekompilacji całego projektu.
 
-Kolejnym argumentem przemawiającym za adopcją Pythona 3.13 jest wprowadzenie wstępnej implementacji kompilatora \textbf{JIT} (PEP 744).\textsuperscript{2} Choć w obecnej fazie jest to technologia dojrzewająca, jej obecność pozwala na optymalizację tzw. \textbf{gorących ścieżek kodu} (\textit{hot paths}) – fragmentów programu wykonywanych wielokrotnie w pętli przetwarzania wideo. Architektura JIT typu ,,copy-and-patch'' umożliwia transformację kodu bajtowego do kodu maszynowego w czasie wykonywania, redukując narzut interpretera.\textsuperscript{7} W systemie analizującym 30 klatek na sekundę, nawet mikrosekundowe zyski na pojedynczej operacji przetwarzania macierzy pikseli sumują się, wpływając na redukcję opóźnienia całkowitego (\textit{end-to-end latency}).\textsuperscript{1}
+\subsubsection{Zarządzanie Zależnościami}
+\label{subsubsec:dependency_management}
 
-\subsubsection{Ulepszony Ekosystem Deweloperski (DX)}
+W inżynierii oprogramowania systemów wbudowanych, \textbf{stabilność i powtarzalność środowiska} są kluczowe. Tradycyjne narzędzia zarządzania pakietami w Pythonie, takie jak \texttt{pip}, często zawodzą w złożonych scenariuszach CI/CD ze względu na wolny proces rozwiązywania zależności (\textit{dependency resolution}) i brak determinizmu.
 
-Z perspektywy inżynierii oprogramowania, Python 3.13 oferuje znacząco usprawniony interfejs REPL (\textit{Read-Eval-Print Loop}) oraz system raportowania błędów.\textsuperscript{1} W fazie inżynierii wstecznej protokołów kamery, możliwość interaktywnego testowania fragmentów kodu z obsługą kolorowania składni i edycji blokowej w terminalu\textsuperscript{9} drastycznie przyspieszyła proces prototypowania sterowników. Precyzyjne komunikaty błędów pozwalają na szybszą diagnozę problemów z typami danych w dynamicznie typowanym środowisku, co jest kluczowe przy obsłudze binarnych payloadów strumieni wideo.
+\subsubsection*{Nowoczesne Narzędzie: \texttt{uv}}
+\label{par:uv_tool}
 
-\begin{table}[h]
+W projekcie zastosowano \textbf{\texttt{uv}} – nowoczesny menedżer pakietów napisany w języku \textbf{Rust}. Narzędzie zostało wybrane ze względu na swoją bezkompromisową \textbf{wydajność}. Benchmarki wskazują, że \texttt{uv} potrafi instalować pakiety i rozwiązywać drzewa zależności od 10 do 100 razy szybciej niż standardowy \texttt{pip}. Skrócenie tego czasu znacząco przyspiesza cykl deweloperski (\textit{feedback loop}) w kontekście budowania obrazów \textbf{Docker}.
+
+\subsubsection*{Determinizm i Pliki Blokady}
+\label{par:uv_lockfiles}
+
+Kluczowym aspektem dla pracy inżynierskiej jest gwarancja, że system wdrożony na urządzeniu produkcyjnym będzie posiadał identyczne wersje bibliotek co środowisko deweloperskie. \texttt{uv} wprowadza obsługę uniwersalnych \textbf{plików blokady} (\texttt{uv.lock}), które precyzyjnie definiują całe drzewo zależności wraz z \textbf{sumami kontrolnymi} (\textit{hashes}), gwarantując kryptograficzną spójność środowiska. Jest to mechanizm podnoszący standard inżynieryjny projektu, analogiczny do \texttt{Cargo.lock} w Rust.
+
+\subsubsection*{Zaawansowana integracja z Dockerem}
+\label{par:uv_docker_integration}
+
+W projekcie wykorzystano specyficzne techniki optymalizacji współpracy \texttt{uv} z systemem plików Docker (\textit{OverlayFS}). Zastosowanie mechanizmu montowania \textit{cache'u} (\textit{BuildKit cache mounts}) pozwala na \textbf{persystencję pobranych artefaktów} pomiędzy kolejnymi budowaniami kontenera. Dodatkowo, strategia \textbf{Bytecode Compilation} wspierana natywnie przez \texttt{uv} skraca czas startu aplikacji (\textit{cold start}), co jest istotne w przypadku restartu usługi na urządzeniu monitoringu.
+
+\subsubsection{Ekosystem Konteneryzacji}
+\label{subsubsec:docker_iot_final}
+
+Wdrożenie oprogramowania na \textbf{urządzeniach brzegowych} (\textit{Edge Devices}) wiąże się z wyzwaniami heterogeniczności sprzętowej i konfliktów bibliotecznych. Zastosowanie technologii \textbf{Docker} w niniejszym projekcie nie jest jedynie wygodą, lecz koniecznością architektoniczną zapewniającą \textbf{izolację}, \textbf{przenośność} i \textbf{bezpieczeństwo}.
+
+\subsubsection*{Izolacja Procesów i Bezpieczeństwo}
+\label{par:docker_bezpieczenstwo_final}
+
+Kamery IoT, w tym modele \textbf{Tapo}, operują w strefie podwyższonego ryzyka cybernetycznego (patrz: analiza podatności \textit{CVE} w Rozdziale 2). Uruchomienie autorskiego serwera sterującego bezpośrednio na systemie operacyjnym hosta (\textit{bare-metal}) niosłoby ryzyko, że ewentualne przejęcie kontroli nad aplikacją dałoby atakującemu dostęp do całego systemu. Docker zapewnia silną \textbf{izolację procesów} wykorzystując mechanizmy jądra \textbf{Linux} (\textit{cgroups}, \textit{namespaces}).
+
+W projekcie zastosowano dodatkowo praktykę \enquote{non-root user} wewnątrz kontenera oraz \textbf{minimalizację uprawnień} (\textit{capabilities drop}), co drastycznie redukuje powierzchnię ataku i chroni system hosta.
+
+\subsubsection*{Multi-stage Builds i Optymalizacja Rozmiaru}
+\label{par:multi_stage_builds_final}
+
+Urządzenia klasy \textit{embedded} często dysponują ograniczoną przestrzenią dyskową. Aby pogodzić wymagania posiadania ciężkich narzędzi kompilacji (np. GCC, \texttt{numpy}) z koniecznością lekkiego obrazu końcowego, zastosowano technikę \textbf{budowania wieloetapowego} (\textit{Multi-stage Builds}). 
+
+\begin{enumerate}
+    \item \textbf{Stage 1 (Builder):} Obraz zawierający pełny \textit{toolchain} (kompilatory GCC, nagłówki systemowe, \texttt{uv}, \texttt{git}).
+    \item \textbf{Stage 2 (Runtime):} Obraz typu \enquote{slim} (np. \texttt{python:3.13-slim-bookworm}), do którego kopiowane są jedynie wynikowe artefakty z etapu pierwszego.
+\end{enumerate}
+Dzięki temu podejściu, finalny obraz kontenera jest pozbawiony zbędnych plików tymczasowych, \textit{cache'u} i narzędzi deweloperskich, osiągając rozmiar rzędu \textbf{200-300 MB} zamiast ponad 1 GB, co przyspiesza jego dystrybucję i aktualizację.
+
+\subsubsection{Interfejs Webowy i Protokół Komunikacji}
+\label{subsubsec:web_interface_final}
+
+Efektywna interakcja użytkownika z systemem IoT wymaga \textbf{warstwy prezentacji}, która jest w stanie obsłużyć dynamiczny charakter \textbf{danych strumieniowych}. W tradycyjnym modelu webowym, opartym na \textbf{bezstanowym protokole HTTP} (\textit{Request-Response}), realizacja płynnego sterowania w czasie rzeczywistym jest nieefektywna ze względu na narzut sieciowy (\textit{overhead}).
+
+\subsubsection*{Serwer Aplikacyjny: Flask}
+\label{par:flask_server_final}
+
+Wybrano \textbf{Flask} – \textbf{lekki mikro-framework} w Pythonie (zgodny ze standardem \textit{WSGI}). W przeciwieństwie do rozwiązań typu \enquote{full-stack}, Flask nie narzuca sztywnej struktury. Posiada minimalny narzut pamięciowy i pełni rolę \enquote{cienkiego klienta} serwerowego, odpowiedzialnego za:
+\begin{itemize}
+    \item \textbf{Orkiestrację wątków:} Integracja asynchronicznych bibliotek sterujących kamerą.
+    \item \textbf{Routing:} Obsługa statycznych plików interfejsu oraz końcówek API (\textit{endpoints}).
+\end{itemize}
+
+\subsubsection*{Protokół Transportowy: WebSockets}
+\label{par:websockets_final}
+
+Zastosowano protokół \textbf{WebSocket} (\textit{RFC 6455}) przy użyciu biblioteki \texttt{Flask-SocketIO}. Zapewnia on zestawienie \textbf{trwałego, dwukierunkowego kanału komunikacji} (pełny dupleks) między przeglądarką klienta a serwerem, eliminując opóźnienia wynikające z cyklicznego odpytywania (\textit{polling}). 
+
+Umożliwia to realizację dwóch celów:
+\begin{itemize}
+    \item \textbf{Transmisja Wideo (\textit{Low-Latency Streaming}):} Klatki wideo są przesyłane jako \textbf{binarne ładunki} (\textit{binary payloads}) przez otwarty socket, co pozwala na redukcję opóźnień transmisji (\textit{latency}).
+    \item \textbf{Sterowanie Czasu Rzeczywistego (\textit{Real-Time Control}):} Komendy sterujące \textbf{PTZ} (Pan/Tilt/Zoom) są przesyłane jako lekkie obiekty \textbf{JSON}. Czas reakcji kamery jest zminimalizowany ($<100ms$).
+\end{itemize}
+
+\subsubsection*{Warstwa Klienta (Frontend): Vanilla HTML/JS}
+\label{par:frontend_final}
+
+W warstwie interfejsu użytkownika podjęto świadomą decyzję o rezygnacji z rozbudowanych frameworków JavaScript (np. React, Vue) na rzecz \textbf{natywnych technologii webowych}: \textbf{Vanilla JavaScript}, HTML5 oraz CSS3. Zastosowanie \textbf{czystego JavaScriptu} pozwoliło na:
+\begin{itemize}
+    \item \textbf{Maksymalną wydajność renderowania:} Bezpośrednia manipulacja \textbf{drzewem DOM} (\textit{Document Object Model}) jest szybsza niż mechanizmy wirtualnego DOM.
+    \item \textbf{Redukcję długu technologicznego:} Kod klienta nie wymaga procesu kompilacji (\textit{transpilacji/bundlingu}).
+    \item \textbf{Intuicyjną obsługę:} Natywne \texttt{EventListeners} służą do przechwytywania zdarzeń klawiatury (sterowanie kamerą za pomocą strzałek).
+\end{itemize}
+
+\subsubsection{Biblioteki Przetwarzania Multimediów}
+\label{subsubsec:biblioteki_multimedialne_final}
+
+W projektowanym systemie nadzoru wizyjnego, kluczową rolę technologiczną odgrywa biblioteka \textbf{OpenCV} (\textit{Open Source Computer Vision Library}). Stanowi ona rdzeń analityczny, odpowiadając za \textbf{akwizycję strumienia wideo} z kamer TP-Link Tapo oraz jego zaawansowaną \textbf{analizę w czasie rzeczywistym}. Biblioteka \textbf{PyAV} została wprowadzona jako rozwiązanie komplementarne, dedykowane wyłącznie do obsługi \textbf{ścieżki dźwiękowej}.
+
+\subsubsection*{OpenCV jako główny silnik wideo i analityczny}
+\label{par:opencv_analiza_final}
+
+Decyzja o uczynieniu OpenCV główną biblioteką projektu podyktowana była jej pozycją jako \textbf{standardu przemysłowego} oraz kompleksowością oferowanych rozwiązań. W ramach opracowanego oprogramowania, OpenCV realizuje pełen cykl życia danych wizyjnych: 
+
+\begin{itemize}
+    \item \textbf{Akwizycja Obrazu (\textit{Video Acquisition}):} Wykorzystanie interfejsu \texttt{cv2.VideoCapture} pozwala na \textbf{stabilne nawiązanie połączenia} ze strumieniem \textbf{RTSP} kamery.
+    \item \textbf{Przetwarzanie Macierzowe i Analityka:} Po pobraniu klatki, OpenCV wykonuje na niej operacje \enquote{inteligentne} (\textit{Smart Features}). Zaimplementowany \textbf{algorytm detekcji ruchu} (oparty na odejmowaniu tła i filtracji Gaussa) oraz nanoszenie metadanych (\textit{OSD}) są realizowane bezpośrednio na obiektach tej biblioteki.
+    \item \textbf{Optymalizacja:} Dzięki \textbf{backendowi napisanemu w C++}, OpenCV zapewnia wysoką wydajność operacji na macierzach, co jest kluczowe przy przetwarzaniu obrazu o wysokiej rozdzielczości na urządzeniach o ograniczonej mocy obliczeniowej.
+\end{itemize}
+
+\subsubsection*{PyAV: Uzupełnienie luki funkcjonalnej (Audio)}
+\label{par:pyav_audio_final}
+
+Mimo wszechstronności w dziedzinie wideo, \textbf{OpenCV} posiada ograniczenia w zakresie \textbf{obsługi dźwięku} – biblioteka ta całkowicie ignoruje pakiety audio przesyłane w kontenerze RTSP.
+
+W celu rozwiązania tego problemu inżynierskiego zastosowano bibliotekę \textbf{PyAV} (\textit{binding} dla \textbf{FFmpeg}). Jej rola w projekcie jest ściśle zdefiniowana i ograniczona do: \textbf{Równoległego nawiązania połączenia}, \textbf{Ekstrakcji, dekodowania i transkodowania strumienia audio} (z formatów PCM/AAC), przy jednoczesnym ignorowaniu pakietów wideo w celu oszczędności zasobów CPU.
+
+Taka architektura pozwala na wykorzystanie pełnej mocy OpenCV do analizy obrazu, delegując jedynie niezbędne minimum (obsługę mikrofonu) do wyspecjalizowanej biblioteki PyAV.
+
+\begin{table}[H]
     \centering
-    \small
-    \renewcommand{\arraystretch}{1.3}
-    \caption{Porównanie kluczowych cech wersji Python w kontekście projektu.}
-    \label{tab:python_porownanie}
-    
-    \begin{tabularx}{\textwidth}{@{} p{3cm} L L L @{}}
+    \caption{Podział kompetencji w warstwie multimedialnej}
+    \label{tab:podzial_multimedia_final}
+    \begin{tabularx}{\textwidth}{L L L}
         \toprule
-        \textbf{Cecha} & 
-        \textbf{Python 3.11/3.12} & 
-        \textbf{Python 3.13 (Zastosowany)} & 
-        \textbf{Implikacja dla Projektu} \\
+        \textbf{Biblioteka} & \textbf{Status w projekcie} & \textbf{Odpowiedzialność} \\
         \midrule
-        
-        \textbf{Model GIL} & 
-        Obecny, wymuszona serializacja wątków & 
-        Eksperymentalny \textit{Free-threaded} (No-GIL) & 
-        Możliwość pełnego wykorzystania wielordzeniowości CPU przy przetwarzaniu wideo.\textsuperscript{3} \\
+        OpenCV & Główna (\textit{Core}) & Pobieranie wideo (RTSP), dekodowanie obrazu, detekcja ruchu, nanoszenie OSD, przygotowanie klatek do streamingu. \\
         \midrule
-        
-        \textbf{Kompilacja} & 
-        Tylko do Bytecode (\texttt{.pyc}) & 
-        Wstępny JIT Compiler & 
-        Potencjał zwiększenia wydajności pętli analitycznych.\textsuperscript{7} \\
-        \midrule
-        
-        \textbf{REPL} & 
-        Standardowy & 
-        Ulepszony, kolorowany, wieloliniowy & 
-        Szybsze prototypowanie i debugowanie interakcji z API kamery.\textsuperscript{9} \\
-        \midrule
-        
-        \textbf{Zarządzanie Pamięcią} & 
-        Standardowe & 
-        Ulepszony GC (\textit{Garbage Collection}) & 
-        Mniejsze ryzyko wycieków pamięci przy długotrwałym strumieniowaniu.\textsuperscript{1} \\
+        PyAV & Pomocnicza (\textit{Auxiliary}) & Przechwytywanie wyłącznie ścieżki audio, transkodowanie dźwięku. \\
         \bottomrule
     \end{tabularx}
 \end{table}
 
-\subsection{Konteneryzacja: Docker}
-\label{subsec:docker}
 
-W celu zapewnienia determinizmu środowiska uruchomieniowego, izolacji procesów oraz łatwości wdrażania (\textit{deployment}) na zróżnicowanych platformach sprzętowych, projekt wykorzystuje technologię konteneryzacji \textbf{Docker}. Decyzja ta jest odpowiedzią na typowe w inżynierii IoT wyzwanie znane jako ,,works on my machine'', wynikające z różnic w wersjach bibliotek systemowych, kodeków i konfiguracji sieciowej między środowiskiem deweloperskim a docelowym.\textsuperscript{10}
+\subsubsection{Kontrola Kamery i Inżynieria Wsteczna}
+\label{subsubsec:pytapo_reverse_engineering_final}
 
-\subsubsection{Architektura Wielowarstwowa (\textit{Multi-stage Builds})}
+Realizacja nadrzędnego celu pracy – \textbf{pełnego uniezależnienia systemu monitoringu od infrastruktury chmurowej producenta} – wymagała rozwiązania problemu \textbf{zamkniętej architektury} urządzenia. Kamera TP-Link Tapo C200 nie udostępnia publicznego \textbf{API} dla sieci lokalnej (\textit{LAN}), co jest klasycznym przykładem strategii \textbf{\textit{Vendor Lock-in}}.
 
-Zastosowany w projekcie plik \texttt{Dockerfile} opiera się na wzorcu \textbf{\textit{Multi-stage Builds}}.\textsuperscript{11} Jest to zaawansowana technika optymalizacji obrazów, polegająca na podziale procesu budowania na odrębne etapy:
+Aby przełamać to ograniczenie, w warstwie sterowania wykorzystano bibliotekę \textbf{PyTapo}. Jest to rozwiązanie typu \textbf{Open Source}, stanowiące implementację klienta własnościowego protokołu komunikacyjnego TP-Link, powstałe w wyniku procesów \textbf{inżynierii wstecznej} (\textit{Reverse Engineering}).
 
-\begin{itemize}
-    \item \textbf{Etap Budowania (\textit{Builder Stage}):} W tej fazie wykorzystywany jest obraz bazowy wyposażony w pełny zestaw narzędzi kompilacji (kompilatory C/C++, nagłówki systemowe, narzędzia budowania Rust dla \texttt{uv}). Służy on do skompilowania zależności, które wymagają natywnych rozszerzeń (np. \texttt{numpy}, \texttt{opencv-python-headless}). Dzięki temu procesor hosta nie jest obciążany kompilacją w czasie uruchamiania, a środowisko budowania nie zanieczyszcza środowiska produkcyjnego.\textsuperscript{11}
-    
-    \item \textbf{Etap Uruchomieniowy (\textit{Runtime Stage}):} Do finalnego obrazu kopiowane są wyłącznie niezbędne artefakty (skompilowane biblioteki, wirtualne środowisko, kod źródłowy) z etapu budowania. Jako baza wykorzystywany jest obraz \texttt{python:3.13-slim} (oparty na Debian Slim), co pozwala na drastyczną redukcję rozmiaru końcowego kontenera (często z $>$1\,GB do $<$200\,MB). Mniejszy rozmiar obrazu jest kluczowy przy wdrażaniu aktualizacji na urządzenia brzegowe o ograniczonej przepustowości sieci i pojemności pamięci masowej.\textsuperscript{11}
-\end{itemize}
+\subsubsection*{Mechanizm działania i emulacja klienta}
+\label{par:pytapo_emulacja_final}
 
-\subsubsection{Izolacja i Bezpieczeństwo}
-
-Docker zapewnia izolację procesów wykorzystując mechanizmy jądra Linux, takie jak \texttt{cgroups} (\textit{control groups}) i \textit{namespaces}. W kontekście bezpieczeństwa kamer IoT jest to funkcja krytyczna. Aplikacja działa w odseparowanym środowisku z własnym systemem plików (\textit{OverlayFS}), co ogranicza skutki ewentualnego przejęcia kontroli nad aplikacją przez atakującego – nie ma on bezpośredniego dostępu do systemu operacyjnego hosta.\textsuperscript{14} Ponadto, konteneryzacja umożliwia precyzyjne limitowanie zasobów (CPU, RAM) przydzielanych procesowi analizy wideo, co zapobiega zawieszeniu całego systemu w przypadku wycieku pamięci w bibliotece przetwarzania obrazu.
-
-\subsubsection{Sieć i Host Networking}
-
-Dla zapewnienia niskich opóźnień w transmisji strumienia RTSP (opartego na UDP) oraz poprawnego działania mechanizmów wykrywania urządzeń w sieci lokalnej (\textit{Discovery Protocols}), kontener Docker może być skonfigurowany w trybie \textbf{host networking} (\texttt{--network host}). Eliminuje to narzut związany z translacją adresów sieciowych (NAT) wewnątrz silnika Dockera, co jest zalecane w systemach strumieniowania wideo czasu rzeczywistego.\textsuperscript{11}
-
-\subsection{Package Manager: uv}
-\label{subsec:package_manager}
-
-Zarządzanie zależnościami w ekosystemie Pythona tradycyjnie opierało się na narzędziach \texttt{pip} i \texttt{virtualenv}. Jednak w projekcie inżynierskim o wysokich wymaganiach co do powtarzalności i wydajności procesu budowania (CI/CD), narzędzia te okazują się niewystarczające. W niniejszej pracy zastosowano \textbf{\texttt{uv}} – nowoczesny menedżer pakietów napisany w języku \textbf{Rust}, który redefiniuje standardy wydajności w ekosystemie Pythona.\textsuperscript{15}
-
-\subsubsection{Wydajność i Architektura Rust}
-
-\texttt{uv} charakteryzuje się ekstremalną wydajnością, oferując czasy instalacji i rozwiązywania zależności (\textit{dependency resolution}) rzędu 10-100 razy krótsze niż \texttt{pip}.\textsuperscript{15} Wynika to z natury języka Rust (brak \textit{Garbage Collectora}, efektywne zarządzanie pamięcią) oraz agresywnego wykorzystania wielowątkowości przy pobieraniu i rozpakowywaniu paczek. W cyklu deweloperskim, gdzie obraz Docker jest przebudowywany wielokrotnie, skrócenie czasu instalacji zależności z kilku minut do kilku sekund\textsuperscript{17} przekłada się na znaczący wzrost efektywności pracy inżyniera.
-
-\subsubsection{Determinizm poprzez \texttt{uv.lock}}
-
-Kluczowym elementem zapewniającym stabilność systemu jest plik blokady \textbf{\texttt{uv.lock}}. W przeciwieństwie do standardowego \texttt{requirements.txt}, który często specyfikuje tylko bezpośrednie zależności, \texttt{uv.lock} zamraża całe drzewo zależności (włącznie z zależnościami przechodnimi) wraz z ich sumami kontrolnymi (\textit{hashes}).\textsuperscript{15} Gwarantuje to, że środowisko zbudowane na komputerze dewelopera jest matematycznie identyczne ze środowiskiem wdrożonym na urządzeniu końcowym. Jest to krytyczne przy pracy z bibliotekami takimi jak \texttt{PyTapo} czy \texttt{OpenCV}, gdzie nawet drobna różnica w wersji podrzędnej zależności mogłaby wpłynąć na stabilność dekodowania strumienia czy poprawność szyfrowania komunikacji.\textsuperscript{19}
-
-\subsubsection{Integracja z Cache'owaniem Docker}
-
-W \texttt{Dockerfile} zastosowano zaawansowane mechanizmy \textit{cache'owania} specyficzne dla \texttt{uv}. Użycie instrukcji \texttt{RUN --mount=type=cache,target=/root/.cache/uv} pozwala na współdzielenie pamięci podręcznej pakietów pomiędzy kolejnymi budowaniami obrazu.\textsuperscript{10} Dodatkowo, strategia instalacji zależności w warstwie poprzedzającej kopiowanie kodu źródłowego (\texttt{COPY uv.lock pyproject.toml./, następnie uv sync}) zapewnia, że zmiany w kodzie aplikacji nie powodują inwalidacji \textit{cache'u} warstwy z bibliotekami. To podejście, w połączeniu z flagą \texttt{--compile-bytecode} (wymuszającą prekompilację do plików \texttt{.pyc}), optymalizuje zarówno czas budowania, jak i czas startu kontenera.\textsuperscript{11}
-
-\begin{table}[h]
-    \centering
-    \small
-    \renewcommand{\arraystretch}{1.3}
-    \caption{Porównanie menedżerów pakietów Python w kontekście projektu.}
-    \label{tab:package_manager_porownanie}
-    
-    \begin{tabularx}{\textwidth}{@{} p{3cm} L L L @{}}
-        \toprule
-        \textbf{Cecha} & 
-        \textbf{pip + virtualenv} & 
-        \textbf{Poetry} & 
-        \textbf{uv (Zastosowany)} \\
-        \midrule
-        
-        \textbf{Język implementacji} & 
-        Python & 
-        Python & 
-        Rust\textsuperscript{15} \\
-        \midrule
-        
-        \textbf{Prędkość instalacji} & 
-        Bazowa & 
-        Wolniejsza (rozbudowany \textit{resolver}) & 
-        10-100x szybsza\textsuperscript{15} \\
-        \midrule
-        
-        \textbf{Plik blokady (\textit{Lockfile})} & 
-        Brak (tylko \texttt{requirements.txt}) & 
-        \texttt{poetry.lock} & 
-        \texttt{uv.lock} (uniwersalny)\textsuperscript{18} \\
-        \midrule
-        
-        \textbf{Zarządzanie Pythonem} & 
-        Zewnętrzne & 
-        Wbudowane & 
-        Kompleksowe (instaluje wersje Pythona)\textsuperscript{16} \\
-        \midrule
-        
-        \textbf{Wsparcie Docker} & 
-        Standardowe & 
-        Wymaga konfiguracji & 
-        Dedykowane obrazy i \textit{cache}\textsuperscript{10} \\
-        \bottomrule
-    \end{tabularx}
-\end{table}
-
-\subsection{Audio: FFmpeg i Kodek AAC}
-\label{subsec:audio}
-
-Obsługa warstwy audio w systemie monitoringu stawia przed inżynierem wyzwania związane z synchronizacją, kompresją i kompatybilnością formatów. Kamera Tapo C200 wykorzystuje kodek \textbf{AAC} (\textit{Advanced Audio Coding}) do transmisji dźwięku, co wymaga zastosowania zaawansowanych narzędzi dekodujących.
-
-\subsubsection{Rola FFmpeg: Uniwersalny Silnik Przetwarzania}
-
-W projekcie wykorzystano bibliotekę \textbf{FFmpeg} jako główny silnik (\textit{backend}) przetwarzania mediów. FFmpeg jest \textit{de facto} standardem przemysłowym w dziedzinie manipulacji danymi A/V, oferującym wsparcie dla niemal wszystkich istniejących kodeków i kontenerów.\textsuperscript{21} Choć warstwa sterująca napisana jest w Pythonie, to FFmpeg wykonuje ,,ciężką pracę'' (\textit{heavy lifting}) związaną z demultipleksowaniem (\textit{demuxing}) strumienia transportowego (często RTP/RTSP) i dekodowaniem ramek audio.
-
-Badania Li i in. (2015) dotyczące systemów analizy wideo opartych na FFmpeg wskazują, że jego modułowa architektura pozwala na efektywne zarządzanie buforami i redukcję zatorów sieciowych, co jest kluczowe w systemach czasu rzeczywistego.\textsuperscript{23} W projekcie wykorzystano te mechanizmy do implementacji potoku audio, który jest odporny na wahania przepustowości sieci (\textit{jitter}).
-
-\subsubsection{Biblioteka PyAV: Wiązanie Python-FFmpeg}
-
-Zamiast polegać na wywoływaniu procesów zewnętrznych (poprzez \texttt{subprocess}), co jest nieefektywne i trudne w zarządzaniu, projekt wykorzystuje bibliotekę \textbf{PyAV}. Jest to bezpośrednie wiązanie (\textit{binding}) do bibliotek C projektu FFmpeg (\texttt{libavcodec}, \texttt{libavformat}, \texttt{libavutil}). \texttt{PyAV} umożliwia precyzyjną, niskopoziomową kontrolę nad procesem dekodowania wewnątrz interpretera Pythona.\textsuperscript{25}
-Zastosowanie \texttt{PyAV} pozwala na:
+Działanie biblioteki opiera się na \textbf{symulacji zachowania oficjalnej aplikacji mobilnej}. Analiza ruchu sieciowego wykazała, że kamera wykorzystuje zmodyfikowany protokół \textbf{HTTP} do przesyłania sterujących ładunków danych (\textit{payloads}) w formacie \textbf{JSON}. Komunikacja ta jest zabezpieczona na kilku poziomach, które \textbf{PyTapo} skutecznie emuluje:
 
 \begin{itemize}
-    \item Dostęp do surowych danych audio (PCM) bezpośrednio w pamięci RAM, bez konieczności zapisu plików tymczasowych (\textit{operacje zero-copy}).
-    \item Precyzyjną ekstrakcję znaczników czasu (PTS/DTS), co jest niezbędne do synchronizacji dźwięku z obrazem (\textit{Lip Sync}) w kliencie webowym.\textsuperscript{21}
-    \item Elastyczne transkodowanie ,,w locie'' do formatów akceptowalnych przez przeglądarki (np. WebM/Opus lub PCM dla \textit{Web Audio API}).
+    \item \textbf{Negocjacja sesji (\textit{Handshake}):} Biblioteka implementuje złożony proces \textbf{uwierzytelniania}, wymagający wymiany \textbf{kluczy sesyjnych} oraz \textbf{tokenów} (\textit{stok}), generowanych w oparciu o algorytmy skrótu (MD5/SHA) i liczby losowe (\textit{nonce}).
+    \item \textbf{Szyfrowanie Payloadu:} W przeciwieństwie do otwartych standardów, parametry sterujące (np. koordynaty silnika PTZ) nie są przesyłane jawnym tekstem. PyTapo implementuje algorytmy \textbf{szyfrowania symetrycznego} (warianty AES), co pozwala na konstruowanie poprawnych, zaszyfrowanych zapytań.
 \end{itemize}
 
-\subsubsection{Optymalizacja Latencji w AAC}
+\subsubsection*{Przewaga nad standardem ONVIF}
+\label{par:pytapo_vs_onvif_final}
 
-Kodek AAC, mimo wysokiej efektywności kompresji, wprowadza algorytmiczne opóźnienie. W pracy zaimplementowano optymalizacje sugerowane w literaturze dla strumieniowania o niskim opóźnieniu\textsuperscript{27}, takie jak wymuszenie flagi \texttt{fflags nobuffer} w FFmpeg, co nakazuje dekoderowi natychmiastowe przetwarzanie nadchodzących pakietów bez oczekiwania na wypełnienie bufora. Jest to kluczowe dla funkcji dwukierunkowego audio, gdzie opóźnienia powyżej 200--300\,ms degradują jakość komunikacji.
+Wybór PyTapo był podyktowany ograniczeniami implementacyjnymi standardu \textbf{ONVIF} (\textit{Open Network Video Interface Forum}), który w tanich kamerach Tapo ogranicza się często tylko do strumieniowania wideo (\textit{RTSP}).
 
-\subsection{Video: OpenCV i FFmpeg}
-\label{subsec:video}
-
-Warstwa wideo stanowi najbardziej zasobochłonny element systemu. Musi ona realizować odbiór strumienia H.264 o wysokiej rozdzielczości (1080p), jego dekodowanie oraz analizę w czasie rzeczywistym. W tym celu zastosowano hybrydowe podejście łączące \textbf{OpenCV} i \textbf{FFmpeg}.
-
-\subsubsection{OpenCV: Komputerowa Analiza Obrazu}
-
-Biblioteka \textbf{OpenCV} (\textit{Open Source Computer Vision Library}) stanowi standard w dziedzinie wizji komputerowej. W projekcie wykorzystano wersję \texttt{opencv-python-headless}, która jest pozbawiona zależności od bibliotek GUI (takich jak GTK czy Qt), co czyni ją idealną do zastosowań serwerowych i w kontenerach Docker.\textsuperscript{29}
-OpenCV pełni w systemie dwie funkcje:
+Zastosowanie PyTapo umożliwiło dostęp do \enquote{ukrytych} \textbf{funkcji administracyjnych}, niedostępnych przez generyczne sterowniki:
 
 \begin{itemize}
-    \item \textbf{Interfejs Akwizycji:} Poprzez klasę \texttt{cv2.VideoCapture}, biblioteka łączy się ze źródłem RTSP. Pod maską OpenCV wykorzystuje FFmpeg jako \textit{backend} do obsługi protokołu sieciowego i dekodowania strumienia H.264.\textsuperscript{30}
-    
-    \item \textbf{Detekcja Ruchu:} Zaimplementowano algorytmy różnicowe (\textit{Background Subtraction}), takie jak MOG2 lub KNN, dostępne w OpenCV. Pozwalają one na tworzenie modelu tła i wykrywanie zmian (ruchomych obiektów) poprzez analizę różnic między kolejnymi klatkami. Podejście to, opisane m.in. przez Samantę i in. (2016) w kontekście Raspberry Pi, pozwala na efektywną detekcję przy minimalnym zużyciu procesora.\textsuperscript{32}
+    \item \textbf{Pełna kontrola PTZ} (\textit{Pan-Tilt-Zoom}): Precyzyjne sterowanie silnikami krokowymi kamery.
+    \item \textbf{Zarządzanie sensorem:} Programowe przełączanie trybu nocnego (\textbf{kontrola filtra IR-Cut}) oraz regulacja czułości detekcji ruchu.
+    \item \textbf{Funkcje prywatności:} Możliwość zdalnego \textbf{wygaszenia obiektywu} (\textit{Privacy Mode}) lub wyłączenia diody statusu LED.
+    \item \textbf{Formatowanie nośników:} Zdalne zarządzanie kartą SD.
 \end{itemize}
 
-\subsubsection{FFmpeg: Bezpośrednia Manipulacja Strumieniem}
+\subsubsection{Narzędzie do Kompozycji i Zapisu Danych}
+\label{subsubsec:moviepy_kompozycja_final}
 
-Mimo wygody OpenCV, interfejs \texttt{VideoCapture} posiada ograniczenia, w tym tendencję do buforowania klatek, co prowadzi do narastania opóźnień (\textit{latency buildup}) w długotrwałych sesjach.\textsuperscript{34} Aby temu zaradzić, w krytycznych sekcjach (np. zapis wideo) wykorzystano bezpośrednią integrację z FFmpeg.
-Pozwala to na realizację funkcji \textbf{\textit{Direct Stream Copy}} – zapisu strumienia wideo na dysk w oryginalnym formacie skompresowanym (H.264), bez kosztownego procesu dekodowania i ponownego kodowania. Takie podejście drastycznie redukuje obciążenie CPU, co jest zgodne z wnioskami z badań nad systemami IoT o niskim opóźnieniu.\textsuperscript{31} Samanta i in. (2016) wykazali, że to właśnie proces kodowania wideo odpowiada za 90\% opóźnień w systemach IoT; ominięcie tego etapu przy zapisie jest zatem kluczową optymalizacją.\textsuperscript{36}
+Ostatnim ogniwem w łańcuchu przetwarzania danych multimedialnych jest moduł odpowiedzialny za \textbf{trwały zapis} (\textit{persystencję}) materiału dowodowego. Ze względu na przyjętą \textbf{architekturę hybrydową}, w której obraz i dźwięk przetwarzane są przez niezależne biblioteki (\textbf{OpenCV} i \textbf{PyAV}), zaistniała konieczność zastosowania narzędzia efektywnie integrującego te dwa rozłączne strumienie. Do realizacji tego zadania wybrano bibliotekę \textbf{MoviePy}.
 
-\subsubsection{Strategie Niskich Opóźnień (\textit{Low-Latency})}
+\subsubsection*{Rola integratora strumieni (Multipleksing)}
+\label{par:moviepy_muxing_final}
 
-Osiągnięcie niskich opóźnień (\textit{glass-to-glass latency}) jest priorytetem. W projekcie zastosowano konfigurację preferującą protokół transportowy UDP (mniejszy narzut niż TCP) oraz flagi tuningu FFmpeg takie jak \texttt{-tune zerolatency} i \texttt{-preset ultrafast}.\textsuperscript{28} Implementacja wykorzystuje również architekturę wielowątkową ,,producent-konsument'', gdzie wątek odbiorczy zawsze pobiera najnowszą klatkę, odrzucając starsze, jeśli wątek przetwarzający nie nadąża (strategia \textbf{\textit{leaky bucket}}), co zapobiega desynchronizacji czasu rzeczywistego.
+MoviePy pełni w projekcie funkcję \textbf{orkiestratora procesu zapisu}. Jego zadaniem jest przeprowadzenie \textbf{multipleksowania} (\textit{muxing}), czyli scalenia danych wizyjnych (\textbf{macierzy NumPy} z OpenCV) i danych fonicznych (\textbf{próbek audio} z PyAV) zgromadzonych w buforach pamięci. Wynikiem jest \textbf{enkapsulacja} do standardowego \textbf{kontenera multimedialnego} (\texttt{MP4}) z kodekami \textbf{H.264} i \textbf{AAC}. Wybór dedykowanej biblioteki gwarantuje zachowanie \textbf{spójności struktury pliku wynikowego}.
 
-\subsection{Web Server: Flask i WebSocket's}
-\label{subsec:web_server}
+\subsubsection*{Abstrakcja nad FFmpeg i Synchronizacja A/V}
+\label{par:moviepy_synchronizacja_final}
 
-W tradycyjnym modelu webowym opartym na HTTP (\textit{Request-Response}) realizacja płynnego sterowania kamerą (PTZ) i podglądu wideo jest nieefektywna ze względu na narzut związany z nawiązywaniem połączeń. Rozwiązaniem tego problemu jest zastosowanie architektury opartej na zdarzeniach i stałym połączeniu.
+MoviePy to wysokopoziomowa nakładka (\textit{wrapper}) na oprogramowanie \textbf{FFmpeg}. Zastosowanie jej eliminuje złożoność bezpośredniego wywoływania komend FFmpeg i zapewnia automatyczną \textbf{synchronizację A/V} (\textit{lip-sync}), zarządzając osią czasu i dopasowując długość ścieżki audio do sekwencji wideo. To kluczowe w przypadku \textbf{detekcji ruchu}, gdzie nagrania mają zmienną długość. Proces kodowania odbywa się w sposób \textbf{wsadowy} (\textit{batch processing}) w momencie zakończenia nagrania.
 
-\subsubsection{Flask: Mikro-framework Aplikacyjny}
+\subsubsection*{Rozszerzalność (Extensibility)}
+\label{par:moviepy_rozszerzalnosc_final}
 
-Jako rdzeń serwera wybrano \textbf{Flask}. Jest to lekki, elastyczny mikro-framework dla Pythona, który nie narzuca sztywnej struktury projektu, co ułatwia integrację z niestandardowymi bibliotekami takimi jak \texttt{PyTapo} czy \texttt{OpenCV}.\textsuperscript{29} Flask odpowiada za serwowanie interfejsu użytkownika (SPA), obsługę API konfiguracyjnego oraz zarządzanie cyklem życia aplikacji.
-
-\subsubsection{WebSocket's: Komunikacja Pełnodupleksowa}
-
-Kluczową technologią komunikacyjną jest protokół \textbf{WebSocket}, zaimplementowany przy użyciu biblioteki \texttt{Flask-SocketIO}. Umożliwia on utrzymywanie otwartego, dwukierunkowego kanału komunikacji między przeglądarką a serwerem.\textsuperscript{38}
-Zastosowanie WebSocket'ów realizuje dwa cele:
+Biblioteka ta oferuje bogaty zestaw funkcji do \textbf{nieliniowego montażu wideo} (\textit{NLE}) z poziomu kodu, co ułatwia przyszły rozwój oprogramowania i implementację dodatkowych funkcjonalności, takich jak:
 
 \begin{itemize}
-    \item \textbf{Transmisja Wideo (\textit{Low-Latency Streaming}):} Zamiast przestarzałego HTTP MJPEG, klatki wideo są kodowane do formatu JPEG i wysyłane jako binarne wiadomości WebSocket bezpośrednio do klienta. Pozwala to na większą kontrolę nad przepływem danych i redukcję opóźnień.\textsuperscript{40}
-    \item \textbf{Sterowanie Czasu Rzeczywistego:} Komendy PTZ (\textit{Pan/Tilt/Zoom}) są przesyłane jako lekkie wiadomości JSON. Dzięki brakowi narzutu HTTP \textit{handshake} dla każdego kliknięcia, reakcja kamery na sterowanie użytkownika jest niemal natychmiastowa ($<$100\,ms), co jest kluczowe dla \textit{User Experience} (UX).
+    \item \textbf{Dynamiczne dodawanie znaków wodnych} (\textit{Watermarking}).
+    \item \textbf{Łączenie (konkatenacja)} wielu klipów zdarzeń w jeden raport wideo.
+    \item \textbf{Nakładanie napisów końcowych} z parametrami zdarzenia (data, typ wykrytego obiektu).
 \end{itemize}
-
-\subsubsection{Asynchroniczność: Eventlet/Gevent}
-
-Standardowy serwer deweloperski Flaska jest jednowątkowy i blokujący. Aby obsłużyć wiele równoległych połączeń WebSocket (np. wielu widzów) oraz procesy w tle (analiza wideo) bez blokowania głównej pętli zdarzeń, zastosowano biblioteki asynchroniczne takie jak \texttt{Eventlet} lub \texttt{Gevent}.\textsuperscript{29} Wykorzystują one tzw. \textbf{\textit{green threads}} (wątki poziomu użytkownika), które pozwalają na kooperatywną wielozadaniowość i efektywną obsługę operacji wejścia/wyjścia (I/O), co jest niezbędne w systemie strumieniowania.
-
-\subsection{Kontrola Kamery: PyTapo i Inżynieria Wsteczna}
-\label{subsec:kontrola_kamery}
-
-Najbardziej krytycznym elementem technologicznym, umożliwiającym realizację celu głównego pracy – uniezależnienia od chmury producenta – jest biblioteka \textbf{PyTapo}. Kamera TP-Link Tapo C200 nie posiada publicznie udokumentowanego lokalnego API do sterowania funkcjami takimi jak obrót (PTZ), zmiana trybu nocnego czy formatowanie karty SD. Funkcje te są oficjalnie dostępne jedynie przez zamkniętą aplikację mobilną.
-
-\subsubsection{Mechanizm Działania: Reverse Engineering}
-
-\texttt{PyTapo} jest rezultatem \textbf{inżynierii wstecznej} protokołu komunikacyjnego kamery. Analiza ruchu sieciowego (przeprowadzona m.in. przy użyciu narzędzi takich jak \texttt{Wireshark} i \textit{MITM proxy} z obejściem \textit{SSL Pinning}) wykazała, że kamera wykorzystuje własnościowy protokół oparty na HTTP, w którym payloady JSON są szyfrowane.\textsuperscript{42}
-Biblioteka \texttt{PyTapo} implementuje\textsuperscript{44}:
-
-\begin{itemize}
-    \item \textbf{Handshake i Uwierzytelnianie:} Proces wymiany kluczy sesyjnych i tokenów (\textit{stok}), który symuluje zachowanie oficjalnej aplikacji. Wykorzystywane jest uwierzytelnianie oparte na skrótach MD5 i wymianie \textit{nonce}.\textsuperscript{45}
-    \item \textbf{Szyfrowanie Payloadu:} Implementacja algorytmów szyfrujących (często warianty AES) pozwala na konstruowanie poprawnych zapytań sterujących, które są akceptowane przez serwer \texttt{uhttpd} kamery.
-    \item \textbf{Sterowanie Funkcjami Ukrytymi:} Dzięki PyTapo możliwe jest wywoływanie metod API niedostępnych przez standard ONVIF Profile S (który w tanich kamerach często ogranicza się tylko do strumieniowania). Obejmuje to pełną kontrolę nad silnikami krokowymi, diodami IR oraz konfiguracją detekcji ruchu po stronie kamery.\textsuperscript{46}
-\end{itemize}
-
-\subsubsection{Bezpieczeństwo i Implikacje}
-
-Wykorzystanie biblioteki opartej na inżynierii wstecznej wymaga świadomości aspektów bezpieczeństwa. Badania nad \textit{firmwarem} Tapo ujawniły w przeszłości podatności, takie jak \texttt{CVE-2021-4045} (zdalne wykonanie kodu - RCE), wynikające z błędów w obsłudze zapytań przez wbudowany serwer kamery.\textsuperscript{48} Zastosowanie \texttt{PyTapo} w architekturze lokalnej (bez dostępu do Internetu dla kamery) pozwala na mitygację tych zagrożeń poprzez izolację urządzenia w wydzielonym VLANie i pośredniczenie w komunikacji przez bezpieczny serwer aplikacyjny (\textit{proxy}), co paradoksalnie podnosi poziom bezpieczeństwa względem domyślnej konfiguracji chmurowej.\textsuperscript{49}
 
 \subsection{Proces implementacji rozwiazania}
 \label{subsec:proces_implementacji}

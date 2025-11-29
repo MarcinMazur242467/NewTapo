@@ -1,6 +1,5 @@
 import threading
 import cv2
-import time
 import base64
 import app.shared as shared
 from app.detection.motion import MotionDetector 
