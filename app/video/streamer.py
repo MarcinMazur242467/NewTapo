@@ -40,7 +40,7 @@ class VideoStreamer:
                     self.motion_active = is_motion
                     self.socketio.emit('motion_status', {'motion': self.motion_active})
                 # --------------------------
-
+                
                 # 3. Resize for Web
                 web_frame = cv2.resize(raw_frame, (1000, 562))
 

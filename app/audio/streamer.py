@@ -17,7 +17,6 @@ class AudioStreamer:
             self.thread = threading.Thread(target=self._stream_loop)
             self.thread.daemon = True
             self.thread.start()
-            print("🎤 Audio Streamer Started")
 
     def _stream_loop(self):
         rtsp_url = f"rtsp://{self.camera.user}:{self.camera.password}@{self.camera.ip}/stream1"

@@ -511,16 +511,217 @@ Biblioteka ta oferuje bogaty zestaw funkcji do \textbf{nieliniowego montażu wid
 
 \subsection{Proces implementacji rozwiazania}
 \label{subsec:proces_implementacji}
-\subsubsection{Serwer http}
-\subsubsection{Implementacja połączenia z kamerą}
-\subsubsection{Client}
-\subsubsection{API}
-\subsubsection{Przechwytywanie audio}
-\subsubsection{Przechwytywanie wideo}
-\subsubsection{Sterowanie kamerą - PTZ}
-\subsubsection{Algorytm wykrywania ruchu}
-\subsubsection{Nagrywanie}
-\subsubsection{Zapis}
+
+Niniejszy podrozdział stanowi techniczną dokumentację procesu transformacji koncepcji architektonicznej, zdefiniowanej w sekcji 3.4, w w pełni funkcjonalny \textbf{artefakt programistyczny}. Celem poniższego opisu jest przedstawienie ewolucyjnego \textbf{cyklu wytwarzania oprogramowania} (\textit{SDLC}), który doprowadził do powstania systemu integrującego zamknięty ekosystem kamer TP-Link Tapo z otwartym środowiskiem \textit{Open Source}.
+
+Proces implementacji został podzielony na etapy odzwierciedlające \textbf{warstwową strukturę} projektowanego systemu, począwszy od najniższej warstwy sprzętowej (\textit{Hardware Abstraction Layer}), poprzez \textbf{logikę biznesową} i warstwę komunikacyjną (\textit{Middleware}), aż po \textbf{warstwę prezentacji} (\textit{Frontend}). Takie podejście pozwoliło na empiryczną weryfikację założeń o trójwarstwowej i potokowej architekturze rozwiązania, zapewniając jednocześnie izolację poszczególnych modułów i łatwość ich późniejszego testowania. 
+
+W kolejnych punktach przedstawiono szczegółowo sposób rozwiązania kluczowych \textbf{wyzwań inżynierskich}, takich jak:
+
+\begin{itemize}
+    \item nawiązanie stabilnego połączenia z urządzeniem \textbf{IoT} operującym na \textbf{własnościowych protokołach},
+    \item implementacja \textbf{asynchronicznego przetwarzania} strumieni multimedialnych (audio/wideo) w czasie rzeczywistym przy użyciu bibliotek \textbf{OpenCV} i \textbf{FFmpeg},
+    \item opracowanie \textbf{algorytmów detekcji ruchu} działających na brzegu sieci (\textit{edge processing}),
+    \item \textbf{konteneryzacja aplikacji} z wykorzystaniem środowiska \textbf{Docker}, zapewniająca jej przenośność i powtarzalność wdrożenia.
+\end{itemize}
+
+Opisany poniżej proces stanowi syntezę doboru odpowiednich narzędzi (język Python, framework Flask, protokół WebSocket) oraz metodologii inżynierskiej, prowadzącą do uzyskania gotowego narzędzia nadzoru wizyjnego, niezależnego od chmury producenta.
+
+\subsubsection{Provisioning i pierwotna konfiguracja środowiska kamery}
+\label{subsubsec:provisioning}
+
+Proces implementacji rozwiązania rozpoczęto od fizycznego uruchomienia urządzenia oraz przeprowadzenia procedury \textbf{provisioningu} (\textit{wstępnej konfiguracji}), mającej na celu włączenie kamery do lokalnej infrastruktury sieciowej i odblokowanie interfejsów komunikacyjnych niezbędnych dla tworzonego oprogramowania.
+
+\subsubsection*{Stan faktyczny i ograniczenia fabryczne}
+\label{par:oobe_ograniczenia}
+
+Analiza fabrycznie nowego urządzenia TP-Link Tapo C200 wykazała, że funkcjonuje ono w modelu tzw. \enquote{zamkniętego ogrodu} (\textit{walled garden}). Domyślna konfiguracja \textit{firmware’u} jest nastawiona wyłącznie na komunikację z chmurą producenta. W stanie \enquote{po wyjęciu z pudełka} (\textit{OOBE – Out-of-box experience}) kamera charakteryzuje się następującymi \textbf{ograniczeniami}:
+
+\begin{itemize}
+    \item Brak otwartego dostępu do strumieniowania protokołem \textbf{RTSP} (\textit{Real Time Streaming Protocol}).
+    \item Zablokowane porty odpowiedzialne za standard \textbf{ONVIF}.
+    \item Brak zdefiniowanego lokalnego użytkownika administracyjnego, co uniemożliwia autoryzację zewnętrznych skryptów sterujących.
+\end{itemize}
+
+\subsubsection*{Procedura konfiguracji i odblokowania dostępu}
+\label{par:procedura_odblokowania}
+
+W celu przystosowania urządzenia do współpracy z autorskim rozwiązaniem \textit{Open Source}, przeprowadzono następującą \textbf{sekwencję działań konfiguracyjnych}:
+
+\begin{enumerate}
+    \item \textbf{Inicjalizacja sieciowa:} Wykorzystując oficjalną aplikację mobilną Tapo, nawiązano tymczasowe połączenie i przekazano poświadczenia docelowej sieci Wi-Fi.
+    \item \textbf{Utworzenie \enquote{Konta Kamery} (\textit{Camera Account}):} W ustawieniach zaawansowanych aplikacji mobilnej zdefiniowano dedykowane konto lokalne. Jest to krok \textbf{krytyczny}, ponieważ utworzone w ten sposób login i hasło (\texttt{TAPO\_USERNAME} i \texttt{TAPO\_PASSWORD}) są przechowywane w pamięci urządzenia i służą do późniejszej autoryzacji zapytań \textbf{RTSP} oraz \textbf{HTTP} wysyłanych przez aplikację.
+    \item \textbf{Aktywacja interfejsów otwartych:} Wymuszono tryb zgodności z oprogramowaniem zewnętrznym poprzez włączenie opcji obsługi \enquote{Third-party software} / \textbf{ONVIF}. Operacja ta skutkowała otwarciem portu \textbf{554} (dla strumienia wideo RTSP) oraz portu \textbf{2020} (dla protokołu ONVIF).
+\end{enumerate}
+
+> \textbf{Uwaga inżynierska:} Aby zapewnić stabilność połączenia dla serwera Python, na routerze sieci lokalnej wykonano \textbf{rezerwację adresu IP} (\textit{Static DHCP Lease}) dla adresu MAC kamery.
+
+Przeprowadzenie powyższych kroków pozwoliło na transformację urządzenia z pasywnego klienta chmury w \textbf{aktywny węzeł sieciowy}, gotowy do przyjmowania poleceń i udostępniania mediów poprzez standardowe protokoły sieciowe.
+
+\subsubsection{Konfiguracja Środowiska Programistycznego}
+\label{subsubsec:konfiguracja_srodowiska}
+
+Przygotowanie środowiska deweloperskiego rozpoczęto od inicjalizacji projektu przy użyciu narzędzia \textbf{\texttt{uv}}. Proces ten przebiegał w dwóch głównych fazach: utworzenia podstawowej struktury (\textit{scaffolding}) oraz instalacji i zablokowania zależności bibliotecznych.
+
+\subsubsection*{Inicjalizacja i zarządzanie zależnościami}
+\label{par:inicjalizacja_uv}
+
+W pierwszej kolejności, w pustym katalogu roboczym, wykonano polecenie \texttt{uv init}. Operacja ta wygenerowała podstawowe pliki konfiguracyjne, w tym plik \texttt{.python-version}, w którym sztywno zdefiniowano wersję interpretera na \textbf{Python 3.13}.
+
+Następnie przystąpiono do instalacji wymaganych bibliotek zewnętrznych za pomocą polecenia \texttt{uv add}:
+
+\begin{itemize}
+    \item \texttt{flask} oraz \texttt{flask-socketio} – obsługa serwera HTTP i komunikacji \textbf{WebSocket}.
+    \item \texttt{opencv-python-headless} – przetwarzanie obrazu (wersja zoptymalizowana dla serwerów).
+    \item \texttt{pytapo} – biblioteka kliencka do komunikacji z kamerą.
+    \item \texttt{moviepy} oraz \texttt{numpy} – operacje na plikach wideo i macierzach danych.
+\end{itemize}
+
+Efektem tego procesu było wygenerowanie plików \texttt{pyproject.toml} (deklaracja zależności) oraz \textbf{\texttt{uv.lock}} (drzewo zależności ze \textbf{skrótami kryptograficznymi}), co zamknęło etap konfiguracji środowiska uruchomieniowego.
+
+\subsubsection*{Struktura projektu}
+\label{par:struktura_projektu}
+
+Na bazie zainicjowanego środowiska utworzono docelową strukturę katalogów i plików, która dzieli aplikację na \textbf{logiczne moduły funkcjonalne}.  Architektura plików w projekcie prezentuje się następująco:
+
+\begin{itemize}
+    \item \textbf{Katalog główny (\textit{Root}):}
+    \begin{itemize}
+        \item \texttt{run.py}: Główny punkt wejścia (\textit{entry point}) uruchamiający serwer.
+        \item \texttt{config.json}: Zewnętrzny plik konfiguracyjny (adres IP kamery, poświadczenia).
+        \item \texttt{Dockerfile} oraz \texttt{uv.lock/pyproject.toml}.
+    \end{itemize}
+    \item \textbf{Moduł aplikacji (\texttt{app/}):}
+    \begin{itemize}
+        \item \texttt{init.py}: Fabryka aplikacji \textbf{Flask}, inicjująca instancję serwera.
+        \item \texttt{settings.py} oraz \texttt{shared.py}: Moduły do ładowania konfiguracji i \textbf{współdzielenia obiektów} (np. instancji kamery) między wątkami.
+        \item \texttt{camera/}: \textbf{Warstwa abstrakcji sprzętowej} (\textit{HAL}) obsługująca bezpośrednie połączenie z urządzeniem.
+        \item \texttt{video/}, \texttt{audio/}, \texttt{detection/}, \texttt{recording/}: Logika biznesowa i przetwarzanie mediów/analiza obrazu.
+        \item \texttt{web/}: \textbf{Warstwa prezentacji} zawierająca trasy (\textit{routes}), obsługę zdarzeń WebSocket oraz szablony HTML (\textit{templates}).
+    \end{itemize}
+\end{itemize}
+
+Tak przygotowana struktura zapewniła separację \textbf{logiki biznesowej} od warstwy sprzętowej i interfejsu użytkownika, co było niezbędne do dalszej implementacji poszczególnych funkcjonalności
+
+\subsubsection{Implementacja serwera HTTP}
+\label{subsubsec:implementacja_serwera_http}
+
+Centralnym punktem logicznym systemu, spajającym warstwę prezentacji z logiką backendową, jest serwer HTTP zrealizowany w oparciu o mikroframework \textbf{Flask}. Wybór tego rozwiązania podyktowany był koniecznością zachowania \textbf{niskiego narzutu pamięciowego} (\textit{low footprint}) przy jednoczesnej elastyczności w obsłudze protokołów asynchronicznych.
+
+\subsubsection*{Rozwiązanie problemu \enquote{Double Execution} i limity sprzętowe}
+\label{par:double_execution}
+
+Krytycznym wyzwaniem na etapie implementacji serwera było dostosowanie jego cyklu życia do \textbf{ograniczeń sprzętowych} kamery TP-Link Tapo C200, która limituje liczbę jednoczesnych sesji \textbf{RTSP} (zazwyczaj do dwóch).
+
+Standardowy tryb deweloperski frameworka Flask wykorzystuje mechanizm \textit{reloader}, który monitoruje zmiany w kodzie i powoduje uruchomienie \textbf{dwóch procesów systemowych}: procesu monitorującego oraz procesu roboczego. W kontekście aplikacji IoT skutkowało to zjawiskiem \enquote{podwójnego uruchomienia} (\textit{double execution}) wątków strumieniujących. Efektem było natychmiastowe \textbf{wyczerpanie puli dostępnych połączeń} kamery (\textit{Resource Exhaustion}) i odrzucanie prób autoryzacji.
+
+W celu wyeliminowania tego błędu, w głównym punkcie wejścia aplikacji (\texttt{run.py}) wymuszono konfigurację serwera z flagą:
+
+\begin{lstlisting}[language=Python, caption=Wymuszenie jednokrotnego uruchomienia serwera Flask]
+if __name__ == '__main__':
+    socketio.run(app, debug=True, use_reloader=False)
+\end{lstlisting}
+
+Ustawienie parametru \texttt{use\_reloader=False} zapewniło \textbf{deterministyczne, jednokrotne uruchomienie} wątków \texttt{VideoStreamer} i \texttt{AudioStreamer}, gwarantując stabilność połączenia z kamerą przy zachowaniu pełnej kontroli nad zasobami sieciowymi.
+
+\subsubsection{Implementacja Warstwy Dostępu do Sprzętu (HAL)}
+\label{subsubsec:implementacja_hal}
+
+\textbf{Warstwa Dostępu do Sprzętu} (ang. \textit{Hardware Abstraction Layer – HAL}) stanowi fundamentalny element architektury systemu, izolujący wysokopoziomową logikę biznesową od specyfiki protokołów komunikacyjnych urządzenia końcowego. W projekcie funkcję tę pełni moduł \texttt{app/camera}, którego centralnym komponentem jest klasa \textbf{\texttt{TapoCamera}}.
+
+Klasa ta realizuje \textbf{wzorzec fasady}, ukrywając złożoność obsługi strumienia \textbf{RTSP} oraz administracyjnego \textbf{API HTTP/ONVIF}. Dzięki takiemu podejściu, pozostałe moduły systemu (np. detektor ruchu czy interfejs webowy) operują na jednolitym interfejsie obiektowym, nie wymagając znajomości niskopoziomowych detali implementacyjnych.
+
+\subsubsection*{Inicjalizacja połączenia i akwizycja wideo}
+\label{par:inicjalizacja_polaczenia_hal}
+
+Nawiązanie komunikacji z kamerą odbywa się dwutorowo. Metoda \texttt{connect()} (Listing 3.1) inicjuje niezależne sesje dla \textbf{podsystemu wideo} oraz \textbf{podsystemu sterowania}.
+
+Do akwizycji obrazu wykorzystano bibliotekę \textbf{OpenCV} (klasa \texttt{cv2.VideoCapture}). Adres strumienia budowany jest dynamicznie w oparciu o poświadczenia, zgodnie ze schematem \texttt{rtsp://user:password@ip/stream1}. Równolegle inicjowana jest instancja obiektu \texttt{Tapo} z biblioteki pomocniczej \textbf{PyTapo}, która autoryzuje się w panelu administracyjnym kamery, umożliwiając wydawanie poleceń sterujących (\textit{PTZ}). 
+
+\textbf{Listing 3.1. Implementacja inicjalizacji połączenia hybrydowego (RTSP + HTTP) w klasie \texttt{TapoCamera}.}
+\lstset{captionpos=b}
+\begin{lstlisting}[language=Python]
+class TapoCamera:
+    def __init__(self, ip, user, password, cloudPassword):
+        self.ip = ip
+        self.user = user
+        self.password = password
+        self.cloudPassword = cloudPassword
+        self.cap = None
+        self.admin = None 
+
+    def connect(self):
+        # 1. Setup Video (RTSP)
+        url = f"rtsp://{self.user}:{self.password}@{self.ip}/stream1"
+        self.cap = cv2.VideoCapture(url)
+        video_success = self.cap.isOpened()
+
+        # 2. Setup Controls (Pytapo)
+        try:
+            self.admin = Tapo(self.ip, self.user, self.cloudPassword)
+            # Weryfikacja polaczenia poprzez proste zapytanie
+            self.admin.getBasicInfo() 
+            control_success = True
+        except Exception as e:
+            print(f"Control Error: {e}")
+            control_success = False
+
+        if video_success and control_success:
+            print(f"Fully Connected to {self.ip}")
+            return True
+        else:
+            return False
+\end{lstlisting}
+Źródło: Opracowanie własne.
+
+\subsubsection*{Abstrakcja sterowania mechaniką (PTZ)}
+\label{par:abstrakcja_ptz}
+
+Istotnym wyzwaniem inżynierskim była implementacja sterowania silnikami \textit{Pan-Tilt-Zoom} (\textbf{PTZ}) w sposób bezpieczny dla mechaniki urządzenia. Bezpośrednie wywoływanie metod biblioteki \texttt{PyTapo} obarczone jest ryzykiem przekroczenia \textbf{fizycznego zakresu obrotu} głowicy.
+
+W celu rozwiązania tego problemu zaimplementowano metodę \texttt{move()}, która pełni rolę tłumacza (\textit{wrappera}). Konwertuje ona semantyczne polecenia kierunkowe (np. \enquote{up}, \enquote{left}) na wektory przesunięcia silników. Metoda ta zawiera również \textbf{mechanizm obsługi wyjątków} (\textit{Exception Handling}), który przechwytuje informacje o osiągnięciu limitu obrotu (\enquote{limit\_reached}) i zwraca je w ustrukturyzowanej formie do klienta API, zamiast przerywać działanie aplikacji.
+
+\textbf{Listing 3.2. Implementacja metody sterującej z obsługą błędów granicznych.}
+\lstset{captionpos=b}
+\begin{lstlisting}[language=Python]
+    def move(self, direction, step=5):
+        """Wykonuje ruch kamera. Zwraca slownik ze statusem operacji."""
+        if not self.admin:
+            return {"success": False, "error": "not_connected"}
+
+        step = int(step)
+
+        try:
+            if direction == "up":
+                self.admin.moveMotor(0, step)
+            elif direction == "down":
+                self.admin.moveMotor(0, -step)
+            elif direction == "left":
+                self.admin.moveMotor(-step, 0)
+            elif direction == "right":
+                self.admin.moveMotor(step, 0)
+            
+            return {"success": True}
+
+        except Exception as e:
+            error_msg = str(e).lower()
+            # Sprawdzenie slow kluczowych oznaczajacych koniec zakresu ruchu
+            if "range" in error_msg or "limit" in error_msg:
+                print(f" Limit Reached: {direction}")
+                return {"success": False, "error": "limit_reached"}
+            
+            try:
+                self.admin = Tapo(self.ip, self.user, self.password)
+            except:
+                pass
+            return {"success": False, "error": "unknown"}
+\end{lstlisting}
+Źródło: Opracowanie własne.
+
+\subsubsection*{Obsługa Audio i Separacja Logiczna}
+\label{par:separacja_audio}
+
+Warto zauważyć, że w przedstawionej klasie \texttt{TapoCamera} \textbf{celowo pominięto obsługę strumienia audio}. Zgodnie z przyjętą strategią niezawodności (\textit{Fault Tolerance}), obsługa dźwięku została wydzielona do \textbf{niezależnego obiektu} korzystającego z biblioteki \textbf{PyAV}. Taka separacja gwarantuje, że ewentualne opóźnienia w dekodowaniu dźwięku lub błędy formatu audio nie wpływają na płynność strumienia wideo i responsywność sterowania PTZ.
 
 \subsection{Podsumowanie}
 \label{subsec:podsumowanie_roz3}

@@ -1,11 +1,14 @@
 from flask import Flask
 from flask_socketio import SocketIO
+
 from app.recording.recorder import Recorder
 from app.settings import load_config
 from app.camera.camera import TapoCamera
 from app.video.streamer import VideoStreamer
-import app.shared as shared # Import the shared file
 from app.audio.streamer import AudioStreamer
+
+import app.shared as shared
+
 
 socketio = SocketIO(cors_allowed_origins="*")
 
