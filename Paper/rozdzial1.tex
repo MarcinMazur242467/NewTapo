@@ -1,63 +1,48 @@
 \section{Wprowadzenie technologiczne Kamer IP}
-\label{sec:wprowadzenie_kamer_ip}% BRAK PUSTYCH LINII TUTAJ
+\label{sec:wprowadzenie_kamer_ip}
 Rozdział ten ma za zadanie ugruntować zrozumienie złożoności systemów kamer IP i precyzyjnie wskazać na luki w otwartych standardach, które musi wypełnić zaprojektowane rozwiązanie.
-\ 
-
 Współczesne systemy monitoringu wizyjnego oparte na kamerach IP stanowią kluczowy element infrastruktury bezpieczeństwa, wykraczając funkcjonalnością poza tradycyjne, analogowe systemy CCTV.
 Ewolucja ta jest ściśle związana z rozwojem sieci komputerowych i koncepcji IoT, gdzie urządzenia peryferyjne uzyskują zdolność do przetwarzania i autonomicznej komunikacji w ramach sieci.
 Z inżynierskiego punktu widzenia, kamera IP jest zaawansowanym systemem wbudowanym, łączącym optykę, cyfrowe przetwarzanie sygnału, kompresję danych oraz kompleksowy stos protokołów sieciowych.
-\subsection{Zastosowanie Kamer IP}\label{subsec:zastosowanie_kamer_ip}
-Na podstawie raportu Hanwha Vision z 2025 roku, można wyróżnić następujące, główne obszary zastosowań kamer IP \cite{Hanwha:2025}:
-\begin{longtable}{|p{0.25\linewidth}|p{0.71\linewidth}|} 
+
+\subsection{Zastosowanie Kamer IP}
+\label{subsec:zastosowanie_kamer_ip}
+\begin{table}[H]
+    \centering
     \caption{Główne obszary zastosowań kamer IP (na podstawie raportu Hanwha Vision, 2025)}
-    \label{tab:zastosowanie_kamer_ip} \\ % Komenda caption musi być na początku longtable
+    \label{tab:zastosowanie_kamer_ip}
+    \begin{tabularx}{\textwidth}{
+        >{\RaggedRight\hsize=0.5\hsize}X % Zmniejszenie szerokości 1. kolumny (0.5/2.0 = 25%)
+        >{\RaggedRight\hsize=1.5\hsize}X % Zwiększenie szerokości 2. kolumny (1.5/2.0 = 75%)
+    }
+        \toprule
+        \textbf{Obszar zastosowania} & \textbf{Przykłady wykorzystania kamer IP} \\
+        \midrule
+        Bezpieczeństwo publiczne & Monitorowanie ulic, placów, obiektów strategicznych; automatyczne wykrywanie zagrożeń i incydentów. \\
+        \midrule
+        Transport i logistyka & Monitoring lotnisk, dworców, portów; analiza przepływu pasażerów; automatyczne rozpoznawanie tablic rejestracyjnych. \\
+        \midrule
+        Przemysł & Kontrola procesów produkcyjnych, wykrywanie awarii maszyn, nadzór nad pracownikami i bezpieczeństwem pracy. \\
+        \midrule
+        Handel detaliczny & Zapobieganie kradzieżom, analiza zachowań klientów, optymalizacja układu sklepu. \\
+        \midrule
+        Edukacja & Zwiększanie bezpieczeństwa uczniów i nauczycieli, kontrola dostępu do budynków szkolnych. \\
+        \midrule
+        Ochrona zdrowia & Nadzór nad pacjentami i personelem, zabezpieczenie pomieszczeń szpitalnych, kontrola dostępu do stref wrażliwych. \\
+        \midrule
+        Smart City & Analiza ruchu drogowego, inteligentne sterowanie sygnalizacją świetlną, planowanie urbanistyczne na podstawie danych z kamer. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
 
-    \hline
-    \textbf{Obszar zastosowania} & \textbf{Przykłady wykorzystania kamer IP} \\
-    \hline
-    \endhead % Koniec nagłówka tabeli, powtarzanego na każdej stronie
-
-    Bezpieczeństwo publiczne & Monitorowanie ulic, placów, obiektów strategicznych;
-automatyczne wykrywanie zagrożeń i incydentów.\\
-    \hline
-    Transport i logistyka & Monitoring lotnisk, dworców, portów;
-analiza przepływu pasażerów; automatyczne rozpoznawanie tablic rejestracyjnych.\\
-    \hline
-    Przemysł & Kontrola procesów produkcyjnych, wykrywanie awarii maszyn, nadzór nad pracownikami i bezpieczeństwem pracy.\\
-    \hline
-    Handel detaliczny & Zapobieganie kradzieżom, analiza zachowań klientów, optymalizacja układu sklepu.\\
-    \hline
-    Edukacja & Zwiększanie bezpieczeństwa uczniów i nauczycieli, kontrola dostępu do budynków szkolnych.\\
-    \hline
-    Ochrona zdrowia & Nadzór nad pacjentami i personelem, zabezpieczenie pomieszczeń szpitalnych, kontrola dostępu do stref wrażliwych.\\
-    \hline
-    Smart City & Analiza ruchu 
-drogowego, inteligentne sterowanie sygnalizacją świetlną, planowanie urbanistyczne na podstawie danych z kamer.\\
-    \hline
-\end{longtable}\
 
 Zastosowanie monitoringu wizyjnego opartego na kamerach IP jest obecnie wielosektorowe i dynamiczne.
 Urządzenia te, integrujące funkcje sensora i procesora danych, stały się podstawą \textbf{systemów analitycznych} w kluczowych obszarach gospodarki i bezpieczeństwa.
 W kontekście dalszego rozwoju monitoringu wizyjnego, szczególne znaczenie zyskuje \textbf{sztuczna inteligencja (AI)} i \textbf{uczenie maszynowe (ML)}.
 Nowoczesne algorytmy pozwalają na automatyczną detekcję zagrożeń, eliminację fałszywych alarmów oraz identyfikację i śledzenie obiektów w czasie rzeczywistym.
 Integracja tych zaawansowanych technik z \textbf{otwartym oprogramowaniem} — co jest celem niniejszej pracy — otwiera drogę do stworzenia bardziej zaawansowanych, konfigurowalnych i niezależnych narzędzi wspierających bezpieczeństwo oraz analitykę zdarzeń.
-Rozwój kamer IP, szczególnie w kontekście inteligentnego monitoringu, jest ściśle powiązany z ewolucją \textbf{Narzędzi Kognitywnych (Cognitive Tools)}.
-Narzędzia kognitywne w monitoringu wizyjnym działają na zasadzie mechanizmów inferencji, które imitują procesy decyzyjne i percepcyjne ludzkiego mózgu.
-Umożliwiają one systemom na przechodzenie od prostej detekcji ruchu do \textbf{zrozumienia kontekstu i intencji} obserwowanych zdarzeń \cite{Fan:Stanford:2020}.
 Dzięki temu, system monitorujący może automatycznie filtrować szum wizualny i koncentrować uwagę na zdarzeniach o wysokim prawdopodobieństwie zagrożenia lub anomalii.
 Technologie te transformują surowe dane wideo w zorganizowane i użyteczne metadane, co jest fundamentalne dla automatyki i bezpieczeństwa.
-\\\\
-    Efektywna Analiza Danych wymaga interoperacyjności.
-Jest to główny powód, dla którego w niniejszej pracy inżynierskiej dąży się do uwolnienia strumienia danych z kamery Tapo C200.
-Tylko otwarty dostęp do strumienia wideo i metadanych umożliwia ich integrację z zaawansowanymi platformami analitycznymi (np. platformy IoT, systemy Business Intelligence), co jest niemożliwe w zamkniętych ekosystemach producentów.
-Kamera IP, połączona z narzędziami kognitywnymi (AI), przestaje być pasywnym urządzeniem rejestrującym, a staje się aktywnym sensorem generującym \textbf{metadane strukturalne}:
-\begin{enumerate}
-    \item Liczba wykrytych obiektów (ludzie, pojazdy), ich zagęszczenie (tzw. \textit{heatmaps}) oraz czas przebywania w określonej strefie (np. w handlu detalicznym) znane jako \textbf{dane statystyczne}.
-\item Analiza ścieżek ruchu, wykrywanie nietypowych wzorców zachowania (np. bieganie w strefie zakazu, pozostawienie bagażu) oraz trendów sezonowych w natężeniu ruchu znane jako \textbf{dane behawioralne}.
-\item \textbf{Analityką predykcyjna}, ktora na podstawie historycznych i bieżących danych, systemy AI mogą przewidywać prawdopodobne incydenty.
-Przykładowo, zagęszczenie osób w metrze w połączeniu z nietypowymi wzorcami ruchu może wygenerować alarm o potencjalnym zatorze lub wypadku, zanim ten nastąpi.
-\end{enumerate}
-
 
 \subsubsection{Monitoring}
 \label{subsubsec:monitoring}
@@ -65,7 +50,7 @@ Przykładowo, zagęszczenie osób w metrze w połączeniu z nietypowymi wzorcami
 Podstawowym i historycznym zastosowaniem kamery IP jest \textbf{nadzór wizyjny (monitoring)}.
 W odróżnieniu od analogowego CCTV, monitoring oparty na protokole internetowym umożliwia przesyłanie strumienia wideo wysokiej rozdzielczości (np. 1080p w Tapo C200) oraz metadanych poprzez standardowe sieci LAN/WLAN.
 Z technicznego punktu widzenia, monitoring realizowany jest poprzez ciągłe kodowanie wideo (standardy H.264/H.265), strumieniowanie za pomocą protokołów czasu rzeczywistego (\textbf{RTSP}) oraz zapis cyfrowy na nośnikach lokalnych (microSD, serwer NVR) lub w chmurze.
-Zaawansowane funkcje, takie jak \textbf{PTZ (Pan-Tilt-Zoom)}, dają inżynierom możliwość dynamicznego dostosowania pola widzenia i śledzenia obiektów bez ingerencji fizycznej, co jest kluczowe w monitorowaniu dużych obszarów (np. hal \cite{AlFuqaha:2015}.
+
 \subsubsection{Kontrola Dostępu}
 \label{subsubsec:kontrola_dostepu}
 
@@ -80,7 +65,7 @@ Takie rozwiązania minimalizują ryzyko błędów ludzkich i zwiększają bezpie
 \subsubsection{Zarządzanie Procesami Biznesowymi}
 \label{subsubsec:zarzadzanie_procesami_biznesowymi}
 
-Wykorzystanie kamer IP w zarządzaniu procesami (\textbf{Business Process Management - BPM}) koncentruje się na optymalizacji operacyjnej poprzez zbieranie danych o efektywności i bezpieczeństwie pracy.
+Wykorzystanie kamer IP w zarządzaniu procesami biznesowymi koncentruje się na optymalizacji operacyjnej poprzez zbieranie danych o efektywności i bezpieczeństwie pracy.
 W sektorach takich jak produkcja i logistyka, kamery są używane do:
 \begin{enumerate}
     \item \textbf{Kontroli Jakości (Quality Assurance - QA):} Monitorowanie linii produkcyjnych w celu automatycznego wykrywania defektów, niezgodności montażu lub nieprawidłowej sekwencji działań.
@@ -98,11 +83,10 @@ Przykłady zastosowań to:
     \item \textbf{Automatyzacja Zdarzeniowa:} Detekcja ruchu lub dźwięku (np. wykrywanie płaczu dziecka w Tapo C200) uruchamia inne urządzenia (np. włącza światło, wysyła alert do systemu zarządzania domem).
 \item \textbf{Zarządzanie Energią:} Wykrycie braku obecności osób w pomieszczeniu może prowadzić do automatycznego obniżenia temperatury lub wyłączenia niepotrzebnych urządzeń, przyczyniając się do zwiększenia efektywności energetycznej.
 \end{enumerate}
-Ten obszar ilustruje potrzebę \textbf{interoperacyjności}, która jest blokowana przez zamknięte protokoły chmurowe, co stanowi główną motywację dla niniejszej pracy inżynierskiej.
 \subsubsection{Analiza Danych}
 \label{subsubsec:analiza_danych}
 
-Kamera IP, połączona z narzędziami kognitywnymi (AI), przestaje być pasywnym urządzeniem rejestrującym, a staje się aktywnym sensorem generującym \textbf{metadane strukturalne}.
+Kamera IP, połączona ze sztuczną inteligencją (AI), przestaje być pasywnym urządzeniem rejestrującym, a staje się aktywnym sensorem generującym \textbf{metadane strukturalne}.
 W kontekście systemów Big Data, strumień wideo jest intensywnie przetwarzany, stanowiąc bazę dla analityki w czasie rzeczywistym i prognozowania zdarzeń.
 Efektywne wykorzystanie danych wizyjnych do celów analitycznych obejmuje trzy główne poziomy inżynierskie:
 \begin{enumerate}
@@ -126,7 +110,7 @@ Poniższe podrozdziały szczegółowo omawiają te dwie warstwy.
 Warstwa sprzętowa stanowi fizyczny fundament kamery, odpowiadając za akwizycję, przetwarzanie i transmisję danych audiowizualnych.
 W celu dogłębnej analizy, jej kluczowe komponenty zostaną omówione w dedykowanych podrozdziałach.
 \paragraph{Matryca (Przetwornik obrazu)}
-\label{para:matryca}
+\label{para:matryca} % dodac link do YT jako zrodlo https://www.youtube.com/watch?v=IipdBSZCcgk
 Matryca, nazywana również przetwornikiem lub sensorem obrazu, jest kluczowym elementem półprzewodnikowym, który inicjuje cały proces wizyjny.
 Jej fundamentalnym zadaniem jest konwersja energii fotonów (światła) padających na jej powierzchnię na mierzalny sygnał elektryczny.
 Proces ten, znany jako wewnętrzne zjawisko fotoelektryczne, stanowi podstawę cyfrowego przetwarzania obrazu \cite{Howe:2014}.
@@ -226,31 +210,31 @@ W kamerze IP, UDP jest protokołem z wyboru do transportu głównego ładunku �
 Ta dwoistość architektoniczna jest kluczowa dla zrozumienia działania kamery. Jej oprogramowanie firmware musi jednocześnie zarządzać stabilnymi, niezawodnymi połączeniami TCP dla poleceń i konfiguracji, oraz emitować ciągły, wysokonakładowy strumień datagramów UDP z danymi audiowizualnymi. Efektywne zarządzanie tymi dwoma trybami komunikacji przez procesor SoC jest jednym z głównych wyzwań inżynierskich w projektowaniu wydajnych urządzeń IoT.
 
 \begin{table}[H]
-\centering
-\begin{tabular}{|l|p{5cm}|p{5cm}|}
-\hline
-\textbf{Cecha} & \textbf{Protokół TCP (Transmission Control Protocol)} & \textbf{Protokół UDP (User Datagram Protocol)} \\
-\hline
-\textbf{Typ Połączenia} & Połączeniowy (wymaga nawiązania sesji) & Bezpołączeniowy (wysyła dane bez nawiązywania sesji) \\
-\hline
-\textbf{Niezawodność} & Gwarantowana dostawa, kontrola błędów i kolejności & "Best-effort" (brak gwarancji dostawy i kolejności) \\
-\hline
-\textbf{Prędkość} & Wolniejszy (większy narzut, retransmisje) & Szybszy (minimalny narzut, brak retransmisji) \\
-\hline
-\textbf{Nagłówek} & Większy (20 bajtów) & Mniejszy (8 bajtów) \\
-\hline
-\textbf{Główne Zastosowanie w Kamerze IP} & Sterowanie i konfiguracja (HTTP API), dostęp webowy & Strumieniowanie mediów w czasie rzeczywistym (RTP) \\
-\hline
-\end{tabular}
-\caption{Porównanie protokołów TCP i UDP w kontekście kamery IP.}
-\label{tab:tcp_vs_udp}
+    \centering
+    \caption{Porównanie protokołów TCP i UDP w kontekście kamery IP.}
+    \label{tab:tcp_vs_udp}
+    \begin{tabularx}{\textwidth}{L L L}
+        \toprule
+        \textbf{Cecha} & \textbf{Protokół TCP (\textit{Transmission Control Protocol})} & \textbf{Protokół UDP (\textit{User Datagram Protocol})} \\
+        \midrule
+        \textbf{Typ Połączenia} & Połączeniowy (wymaga nawiązania sesji) & Bezpołączeniowy (wysyła dane bez nawiązywania sesji) \\
+        \midrule
+        \textbf{Niezawodność} & Gwarantowana dostawa, kontrola błędów i kolejności & \enquote{Best-effort} (brak gwarancji dostawy i kolejności) \\
+        \midrule
+        \textbf{Prędkość} & Wolniejszy (większy narzut, retransmisje) & Szybszy (minimalny narzut, brak retransmisji) \\
+        \midrule
+        \textbf{Nagłówek} & Większy (20 bajtów) & Mniejszy (8 bajtów) \\
+        \midrule
+        \textbf{Główne Zastosowanie w Kamerze IP} & Sterowanie i konfiguracja (HTTP API), dostęp webowy & Strumieniowanie mediów w czasie rzeczywistym (RTP) \\
+        \bottomrule
+    \end{tabularx}
 \end{table}
 
 \paragraph{Warstwa Aplikacji (Application Layer): Usługi Sieciowe i Sterowanie}
 Najwyższa warstwa stosu TCP/IP zawiera protokoły, które realizują konkretne funkcje widoczne dla użytkownika i innych systemów. To tutaj logika biznesowa kamery jest wystawiana na zewnątrz w postaci usług sieciowych.
 
 \subparagraph{HTTP API (Application Programming Interface)}
-Wiele kamer IP, zwłaszcza tych przeznaczonych do integracji, udostępnia interfejs programistyczny aplikacji (API) oparty na protokole HTTP. Działa on jak zdalny panel sterowania, umożliwiając autoryzowanym aplikacjom wysyłanie żądań HTTP (np. GET lub POST) do określonych adresów URL na serwerze webowym kamery w celu wykonania akcji lub odczytania stanu. Przykładowo, wysłanie żądania do \texttt{http://<adres\_ip\_kamery>/api/ptz?action=pan\_left\&speed=50} mogłoby spowodować obrót kamery w lewo z określoną prędkością. Takie API jest kluczowe dla integracji kamery z zewnętrznymi systemami, takimi jak platformy automatyki domowej (np. Home Assistant) czy niestandardowe oprogramowanie do zarządzania wideo. Jest to mechanizm, który projekt opisany w niniejszej pracy inżynierskiej ma na celu wykorzystać do sterowania kamerą Tapo.
+Wiele kamer IP, zwłaszcza tych przeznaczonych do integracji, udostępnia interfejs programistyczny aplikacji (API) oparty na protokole HTTP. Działa on jak zdalny panel sterowania, umożliwiając autoryzowanym aplikacjom wysyłanie żądań HTTP (np. GET lub POST) do określonych adresów URL na serwerze webowym kamery w celu wykonania akcji lub odczytania stanu. Przykładowo, wysłanie żądania do http://<adres\_ip\_kamery>/api/ptz?action=pan\_left\&speed=50 mogłoby spowodować obrót kamery w lewo z określoną prędkością. Takie API jest kluczowe dla integracji kamery z zewnętrznymi systemami, takimi jak platformy automatyki domowej (np. Home Assistant) czy niestandardowe oprogramowanie do zarządzania wideo. Jest to mechanizm, który projekt opisany w niniejszej pracy inżynierskiej ma na celu wykorzystać do sterowania kamerą Tapo.
 
 \subparagraph{NTP (Network Time Protocol)}
 Choć często pomijany, NTP odgrywa fundamentalną rolę w prawidłowym funkcjonowaniu kamery IP. Jest to protokół służący do synchronizacji wewnętrznego zegara urządzenia z wysoce precyzyjnymi, globalnymi serwerami czasu. Dokładny i zsynchronizowany czas jest niezbędny z kilku powodów:
@@ -314,26 +298,29 @@ Wszystko zaczyna się w przetworniku obrazu, którym w nowoczesnych kamerach jes
 Surowy, zdigitalizowany obraz w formacie Bayera jest następnie przekazywany do dedykowanego koprocesora – Procesora Sygnału Obrazu (ISP). ISP to potężny, wyspecjalizowany układ, często będący częścią głównego SoC, który w czasie rzeczywistym wykonuje serię skomplikowanych operacji w celu przekształcenia surowych danych w pełnowartościowy, estetyczny obraz wideo. Potok przetwarzania w ISP (ISP Pipeline) obejmuje następujące kluczowe etapy:
 
 \begin{table}[H]
-\centering
-\begin{tabular}{|l|p{10cm}|}
-\hline
-\textbf{Etap} & \textbf{Opis} \\
-\hline
-\textbf{Akwizycja Danych Surowych (Bayer)} & Otrzymanie zdigitalizowanego, mozaikowego obrazu z matrycy CMOS, gdzie każdy piksel reprezentuje natężenie tylko jednego z trzech kolorów (R, G lub B). \\
-\hline
-\textbf{Demosaicing (Interpolacja Kolorów)} & Algorytm rekonstruuje pełną informację o kolorze (RGB) dla każdego piksela poprzez interpolację brakujących wartości na podstawie kolorów sąsiednich pikseli. \\
-\hline
-\textbf{Redukcja Szumów} & Zastosowanie zaawansowanych filtrów w celu usunięcia szumu cyfrowego, który powstaje zwłaszcza przy słabym oświetleniu (wysokie ISO). \\
-\hline
-\textbf{Automatyczna Korekcja (AWB/AE)} & Analiza całej sceny w celu automatycznego dostosowania balansu bieli (AWB) dla naturalnego odwzorowania kolorów oraz ekspozycji (AE) dla optymalnej jasności obrazu. \\
-\hline
-\textbf{Ulepszanie Obrazu} & Zastosowanie operacji takich jak korekcja gamma, regulacja kontrastu, nasycenia kolorów oraz wyostrzanie krawędzi w celu poprawy ogólnej jakości wizualnej. \\
-\hline
-\textbf{Konwersja Przestrzeni Kolorów} & Przekształcenie obrazu z przestrzeni kolorów RGB na format bardziej odpowiedni do kompresji wideo, najczęściej YCbCr, który oddziela informację o jasności (Y) od informacji o kolorze (Cb, Cr). \\
-\hline
-\end{tabular}
-\caption{Etapy przetwarzania w potoku ISP.}
-\label{tab:isp_pipeline}
+    \centering
+    \caption{Etapy przetwarzania w potoku ISP.}
+    \label{tab:isp_pipeline}
+    \begin{tabularx}{\textwidth}{
+        >{\RaggedRight\hsize=10\hsize}X % Węższa kolumna dla Etapu (20% szerokości)
+        >{\RaggedRight\hsize=24\hsize}X % Szersza kolumna dla Opisu (80% szerokości)
+    }
+        \toprule
+        \textbf{Etap} & \textbf{Opis} \\
+        \midrule
+        \textbf{Akwizycja Danych Surowych (\textit{Bayer})} & Otrzymanie zdigitalizowanego, mozaikowego obrazu z matrycy CMOS, gdzie każdy piksel reprezentuje natężenie tylko jednego z trzech kolorów (\textit{R, G lub B}). \\
+        \midrule
+        \textbf{Demosaicing (\textit{Interpolacja Kolorów})} & Algorytm rekonstruuje pełną informację o kolorze (\textit{RGB}) dla każdego piksela poprzez interpolację brakujących wartości na podstawie kolorów sąsiednich pikseli. \\
+        \midrule
+        \textbf{Redukcja Szumów} & Zastosowanie zaawansowanych filtrów w celu usunięcia szumu cyfrowego, który powstaje zwłaszcza przy słabym oświetleniu (\textit{wysokie ISO}). \\
+        \midrule
+        \textbf{Automatyczna Korekcja (\textit{AWB/AE})} & Analiza całej sceny w celu automatycznego dostosowania \textbf{balansu bieli} (\textit{AWB}) dla naturalnego odwzorowania kolorów oraz \textbf{ekspozycji} (\textit{AE}) dla optymalnej jasności obrazu. \\
+        \midrule
+        \textbf{Ulepszanie Obrazu} & Zastosowanie operacji takich jak korekcja gamma, regulacja kontrastu, nasycenia kolorów oraz wyostrzanie krawędzi w celu poprawy ogólnej jakości wizualnej. \\
+        \midrule
+        \textbf{Konwersja Przestrzeni Kolorów} & Przekształcenie obrazu z przestrzeni kolorów \textit{RGB} na format bardziej odpowiedni do kompresji wideo, najczęściej \textbf{YCbCr}, który oddziela informację o jasności (\textit{Y}) od informacji o kolorze (\textit{Cb, Cr}). \\
+        \bottomrule
+    \end{tabularx}
 \end{table}
 
 Po przejściu przez potok ISP, mamy do czynienia z pełnokolorowym, skorygowanym, ale wciąż nieskompresowanym strumieniem wideo. Strumień ten, nawet dla rozdzielczości 1080p przy 30 klatkach na sekundę, ma ogromną przepływność (rzędu 1.5 Gb/s), co czyni go niemożliwym do przesłania przez typową sieć domową.
@@ -382,24 +369,28 @@ Fundamentalną zasadą architektoniczną w strumieniowaniu na żywo jest rozdzie
 Zanim na ekranie klienta pojawi się pierwszy obraz, musi on przeprowadzić z kamerą negocjacje za pomocą protokołu RTSP. Ten proces, często nazywany "uściskiem dłoni" (handshake), przebiega w kilku krokach i jest niezbędny do ustalenia parametrów transmisji.
 
 \begin{table}[H]
-\centering
-\begin{tabular}{|l|l|p{8cm}|}
-\hline
-\textbf{Komenda} & \textbf{Nadawca} & \textbf{Cel} \\
-\hline
-\textbf{DESCRIBE} & Klient & Żądanie od serwera (kamery) opisu dostępnych strumieni multimedialnych. Odpowiedź zawiera dane w formacie SDP, informujące np. o istnieniu strumienia wideo H.264 i audio AAC. \\
-\hline
-\textbf{SETUP} & Klient & Konfiguracja transportu dla każdego strumienia z osobna. Klient informuje serwer, na których portach UDP będzie nasłuchiwał na pakiety RTP (dane) i RTCP (dane kontrolne). \\
-\hline
-\textbf{PLAY} & Klient & Polecenie dla serwera, aby rozpoczął transmisję pakietów RTP na wcześniej uzgodnione porty. \\
-\hline
-\textbf{PAUSE} & Klient & Wstrzymanie transmisji strumienia bez zrywania sesji. Sesję można wznowić komendą PLAY. \\
-\hline
-\textbf{TEARDOWN} & Klient & Zakończenie sesji strumieniowej i zwolnienie zasobów po stronie serwera. \\
-\hline
-\end{tabular}
-\caption{Podstawowe komendy protokołu RTSP.}
-\label{tab:rtsp_commands}
+    \centering
+    \caption{Podstawowe komendy protokołu RTSP.}
+    \label{tab:rtsp_commands}
+    \begin{tabularx}{\textwidth}{
+        >{\RaggedRight\hsize=6.0\hsize}X % Komenda (waska)
+        >{\RaggedRight\hsize=5.0\hsize}X % Nadawca (waska)
+        >{\RaggedRight\hsize=14.2\hsize}X % Cel (szeroki)
+    }
+        \toprule
+        \textbf{Komenda} & \textbf{Nadawca} & \textbf{Cel} \\
+        \midrule
+        \textbf{DESCRIBE} & Klient & Żądanie od serwera (kamery) opisu dostępnych strumieni multimedialnych. Odpowiedź zawiera dane w formacie \textbf{SDP}, informujące np. o istnieniu strumienia wideo H.264 i audio AAC. \\
+        \midrule
+        \textbf{SETUP} & Klient & Konfiguracja transportu dla każdego strumienia z osobna. Klient informuje serwer, na których portach \textbf{UDP} będzie nasłuchiwał na pakiety \textit{RTP} (dane) i \textit{RTCP} (dane kontrolne). \\
+        \midrule
+        \textbf{PLAY} & Klient & Polecenie dla serwera, aby rozpoczął transmisję pakietów \textit{RTP} na wcześniej uzgodnione porty. \\
+        \midrule
+        \textbf{PAUSE} & Klient & Wstrzymanie transmisji strumienia bez zrywania sesji. Sesję można wznowić komendą \textbf{PLAY}. \\
+        \midrule
+        \textbf{TEARDOWN} & Klient & Zakończenie sesji strumieniowej i zwolnienie zasobów po stronie serwera. \\
+        \bottomrule
+    \end{tabularx}
 \end{table}
 
 Przebieg negocjacji:
@@ -549,37 +540,6 @@ Transmisja strumienia wideo, zwłaszcza w wysokiej rozdzielczości, jest procese
     \item \textbf{Kompresja (Compression):} Wybór kodeka ma fundamentalne znaczenie dla efektywności transmisji. Nowocześniejszy standard H.265 (HEVC) jest w stanie zredukować wymagania dotyczące przepustowości nawet o 50\% w porównaniu do powszechnie stosowanego H.264, przy zachowaniu porównywalnej jakości wizualnej.
     \item \textbf{Złożoność sceny (Scene Complexity):} Nowoczesne kodeki wideo optymalizują transmisję, kodując głównie zmiany pomiędzy kolejnymi klatkami. W rezultacie, statyczna scena, taka jak pusty korytarz, będzie generować znacznie mniejszy strumień danych niż dynamiczna scena z dużą ilością ruchu, np. wejście do sklepu w godzinach szczytu. Wysoka aktywność w kadrze może nawet podwoić chwilowe zapotrzebowanie na pasmo.
 \end{itemize}
-
-Poniższa tabela syntetyzuje te zależności, przedstawiając szacunkowe zapotrzebowanie na przepustowość dla typowych konfiguracji.
-
-\begin{table}[H]
-\centering
-\caption{Szacowane Zużycie Przepustowości dla Strumieni Wideo Kamer IP}
-\label{tab:szac_przepustowosc}
-\begin{tabular}{|l|l|l|l|}
-\hline
-\textbf{Rozdzielczość} & \textbf{Klatki/s (FPS)} & \textbf{Kodek} & \textbf{Szac. Przepustowość (Mbps)} \\
-\hline
-1080p & 15 & H.264 & 1–2 \\
-\hline
-1080p & 30 & H.264 & 2–4 \\
-\hline
-1080p & 15 & H.265 & 0.5–1 \\
-\hline
-1080p & 30 & H.265 & 1–2 \\
-\hline
-4K (2160p) & 15 & H.264 & 8–12 \\
-\hline
-4K (2160p) & 30 & H.264 & 15–20+ \\
-\hline
-4K (2160p) & 15 & H.265 & 4–6 \\
-\hline
-4K (2160p) & 30 & H.265 & 8–15 \\
-\hline
-\end{tabular}
-\end{table}
-\small{\textit{Źródło: Opracowanie własne. Wartości są szacunkowe; rzeczywiste zużycie zależy od złożoności sceny i ustawień kodera.}}
-\vspace{1em}
 
 Te wymagania stają się szczególnie problematyczne w kontekście zapisu w chmurze. Większość konsumenckich planów internetowych ma charakter asymetryczny, oferując wysoką prędkość pobierania (download), ale znacznie niższą prędkość wysyłania (upload). Ponieważ kamera wysyła strumień wideo do chmury, kluczowa jest właśnie przepustowość wysyłania. Pojedyncza kamera 4K może z łatwością wysycić całe dostępne pasmo wysyłania typowego łącza domowego, uniemożliwiając lub znacznie spowalniając działanie innych usług internetowych, takich jak wideokonferencje czy wysyłanie dużych plików.
 

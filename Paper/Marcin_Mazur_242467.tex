@@ -57,6 +57,11 @@
     showstringspaces=false, % Nie pokazuj spacji w napisach
 }
 
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\@startsection}{\@minus\p@}{\@minus\p@\indent}{}{}
+\makeatother
+
 \usepackage{lmodern}
 \renewcommand*\familydefault{\sfdefault}
 
