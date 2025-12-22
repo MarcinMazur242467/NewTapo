@@ -145,106 +145,51 @@ Firmware realizuje kluczowe zadania, takie jak:
 \label{subsec:zasada_dzialania}
 Niniejszy podrozdział stanowi dogłębną analizę mechanizmów operacyjnych, które definiują funkcjonalność nowoczesnej kamery IP. Urządzenie to, dalekie od bycia prostym peryferium, jest w rzeczywistości zaawansowanym, autonomicznym systemem wbudowanym, w którym zbiegają się dziedziny inżynierii sprzętowej, oprogramowania firmware oraz złożonych protokołów sieciowych. Celem tej analizy jest dekonstrukcja logiki działania kamery na cztery fundamentalne, wzajemnie powiązane domeny. Rozpoczniemy od zbadania jej architektury komunikacyjnej, czyli stosu protokołów, który umożliwia jej funkcjonowanie jako węzła w sieci. Następnie przeanalizujemy krytyczny proces provisioningu, czyli bezpiecznego włączania urządzenia do infrastruktury sieciowej. W trzeciej części prześledzimy wewnętrzny potok przetwarzania danych, od momentu konwersji zjawisk fizycznych – fotonów światła i fal akustycznych – na surowe dane cyfrowe, aż po ich kompresję do formatu gotowego do transmisji. Na końcu szczegółowo omówimy mechanizmy strumieniowania, które pozwalają na przesyłanie tych danych w czasie rzeczywistym. Zrozumienie synergii między wyspecjalizowanym układem scalonym (SoC), sensorami, oprogramowaniem układowym i protokołami sieciowymi jest kluczowe do pełnego pojęcia, jak kamera IP realizuje swoje zadania – od prostego monitoringu po zaawansowaną analitykę danych.
 
-\subsubsection{Architektura Komunikacji Sieciowej: Stos Protokółów i Standardy}
-Zdolność kamery IP do komunikacji z innymi urządzeniami i systemami jest jej cechą definiującą, odróżniającą ją od tradycyjnych systemów analogowych. Ta komunikacja nie jest monolitycznym procesem, lecz jest zarządzana przez hierarchiczny zbiór reguł i protokołów, zorganizowanych w warstwową architekturę. Zrozumienie tej architektury jest fundamentalne dla pojęcia, w jaki sposób kamera wysyła polecenia, odbiera konfigurację i transmituje strumień wideo.
+\subsubsection{Architektura Komunikacji Sieciowej: Stos Protokołów}
 
-\paragraph{Fundamenty: Czterowarstwowy Model TCP/IP}
-Podstawą całej komunikacji w internecie, a co za tym idzie, również w kamerach IP, jest model TCP/IP. Jest to uniwersalna, sprawdzona w praktyce struktura, która dzieli złożone zadanie komunikacji sieciowej na cztery zarządzalne, abstrakcyjne warstwy. Każda warstwa odpowiada za określony zestaw funkcji i komunikuje się wyłącznie z warstwami bezpośrednio powyżej i poniżej niej. Taka modularna budowa upraszcza projektowanie systemów sieciowych i zapewnia interoperacyjność między urządzeniami różnych producentów\cite{tanenbaum2011computer}.
+Komunikacja kamery IP opiera się na warstwowej architekturze modelu TCP/IP, co zapewnia modularność i interoperacyjność systemu. Poniżej przedstawiono esencję technologiczną poszczególnych warstw w kontekście analizowanego rozwiązania \cite{tanenbaum2011computer}.
 
+\paragraph{Warstwa Dostępu do Sieci}
+Warstwa ta definiuje fizyczną transmisję danych. W kamerach Tapo kluczowe są standardy bezprzewodowe oraz mechanizmy zabezpieczeń:
 \begin{itemize}
-    \item \textbf{Warstwa Dostępowa (Link Layer):} Najniższa warstwa, odpowiedzialna za fizyczne przesyłanie danych w ramach jednej sieci lokalnej (np. przez Wi-Fi lub kabel Ethernet).
-    \item \textbf{Warstwa Internetowa (Internet Layer):} Odpowiada za adresowanie i routing pakietów danych pomiędzy różnymi sieciami, umożliwiając komunikację globalną.
-    \item \textbf{Warstwa Transportowa (Transport Layer):} Zarządza komunikacją między konkretnymi aplikacjami na urządzeniach końcowych, zapewniając niezawodność lub szybkość transmisji.
-    \item \textbf{Warstwa Aplikacji (Application Layer):} Najwyższa warstwa, zawierająca protokoły, z którymi bezpośrednio interaguje oprogramowanie kamery i aplikacje klienckie (np. protokoły do strumieniowania wideo czy sterowania).
-\end{itemize}
-Wszystkie protokoły i standardy omówione w dalszej części tego podrozdziału działają w ramach jednej z tych czterech warstw, tworząc spójny i funkcjonalny stos komunikacyjny.
-
-\paragraph{Warstwa Dostępowa (Link Layer): Fizyczne Połączenie i Bezpieczeństwo}
-Ta warstwa stanowi fizyczny fundament komunikacji, definiując, w jaki sposób bity danych są przesyłane przez medium transmisyjne. W przypadku konsumenckich kamer IP, takich jak analizowany model Tapo, dominującym medium jest sieć bezprzewodowa.
-
-\subparagraph{Standardy IEEE 802.11 (Wi-Fi)}
-Kamery IP powszechnie wykorzystują standardy z rodziny IEEE 802.11, znane komercyjnie jako Wi-Fi. Najczęściej spotykane w urządzeniach IoT są standardy 802.11n (Wi-Fi 4) oraz 802.11ac (Wi-Fi 5). Standardy te określają kluczowe parametry transmisji, takie jak techniki modulacji sygnału, wykorzystywane pasma częstotliwości oraz maksymalne teoretyczne przepustowości.
-
-\begin{itemize}
-    \item \textbf{IEEE 802.11n (Wi-Fi 4):} Jest to starszy, ale wciąż bardzo popularny standard w urządzeniach IoT ze względu na niższy koszt implementacji. Może on operować zarówno w zatłoczonym paśmie 2.4 GHz, jak i w mniej obciążonym paśmie 5 GHz, oferując przepustowości wystarczające dla strumieni wideo w rozdzielczości Full HD.
-    \item \textbf{IEEE 802.11ac (Wi-Fi 5):} Nowszy standard, działający wyłącznie w paśmie 5 GHz, co zapewnia mniejsze zakłócenia od innych urządzeń (np. kuchenek mikrofalowych, telefonów bezprzewodowych). Oferuje znacznie wyższe prędkości i jest preferowany w środowiskach o dużej gęstości sieci bezprzewodowych.
-\end{itemize}
-Wybór odpowiedniego standardu i pasma ma bezpośredni wpływ na stabilność i jakość połączenia kamery, co jest kluczowe dla nieprzerwanego monitoringu.
-
-\subparagraph{Mechanizmy Bezpieczeństwa (WPA2/WPA3)}
-Ponieważ dane przesyłane są bezprzewodowo, ich zabezpieczenie przed nieautoryzowanym dostępem jest absolutnie krytyczne. Służą do tego protokoły szyfrowania.
-\begin{itemize}
-    \item \textbf{WPA2 (Wi-Fi Protected Access 2):} Przez wiele lat był to złoty standard bezpieczeństwa sieci bezprzewodowych. WPA2 wykorzystuje silny algorytm szyfrowania AES (Advanced Encryption Standard), który zapewnia solidną ochronę danych. Jest on powszechnie stosowany i kompatybilny z praktycznie wszystkimi urządzeniami.
-    \item \textbf{WPA3 (Wi-Fi Protected Access 3):} Jest to najnowszy i najbezpieczniejszy standard, wprowadzony w 2018 roku. WPA3 oferuje kilka kluczowych ulepszeń w stosunku do WPA2, w tym silniejszą ochronę przed atakami typu "brute-force" na hasła (dzięki mechanizmowi Simultaneous Authentication of Equals) oraz zapewnia tzw. "forward secrecy", co oznacza, że nawet jeśli atakujący zdobędzie hasło do sieci, nie będzie w stanie odszyfrować przechwyconej wcześniej komunikacji. Chociaż WPA3 jest standardem preferowanym, niektóre starsze urządzenia IoT mogą mieć problemy z kompatybilnością, co zmusza do korzystania z trybu mieszanego WPA2/WPA3 lub pozostania przy WPA2. Zabezpieczenie transmisji na tej warstwie jest pierwszą i fundamentalną linią obrony przed podsłuchem i nieautoryzowanym dostępem do strumienia wideo z kamery.
+    \item \textbf{IEEE 802.11n/ac:} Standardy Wi-Fi zapewniające przepustowość niezbędną dla strumieni Full HD. Wybór pasma (2.4 GHz vs 5 GHz) determinuje zasięg oraz odporność na zakłócenia.
+    \item \textbf{WPA2/WPA3:} Protokoły szyfrowania (AES). WPA3 wprowadza mechanizm \textit{Simultaneous Authentication of Equals}, chroniący przed atakami typu brute-force oraz zapewniający \textit{forward secrecy}.
 \end{itemize}
 
-\paragraph{Warstwa Internetowa (Internet Layer): Adresacja i Routing}
-Gdy kamera uzyska bezpieczne połączenie z siecią lokalną, warstwa internetowa wchodzi do gry, aby nadać jej unikalny adres i umożliwić komunikację z urządzeniami spoza jej bezpośredniego otoczenia.
-
-\subparagraph{Protokół IP i Adresacja}
-Sercem tej warstwy jest Protokół Internetowy (IP), którego głównym zadaniem jest przypisanie każdemu urządzeniu w sieci unikalnego adresu IP. Adres ten działa jak adres pocztowy, pozwalając na precyzyjne kierowanie (routing) pakietów danych do i z kamery.
-
-\subparagraph{Dynamiczna vs. Statyczna Konfiguracja IP}
-Kamera może uzyskać swój adres IP na dwa sposoby:
+\paragraph{Warstwa Internetowa}
+Odpowiada za adresowanie i routing pakietów w sieciach IP.
 \begin{itemize}
-    \item \textbf{DHCP (Dynamic Host Configuration Protocol):} Jest to metoda domyślna w większości sieci domowych i konsumenckich. Po podłączeniu do sieci, kamera automatycznie wysyła zapytanie do routera, który z puli dostępnych adresów przydziela jej jeden na określony czas. Jest to rozwiązanie wygodne i nie wymagające konfiguracji przez użytkownika. Jego wadą jest to, że adres IP kamery może się zmienić po jej ponownym uruchomieniu, co może utrudnić dostęp do niej z innych systemów.
-    \item \textbf{Statyczny adres IP:} W bardziej profesjonalnych zastosowaniach często konfiguruje się kamerę ze stałym, niezmiennym adresem IP. Użytkownik ręcznie przypisuje adres spoza puli DHCP routera. Gwarantuje to, że kamera będzie zawsze dostępna pod tym samym, znanym adresem, co jest kluczowe dla integracji z systemami NVR (Network Video Recorder) czy platformami automatyki domowej.
+    \item \textbf{Adresacja IP:} Kamera uzyskuje tożsamość sieciową dynamicznie (DHCP) lub poprzez stałą konfigurację (statyczny adres IP). W profesjonalnych implementacjach zalecany jest statyczny adres IP, co gwarantuje stabilność połączenia dla zewnętrznych systemów sterujących.
 \end{itemize}
 
-\paragraph{Warstwa Transportowa (Transport Layer): Niezawodność kontra Szybkość}
-Warstwa transportowa odpowiada za komunikację pomiędzy konkretnymi procesami działającymi na kamerze i na urządzeniu klienckim. To na tym poziomie podejmowana jest fundamentalna decyzja architektoniczna dotycząca sposobu przesyłania danych, która determinuje charakter całej komunikacji. Kamera IP musi obsługiwać dwa diametralnie różne typy komunikacji, co prowadzi do swoistej "podwójnej osobowości" jej stosu sieciowego. Z jednej strony musi działać jak niezawodny serwer webowy, a z drugiej – jak stacja nadawcza czasu rzeczywistego. Do obsługi tych dwóch ról wykorzystywane są dwa różne protokoły warstwy transportowej: TCP i UDP.
-
-\subparagraph{TCP (Transmission Control Protocol)}
-TCP jest protokołem połączeniowym, co oznacza, że przed przesłaniem jakichkolwiek danych, nawiązuje formalną sesję między klientem a serwerem za pomocą trójetapowego procesu "uścisku dłoni" (three-way handshake). Jego główną cechą jest niezawodność. TCP gwarantuje, że każdy wysłany pakiet dotrze do odbiorcy, a pakiety zostaną złożone w prawidłowej kolejności. Osiąga to poprzez mechanizmy potwierdzeń (acknowledgements) i retransmisji utraconych pakietów. Ta niezawodność ma jednak swoją cenę – dodatkowe dane kontrolne i potencjalne opóźnienia związane z retransmisjami sprawiają, że TCP jest wolniejszy od UDP.
-
-W kamerze IP, TCP jest absolutnie niezbędny do zadań, gdzie integralność danych jest krytyczna. Są to między innymi:
+\paragraph{Warstwa Transportowa}
+Determinuje sposób przesyłania danych pomiędzy procesami, wykorzystując dwa odmienne podejścia:
 \begin{itemize}
-    \item \textbf{Dostęp do interfejsu konfiguracyjnego:} Gdy użytkownik łączy się z kamerą przez przeglądarkę internetową, cała komunikacja odbywa się za pomocą protokołu HTTP, który działa na bazie TCP.
-    \item \textbf{Wysyłanie poleceń sterujących:} Komendy wysyłane przez API, takie jak obrót kamery (PTZ), zmiana ustawień obrazu czy aktywacja trybu nocnego, muszą dotrzeć w całości i bezbłędnie. Utrata nawet jednego pakietu w poleceniu "obróć w lewo" mogłaby spowodować nieprzewidywalne zachowanie urządzenia. Dlatego te funkcje również opierają się na niezawodności TCP.
+    \item \textbf{TCP (Transmission Control Protocol):} Protokół połączeniowy, gwarantujący dostarczenie i kolejność pakietów. Wykorzystywany do zadań krytycznych: obsługi interfejsu konfiguracyjnego oraz przesyłania poleceń sterujących PTZ (\textit{Pan-Tilt-Zoom}) poprzez HTTP API.
+    \item \textbf{UDP (User Datagram Protocol):} Protokół bezpołączeniowy o niskim narzucie, optymalny dla transmisji czasu rzeczywistego. Stanowi fundament dla protokołu RTP, umożliwiając strumieniowanie wideo przy minimalnych opóźnieniach kosztem dopuszczalnej utraty pojedynczych klatek.
 \end{itemize}
 
-\subparagraph{UDP (User Datagram Protocol)}
-UDP jest protokołem bezpołączeniowym, często określanym jako "best-effort". Nie nawiązuje on formalnej sesji i nie gwarantuje dostarczenia pakietów ani ich prawidłowej kolejności. Po prostu wysyła datagramy do odbiorcy, nie czekając na potwierdzenie. Brak tych mechanizmów kontrolnych sprawia, że UDP ma znacznie mniejszy narzut (mniejsze nagłówki) i charakteryzuje się bardzo niskimi opóźnieniami, co czyni go idealnym do zastosowań czasu rzeczywistego.
-
-W kamerze IP, UDP jest protokołem z wyboru do transportu głównego ładunku – strumienia audio i wideo. W przypadku transmisji na żywo, utrata pojedynczej klatki wideo (jednego lub kilku pakietów) jest zazwyczaj niezauważalna dla ludzkiego oka. Znacznie gorszym doświadczeniem dla użytkownika byłoby zatrzymanie obrazu na kilkaset milisekund w oczekiwaniu na retransmisję utraconego pakietu, co miałoby miejsce przy użyciu TCP. Dlatego strumieniowanie mediów jest realizowane za pomocą protokołu RTP, który niemal zawsze działa na bazie szybkiego, ale zawodnego UDP.
-
-Ta dwoistość architektoniczna jest kluczowa dla zrozumienia działania kamery. Jej oprogramowanie firmware musi jednocześnie zarządzać stabilnymi, niezawodnymi połączeniami TCP dla poleceń i konfiguracji, oraz emitować ciągły, wysokonakładowy strumień datagramów UDP z danymi audiowizualnymi. Efektywne zarządzanie tymi dwoma trybami komunikacji przez procesor SoC jest jednym z głównych wyzwań inżynierskich w projektowaniu wydajnych urządzeń IoT.
+\paragraph{Warstwa Aplikacji}
+Najwyższa warstwa realizująca konkretne funkcje systemowe:
+\begin{itemize}
+    \item \textbf{HTTP API:} Interfejs programistyczny umożliwiający zewnętrznym aplikacjom (np. napisanym w Pythonie) sterowanie kamerą i odczyt jej stanu.
+    \item \textbf{NTP (Network Time Protocol):} Kluczowy dla synchronizacji czasu, co jest niezbędne do prawidłowego generowania znaczników czasu (\textit{timestamps}) w strumieniu wideo oraz logowania zdarzeń o charakterze kryminalistycznym.
+\end{itemize}
 
 \begin{table}[H]
     \centering
-    \caption{Porównanie protokołów TCP i UDP w kontekście kamery IP.}
-    \label{tab:tcp_vs_udp}
+    \caption{Porównanie protokołów transportowych w systemie kamery IP.}
+    \label{tab:tcp_vs_udp_short}
     \begin{tabularx}{\textwidth}{L L L}
         \toprule
-        \textbf{Cecha} & \textbf{Protokół TCP (\textit{Transmission Control Protocol})} & \textbf{Protokół UDP (\textit{User Datagram Protocol})} \\
+        \textbf{Cecha} & \textbf{TCP} & \textbf{UDP (RTP)} \\
         \midrule
-        \textbf{Typ Połączenia} & Połączeniowy (wymaga nawiązania sesji) & Bezpołączeniowy (wysyła dane bez nawiązywania sesji) \\
-        \midrule
-        \textbf{Niezawodność} & Gwarantowana dostawa, kontrola błędów i kolejności & \enquote{Best-effort} (brak gwarancji dostawy i kolejności) \\
-        \midrule
-        \textbf{Prędkość} & Wolniejszy (większy narzut, retransmisje) & Szybszy (minimalny narzut, brak retransmisji) \\
-        \midrule
-        \textbf{Nagłówek} & Większy (20 bajtów) & Mniejszy (8 bajtów) \\
-        \midrule
-        \textbf{Główne Zastosowanie w Kamerze IP} & Sterowanie i konfiguracja (HTTP API), dostęp webowy & Strumieniowanie mediów w czasie rzeczywistym (RTP) \\
+        \textbf{Zastosowanie} & Sterowanie (API), konfiguracja & Strumieniowanie mediów \\
+        \textbf{Zaleta} & Niezawodność i integralność danych & Minimalne opóźnienia (\textit{latency}) \\
+        \textbf{Narzut} & Większy (retransmisje, potwierdzenia) & Minimalny (brak kontroli błędów) \\
         \bottomrule
     \end{tabularx}
 \end{table}
-
-\paragraph{Warstwa Aplikacji (Application Layer): Usługi Sieciowe i Sterowanie}
-Najwyższa warstwa stosu TCP/IP zawiera protokoły, które realizują konkretne funkcje widoczne dla użytkownika i innych systemów. To tutaj logika biznesowa kamery jest wystawiana na zewnątrz w postaci usług sieciowych.
-
-\subparagraph{HTTP API (Application Programming Interface)}
-Wiele kamer IP, zwłaszcza tych przeznaczonych do integracji, udostępnia interfejs programistyczny aplikacji (API) oparty na protokole HTTP. Działa on jak zdalny panel sterowania, umożliwiając autoryzowanym aplikacjom wysyłanie żądań HTTP (np. GET lub POST) do określonych adresów URL na serwerze webowym kamery w celu wykonania akcji lub odczytania stanu. Przykładowo, wysłanie żądania do http://<adres\_ip\_kamery>/api/ptz?action=pan\_left\&speed=50 mogłoby spowodować obrót kamery w lewo z określoną prędkością. Takie API jest kluczowe dla integracji kamery z zewnętrznymi systemami, takimi jak platformy automatyki domowej (np. Home Assistant) czy niestandardowe oprogramowanie do zarządzania wideo. Jest to mechanizm, który projekt opisany w niniejszej pracy inżynierskiej ma na celu wykorzystać do sterowania kamerą Tapo.
-
-\subparagraph{NTP (Network Time Protocol)}
-Choć często pomijany, NTP odgrywa fundamentalną rolę w prawidłowym funkcjonowaniu kamery IP. Jest to protokół służący do synchronizacji wewnętrznego zegara urządzenia z wysoce precyzyjnymi, globalnymi serwerami czasu. Dokładny i zsynchronizowany czas jest niezbędny z kilku powodów:
-\begin{itemize}
-    \item \textbf{Prawidłowe znaczniki czasu (timestamps):} Każda klatka wideo i fragment audio muszą być opatrzone precyzyjnym znacznikiem czasu. Jest to kluczowe dla synchronizacji obrazu z dźwiękiem podczas odtwarzania oraz dla analizy zdarzeń, gdzie dokładna kolejność i czas ich wystąpienia mają znaczenie kryminalistyczne.
-    \item \textbf{Logowanie zdarzeń:} Wszelkie zdarzenia systemowe, takie jak wykrycie ruchu, utrata połączenia czy próby logowania, są zapisywane w logach systemowych. Spójny czas we wszystkich logach w sieci jest niezbędny do diagnostyki i analizy bezpieczeństwa.
-    \item \textbf{Bezpieczeństwo:} Wiele mechanizmów bezpieczeństwa, takich jak walidacja certyfikatów cyfrowych (używanych np. w HTTPS), opiera się na sprawdzaniu, czy bieżąca data i godzina mieszczą się w okresie ważności certyfikatu. Błędnie ustawiony zegar mógłby uniemożliwić kamerze nawiązywanie bezpiecznych połączeń.
-\end{itemize}
-Kamera okresowo wysyła zapytania do serwerów NTP, aby skorygować ewentualne dryfowanie swojego wewnętrznego zegara, zapewniając dokładność rzędu milisekund w sieciach lokalnych.
 
 \subsubsection{Provisioning: Inicjalizacja i Uwierzytelnianie Urządzenia}
 Zanim nowa kamera IP stanie się funkcjonalnym i zaufanym elementem sieci, musi przejść przez krytyczny proces zwany provisioningiem. Nie jest to jedynie techniczna konfiguracja, ale fundamentalny proces ustanawiania cyfrowej tożsamości urządzenia i zakotwiczania zaufania, który przekształca anonimowy sprzęt prosto z pudełka w zweryfikowany i bezpieczny węzeł sieciowy.
@@ -402,7 +347,7 @@ Zanim na ekranie klienta pojawi się pierwszy obraz, musi on przeprowadzić z ka
 
 Przebieg negocjacji:
 \begin{enumerate}
-    \item \textbf{DESCRIBE:} Klient (np. odtwarzacz VLC) wysyła do kamery żądanie DESCRIBE, pytając o zawartość dostępną pod danym adresem RTSP (np. \texttt{rtsp://192.168.1.100/stream1}). Kamera odpowiada, wysyłając opis w formacie SDP (Session Description Protocol), który informuje klienta, że dostępne są dwa strumienie: jeden wideo (zakodowany w H.264) i jeden audio (zakodowany w AAC).
+    \item \textbf{DESCRIBE:} Klient wysyła do kamery żądanie DESCRIBE, pytając o zawartość dostępną pod danym adresem RTSP (np. \texttt{rtsp://192.168.1.100/stream1}). Kamera odpowiada, wysyłając opis w formacie SDP (Session Description Protocol), który informuje klienta, że dostępne są dwa strumienie: jeden wideo (zakodowany w H.264) i jeden audio (zakodowany w AAC).
     \item \textbf{SETUP:} Klient, chcąc odbierać oba strumienie, wysyła dwa osobne żądania SETUP – jedno dla strumienia wideo i jedno dla audio. W każdym żądaniu SETUP klient podaje kamerze numery portów, na których będzie nasłuchiwał na przychodzące pakiety RTP (z danymi) oraz RTCP (z informacjami kontrolnymi).
     \item \textbf{PLAY:} Po pomyślnym skonfigurowaniu obu strumieni, klient wysyła jedno polecenie PLAY. Jest to sygnał dla kamery, aby rozpoczęła wysyłanie pakietów RTP z danymi wideo i audio na porty wskazane przez klienta w krokach SETUP. Od tego momentu rozpoczyna się właściwe strumieniowanie.
 \end{enumerate}

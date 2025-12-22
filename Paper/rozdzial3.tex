@@ -1230,3 +1230,19 @@ def load_config():
 
 \subsection{Podsumowanie}
 \label{subsec:podsumowanie_roz3}
+
+W niniejszym rozdziale przedstawiono kompletny \textbf{proces projektowy i implementacyjny} autorskiego systemu nadzoru wizyjnego, stanowiącego otwartą alternatywę dla zamkniętego ekosystemu TP-Link. Prace rozpoczęto od przyjęcia metodyki \textbf{\textit{Double Diamond}}, która pozwoliła na precyzyjne zdefiniowanie wymagań architektonicznych, a następnie na dobór optymalnego stosu technologicznego opartego na języku \textbf{Python 3.13}, bibliotece \textbf{OpenCV} oraz \textbf{konteneryzacji Docker}.
+
+Kluczowym osiągnięciem inżynierskim opisanym w tej części pracy jest \textbf{skuteczna integracja warstwy sprzętowej} kamery Tapo C200 z aplikacją webową, pomimo ograniczeń narzucanych przez producenta (zjawisko \textit{vendor lock-in}). Zrealizowano to poprzez zaprojektowanie \textbf{trójwarstwowej architektury systemu}, w której: 
+
+\begin{itemize}
+    \item \textbf{Warstwa Abstrakcji Sprzętu (\textit{HAL})} skutecznie izoluje logikę aplikacji od specyfiki protokołów \textit{RTSP} i własnościowego \textit{API} sterującego, wykorzystując \textbf{inżynierię wsteczną} do obsługi funkcji \textit{PTZ}.
+    \item \textbf{Warstwa Logiki (\textit{Middleware})} realizuje zaawansowane przetwarzanie sygnałów w czasie rzeczywistym.
+    \begin{itemize}
+        \item Dzięki zastosowaniu architektury potokowej (\textit{Pipe and Filter}) oraz hybrydowemu podejściu do obsługi multimediów (\textit{OpenCV} dla wideo, \textit{PyAV} dla audio), rozwiązano problemy \textbf{synchronizacji A/V} oraz \textbf{kompensacji opóźnień sieciowych} (\textit{Jitter Buffer}).
+        \item Zaimplementowano również autorski algorytm \textbf{detekcji ruchu} działający na \textbf{brzegu sieci} (\textit{Edge Computing}), uniezależniając system od chmury obliczeniowej.
+    \end{itemize}
+    \item \textbf{Warstwa Prezentacji} zapewnia interaktywność i niski czas reakcji dzięki wykorzystaniu protokołu \textbf{WebSocket} oraz renderowaniu obrazu na elemencie \textbf{HTML5 Canvas}, co eliminuje narzut typowy dla klasycznych odtwarzaczy wideo.
+\end{itemize}
+
+Całość rozwiązania została \textbf{zhermetyzowana w kontenerze Docker}, co gwarantuje powtarzalność środowiska uruchomieniowego i łatwość wdrożenia. Opisany proces implementacji doprowadził do powstania funkcjonalnego artefaktu programistycznego, gotowego do empirycznej weryfikacji. Kolejny rozdział poświęcony zostanie \textbf{testom wydajnościowym} oraz analizie jakościowej tak przygotowanego rozwiązania.

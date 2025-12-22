@@ -1,41 +1,41 @@
-\section{Testowanie i Analiza wyników}
-\label{sec:testowanie}
-Wstęp: Ten rozdzial ma na celu:
-- przetestowanie  jak dziala rozwiazanie które zbudowalem 
-- wyciagniecie wnioskow z tego co mozna zrobic lepiej
-Oraz synterza z poprzednia cześcią pracy.  
+ \section{Testowanie i Analiza wyników}
+% \label{sec:testowanie}
+% Wstęp: Ten rozdzial ma na celu:
+% - przetestowanie  jak dziala rozwiazanie które zbudowalem 
+% - wyciagniecie wnioskow z tego co mozna zrobic lepiej
+% Oraz synterza z poprzednia cześcią pracy.  
 
-\subsection{Zakres Testów}
-\label{subsec:zakres_testow}
-Opis metodologii testowania funkcjonalności PTZ, streamingu, detekcji ruchu i nagrywania.
-Umożliwienie stabilnego \textbf{wyświetlania obrazu w czasie rzeczywistym} w medium. Weryfikacja nastąpi poprzez pomiar \textbf{opóźnienia strumienia wideo ($Latency$)} oraz wskaźnika \textbf{klatek na sekundę (FPS)}, celem osiągnięcia płynności monitoringu.
-Testy jednostkowe:
-- dlugosc nagrania ile zabiera ramu 
-- czy PTZ wykrwa blokade 
-- 
+% \subsection{Zakres Testów}
+% \label{subsec:zakres_testow}
+% Opis metodologii testowania funkcjonalności PTZ, streamingu, detekcji ruchu i nagrywania.
+% Umożliwienie stabilnego \textbf{wyświetlania obrazu w czasie rzeczywistym} w medium. Weryfikacja nastąpi poprzez pomiar \textbf{opóźnienia strumienia wideo ($Latency$)} oraz wskaźnika \textbf{klatek na sekundę (FPS)}, celem osiągnięcia płynności monitoringu.
+% Testy jednostkowe:
+% - dlugosc nagrania ile zabiera ramu 
+% - czy PTZ wykrwa blokade 
+% - 
 
-- czy nagrania sie zapisuja
-Testy empiryczne:
-- Czy live preview dziala
-- Czy mozna oddtworzyc zapiasne nagranie 
-- czy dziala PTZ 
-- zmiana stanu na motion detected  
-Weryfikacja nastąpi poprzez analizę \textbf{efektywności algorytmów} mierzoną w kategoriach czasu przetwarzania klatki oraz minimalizacji błędów detekcji.
+% - czy nagrania sie zapisuja
+% Testy empiryczne:
+% - Czy live preview dziala
+% - Czy mozna oddtworzyc zapiasne nagranie 
+% - czy dziala PTZ 
+% - zmiana stanu na motion detected  
+% Weryfikacja nastąpi poprzez analizę \textbf{efektywności algorytmów} mierzoną w kategoriach czasu przetwarzania klatki oraz minimalizacji błędów detekcji.
 
-\subsection{Środowisko Testowe}
-\label{subsec:srodowisko_testowe}
-Docker kamera tplink tapo c200 laptop 
+% \subsection{Środowisko Testowe}
+% \label{subsec:srodowisko_testowe}
+% Docker kamera tplink tapo c200 laptop 
 
-Specyfikacja sprzętu (np. Raspberry Pi lub PC hostujący Docker), wersji oprogramowania i konfiguracji sieciowej.
+% Specyfikacja sprzętu (np. Raspberry Pi lub PC hostujący Docker), wersji oprogramowania i konfiguracji sieciowej.
 
-\subsection{Wyniki testów i Analiza}
-\label{subsec:wyniki_i_analiza}
-Prezentacja kluczowych metryk, w tym:
-\begin{itemize}
-    \item \textbf{Opóźnienie (Latency):} Porównanie opóźnień strumienia RTSP przetworzonego przez Flask/WebSockets z oficjalną aplikacją.
-    \item \textbf{Skuteczność Detekcji Ruchu:} Wyniki testów algorytmu OpenCV (np. metryki True Positive Rate, False Positive Rate).
-    \item \textbf{Wydajność Systemu:} Obciążenie procesora hosta w warunkach ciągłego streamingu i detekcji.
-\end{itemize}
+% \subsection{Wyniki testów i Analiza}
+% \label{subsec:wyniki_i_analiza}
+% Prezentacja kluczowych metryk, w tym:
+% \begin{itemize}
+%     \item \textbf{Opóźnienie (Latency):} Porównanie opóźnień strumienia RTSP przetworzonego przez Flask/WebSockets z oficjalną aplikacją.
+%     \item \textbf{Skuteczność Detekcji Ruchu:} Wyniki testów algorytmu OpenCV (np. metryki True Positive Rate, False Positive Rate).
+%     \item \textbf{Wydajność Systemu:} Obciążenie procesora hosta w warunkach ciągłego streamingu i detekcji.
+% \end{itemize}
 
-\subsection{Podsumowanie}
-\label{subsec:podsumowanie_roz4}
+% \subsection{Podsumowanie}
+% \label{subsec:podsumowanie_roz4}
