@@ -5,14 +5,14 @@
 % - wyciagniecie wnioskow z tego co mozna zrobic lepiej
 % Oraz synterza z poprzednia cześcią pracy.  
 
-% \subsection{Zakres Testów}
-% \label{subsec:zakres_testow}
-% Opis metodologii testowania funkcjonalności PTZ, streamingu, detekcji ruchu i nagrywania.
-% Umożliwienie stabilnego \textbf{wyświetlania obrazu w czasie rzeczywistym} w medium. Weryfikacja nastąpi poprzez pomiar \textbf{opóźnienia strumienia wideo ($Latency$)} oraz wskaźnika \textbf{klatek na sekundę (FPS)}, celem osiągnięcia płynności monitoringu.
-% Testy jednostkowe:
-% - dlugosc nagrania ile zabiera ramu 
-% - czy PTZ wykrwa blokade 
-% - 
+\subsection{Zakres Testów}
+\label{subsec:zakres_testow}
+Opis metodologii testowania funkcjonalności PTZ, streamingu, detekcji ruchu i nagrywania.
+Umożliwienie stabilnego wyświetlania obrazu w czasie rzeczywistym. Weryfikacja nastąpi poprzez pomiar opóźnienia strumienia wideo oraz wskaźnika klatek na sekundę, celem osiągnięcia płynności monitoringu.
+Testy jednostkowe:
+- dlugosc nagrania ile zabiera ramu 
+- czy PTZ wykrwa blokade 
+- 
 
 % - czy nagrania sie zapisuja
 % Testy empiryczne:
@@ -36,6 +36,35 @@
 %     \item \textbf{Skuteczność Detekcji Ruchu:} Wyniki testów algorytmu OpenCV (np. metryki True Positive Rate, False Positive Rate).
 %     \item \textbf{Wydajność Systemu:} Obciążenie procesora hosta w warunkach ciągłego streamingu i detekcji.
 % \end{itemize}
+\subsection{Wyniki testów i Analiza}
+\label{subsec:wyniki_i_analiza}
+
+W celu kwantyfikacji wydajności oraz stabilności zaimplementowanego systemu, przeprowadzono serię testów, których zagregowane wyniki przedstawiono we wcześniejszej tabeli. Analiza objęła trzy fundamentalne aspekty: wydajność algorytmu detekcji ruchu, rzeczywistą płynność i stabilność strumienia wideo, oraz zachowanie systemu w kontekście zarządzania pamięcią.
+
+\subsubsection*{Analiza wydajności detekcji ruchu (Test T01)}
+Test wydajności komponentu analitycznego wykazał, że średni czas potrzebny na przetworzenie klatki 1080p przez algorytm detekcji ruchu wynosi \textbf{65.1 ms}. Implikuje to teoretyczną, maksymalną przepustowość na poziomie około \textbf{15.36 FPS}, identyfikując ten proces jako potencjalne ,,wąskie gardło'' w scenariuszach wymagających analizy z wysoką płynnością.
+
+\subsubsection*{Analiza rzeczywistej wydajności i stabilności streamingu (Test T02, T02.1, T02.2)}
+W celu uzyskania wiarygodnych danych, test wydajności streamingu na żywo przeprowadzono wielokrotnie, zbierając łącznie \textbf{347 próbek} w docelowym środowisku kontenerowym. Uśredniona wydajność systemu wyniosła \textbf{15.70 FPS}, co zapewnia płynne doświadczenie dla użytkownika końcowego. Co ważniejsze, obliczone odchylenie standardowe na poziomie zaledwie \textbf{1.57 FPS} ilościowo potwierdza wysoką ogólną stabilność strumienia.
+Jednakże, podczas testów zaobserwowano również istotne zdarzenia rzadkie. Wystąpiły sporadyczne spadki wydajności do zaledwie \textbf{10 FPS}, które były skorelowane z pojawianiem się w logach systemowych błędów dekodera H.264 (np. \texttt{error while decoding MB}) oraz nieobsłużonych wyjątków prowadzących do zamknięcia procesu (\texttt{terminate called without an active exception}). Obserwacje te sugerują, że chociaż system jest generalnie stabilny, mogą w nim występować chwilowe problemy z integralnością danych w strumieniu RTSP, co prowadzi do błędów w niższej warstwie przetwarzania wideo. Jest to kluczowy wniosek wskazujący na potencjalne obszary dalszego rozwoju, takie jak implementacja mechanizmów odporności na błędy (fault tolerance).
+
+\subsubsection*{Analiza zużycia pamięci RAM (Test T03)}
+Test symulujący proces nagrywania wideo ujawnił krytyczną cechę architektury modułu zapisu. Zaobserwowano liniowy przyrost zużycia pamięci operacyjnej w tempie około \textbf{148.3 MB na sekundę}. Wynik ten jednoznacznie potwierdza, że mechanizm buforowania klatek w pamięci RAM jest nieskalowalny. Wnioskiem inżynierskim jest tu konieczność refaktoryzacji modułu zapisu w celu implementacji mechanizmu zapisu strumieniowego bezpośrednio na dysk (ang. \textit{stream-to-disk}), co pozwoli na realizację długotrwałych nagrań przy zachowaniu stałego, niskiego zużycia zasobów.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Sources/wykres_stabilnosci_fps_aktualizacja.png}
+    \caption{Wykres stabilności FPS z N=347 próbek (Test T02).}
+    \label{fig:fps_stability}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Sources/wykres_zuzycia_ram.png}
+    \caption{Wykres liniowego wzrostu zużycia pamięci RAM (Test T03).}
+    \label{fig:ram_usage}
+\end{figure}
+
 
 % \subsection{Podsumowanie}
 % \label{subsec:podsumowanie_roz4}

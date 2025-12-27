@@ -1,6 +1,7 @@
 import threading
 import cv2
 import base64
+import time
 import app.shared as shared
 from app.detection.motion import MotionDetector 
 
@@ -10,6 +11,8 @@ class VideoStreamer:
         self.socketio = socketio
         self.is_running = False
         self.thread = None
+        self.fps_counter = 0 
+        self.last_fps_time = time.time()
         
         self.detector = MotionDetector(min_area=1000)
         self.motion_active = False 
@@ -40,7 +43,15 @@ class VideoStreamer:
                     self.motion_active = is_motion
                     self.socketio.emit('motion_status', {'motion': self.motion_active})
                 # --------------------------
-                
+
+                # --- POMIAR FPS ---
+                self.fps_counter += 1
+                if time.time() - self.last_fps_time >= 1.0:
+                    print(f"[DATA_POINT] Metric=FPS Value={self.fps_counter} Timestamp={time.time()}")
+                    self.fps_counter = 0
+                    self.last_fps_time = time.time()
+
+
                 # 3. Resize for Web
                 web_frame = cv2.resize(raw_frame, (1000, 562))
 
