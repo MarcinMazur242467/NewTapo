@@ -77,19 +77,19 @@ This Python application integrates with TP-Link Tapo cameras, allowing users to 
 
 ## Installation
 
-    Clone repository:
-    ```
+   Clone repository:
+    
     git clone https://github.com/MarcinMazur242467/Tapo-Camera
-    ```
     
-    Build the Docker image:
     
-    ```
+   Build the Docker image:
+    
+    
     docker build -t tapo-camera .
-    ```
+    
 
-    Run the container:
-    ```
+Run the container:
+    
         docker run --rm -p 5000:5000 \
     -e CAMERA_IP="192.168.x.x" \
     -e CAMERA_USER="your_camera_username" \
@@ -97,12 +97,11 @@ This Python application integrates with TP-Link Tapo cameras, allowing users to 
     -e CAMERA_CPASS="your_cloud_password" \
     --name tapo-camera-app \
     tapo-camera
-    ```
+    
 
-    Access the web interface at:
-    ```
+Access the web interface at:
+    
     http://localhost:5000
-    ```
 
 ## 🛠️ Built With
 

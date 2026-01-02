@@ -187,14 +187,6 @@ Gdzie:
 
 \subsection{Wnioski i Analiza}
 \label{subsec:wnioski_z_testów}
-Głównym celem niniejszej sekcji jest interpretacja zależności pomiędzy zastosowanym stosem technologicznym (Python, OpenCV, Docker) a rzeczywistą wydajnością bramy IoT działającej w trybie czasu rzeczywistego.
-
-Wnioskowanie opiera się na konfrontacji teoretycznych założeń projektowych z fizycznymi ograniczeniami medium transmisyjnego oraz zasobami sprzętowymi hosta. Kluczowym aspektem analizy jest ocena, czy narzut obliczeniowy wprowadzony przez warstwy abstrakcji programowej (ang. \textit{Middleware}) mieści się w granicach akceptowalności dla systemów bezpieczeństwa, które wymagają wysokiej responsywności.
-
-Poniższa dyskusja weryfikuje również, czy osiągnięte parametry opóźnień (ang. \textit{latency}) oraz stabilności detekcji pozwalają na uznanie rozwiązania \textbf{Open Source} za pełnoprawną alternatywę dla ekosystemu chmurowego producenta, w kontekście wyzwań stawianych systemom strumieniowania wideo o niskim opóźnieniu.
-
-Analiza została podzielona na trzy kluczowe obszary, odpowiadające przeprowadzonym scenariuszom testowym: wydajność algorytmów brzegowych, jakość transmisji, zarządzanie pamięcią operacyjną.
-
 \subsubsection{Analiza wydajności algorytmu detekcji ruchu (Wnioski z testu T01)}
 \label{subsubsec:wnioski_t01}
 
@@ -255,7 +247,7 @@ Mimo dysponowania stacją roboczą wyposażoną w ponad 15 GB pamięci RAM, stab
 Zidentyfikowano główną przyczynę problemu wydajnościowego, którą jest przechowywanie w pamięci „surowych” klatek obrazu (bitmap w formacie BGR/RGB). Brak implementacji kompresji strumieniowej (np. potokowego kodowania do H.264 w locie) sprawia, że dane buforowane w RAM zajmują setki razy więcej miejsca niż wynikowy, skompresowany plik wideo zapisywany ostatecznie na dysku. Wskazuje to na konieczność zmiany architektury modułu \texttt{Recorder} w przyszłych iteracjach projektu, np. poprzez bezpośrednie przekazywanie strumienia do procesu kodującego (ang. \textit{FFmpeg pipe}).
 
 
-\subsection{Synteza wniosków badawczych}
+\subsection{Synteza wniosków}
 \label{subsubsec:synteza_wnioskow}
 
 Przeprowadzone w niniejszym rozdziale badania wydajnościowe oraz testy weryfikacyjne (T01–T03) pozwoliły na empiryczną ocenę stopnia realizacji celu głównego pracy, jakim było stworzenie niezależnego systemu monitoringu opartego na rozwiązaniach \textbf{Open Source}. Analiza wyników umożliwiła również identyfikację kluczowych ograniczeń technologicznych zaprojektowanego rozwiązania.
