@@ -1,70 +1,288 @@
- \section{Testowanie i Analiza wyników}
-% \label{sec:testowanie}
-% Wstęp: Ten rozdzial ma na celu:
-% - przetestowanie  jak dziala rozwiazanie które zbudowalem 
-% - wyciagniecie wnioskow z tego co mozna zrobic lepiej
-% Oraz synterza z poprzednia cześcią pracy.  
+\section{Testowanie i Analiza wyników}
+\label{sec:testowanie_i_analiza}
 
-\subsection{Zakres Testów}
-\label{subsec:zakres_testow}
-Opis metodologii testowania funkcjonalności PTZ, streamingu, detekcji ruchu i nagrywania.
-Umożliwienie stabilnego wyświetlania obrazu w czasie rzeczywistym. Weryfikacja nastąpi poprzez pomiar opóźnienia strumienia wideo oraz wskaźnika klatek na sekundę, celem osiągnięcia płynności monitoringu.
-Testy jednostkowe:
-- dlugosc nagrania ile zabiera ramu 
-- czy PTZ wykrwa blokade 
-- 
+Niniejszy rozdział stanowi kluczowy etap weryfikacji opracowanego rozwiązania programistycznego. Po fazie projektowania i implementacji, niezbędne jest poddanie systemu rygorystycznym testom, które pozwolą ocenić stopień realizacji postawionych celów inżynierskich. 
+Głównym założeniem niniejszej części pracy jest nie tylko potwierdzenie poprawności działania poszczególnych modułów, ale przede wszystkim uzyskanie pogłębionej wiedzy na temat charakterystyki operacyjnej systemu w warunkach rzeczywistych.Proces testowania został zaprojektowany tak, aby zidentyfikować potencjalne ograniczenia wydajnościowe oraz słabe punkty tzw. \textbf{„wąskie gardła”} zbudowanego systemu. 
+W systemach \textbf{Internetu Rzeczy (IoT)} przetwarzających multimedia w czasie rzeczywistym, krytyczne znaczenie ma balans pomiędzy jakością obrazu, opóźnieniem transmisji (\textbf{latency}) a zużyciem zasobów sprzętowych hosta. 
+Analiza uzyskanych wyników pozwoli na sformułowanie konkretnych wniosków optymalizacyjnych, które mogą posłużyć jako fundament dla przyszłego rozwoju oprogramowania, dążącego do zwiększenia jego skalowalności i odporności na błędy.
 
-% - czy nagrania sie zapisuja
-% Testy empiryczne:
-% - Czy live preview dziala
-% - Czy mozna oddtworzyc zapiasne nagranie 
-% - czy dziala PTZ 
-% - zmiana stanu na motion detected  
-% Weryfikacja nastąpi poprzez analizę \textbf{efektywności algorytmów} mierzoną w kategoriach czasu przetwarzania klatki oraz minimalizacji błędów detekcji.
+W ramach przeprowadzonych badań zweryfikowano następujące obszary funkcjonalne:
 
-% \subsection{Środowisko Testowe}
-% \label{subsec:srodowisko_testowe}
-% Docker kamera tplink tapo c200 laptop 
+\begin{enumerate}
+    \item \textbf{Stabilność i płynność strumieniowania:} weryfikacja transmisji video.
+    \item \textbf{Efektywność algorytmu detekcji ruchu:} analiza procesu realizowanego na brzegu sieci (\textbf{edge processing}).
+    \item \textbf{Wpływ rejestracji na zasoby:} badanie obciążenia pamięci operacyjnej systemu podczas zapisu materiału wideo.
+\end{enumerate}
 
-% Specyfikacja sprzętu (np. Raspberry Pi lub PC hostujący Docker), wersji oprogramowania i konfiguracji sieciowej.
 
-% \subsection{Wyniki testów i Analiza}
-% \label{subsec:wyniki_i_analiza}
-% Prezentacja kluczowych metryk, w tym:
-% \begin{itemize}
-%     \item \textbf{Opóźnienie (Latency):} Porównanie opóźnień strumienia RTSP przetworzonego przez Flask/WebSockets z oficjalną aplikacją.
-%     \item \textbf{Skuteczność Detekcji Ruchu:} Wyniki testów algorytmu OpenCV (np. metryki True Positive Rate, False Positive Rate).
-%     \item \textbf{Wydajność Systemu:} Obciążenie procesora hosta w warunkach ciągłego streamingu i detekcji.
-% \end{itemize}
-\subsection{Wyniki testów i Analiza}
-\label{subsec:wyniki_i_analiza}
 
-W celu kwantyfikacji wydajności oraz stabilności zaimplementowanego systemu, przeprowadzono serię testów, których zagregowane wyniki przedstawiono we wcześniejszej tabeli. Analiza objęła trzy fundamentalne aspekty: wydajność algorytmu detekcji ruchu, rzeczywistą płynność i stabilność strumienia wideo, oraz zachowanie systemu w kontekście zarządzania pamięcią.
+Poprzez kwantyfikację tych parametrów, możliwe będzie obiektywne stwierdzenie, w jakim stopniu autorskie rozwiązanie oparte na oprogramowaniu \textbf{Open Source} stanowi skuteczną i bezpieczną alternatywę dla zamkniętego ekosystemu producenta.
 
-\subsubsection*{Analiza wydajności detekcji ruchu (Test T01)}
-Test wydajności komponentu analitycznego wykazał, że średni czas potrzebny na przetworzenie klatki 1080p przez algorytm detekcji ruchu wynosi \textbf{65.1 ms}. Implikuje to teoretyczną, maksymalną przepustowość na poziomie około \textbf{15.36 FPS}, identyfikując ten proces jako potencjalne ,,wąskie gardło'' w scenariuszach wymagających analizy z wysoką płynnością.
+\subsection{Środowisko Testowe}
+\label{subsec:srodowisko_testowe}
 
-\subsubsection*{Analiza rzeczywistej wydajności i stabilności streamingu (Test T02, T02.1, T02.2)}
-W celu uzyskania wiarygodnych danych, test wydajności streamingu na żywo przeprowadzono wielokrotnie, zbierając łącznie \textbf{347 próbek} w docelowym środowisku kontenerowym. Uśredniona wydajność systemu wyniosła \textbf{15.70 FPS}, co zapewnia płynne doświadczenie dla użytkownika końcowego. Co ważniejsze, obliczone odchylenie standardowe na poziomie zaledwie \textbf{1.57 FPS} ilościowo potwierdza wysoką ogólną stabilność strumienia.
-Jednakże, podczas testów zaobserwowano również istotne zdarzenia rzadkie. Wystąpiły sporadyczne spadki wydajności do zaledwie \textbf{10 FPS}, które były skorelowane z pojawianiem się w logach systemowych błędów dekodera H.264 (np. \texttt{error while decoding MB}) oraz nieobsłużonych wyjątków prowadzących do zamknięcia procesu (\texttt{terminate called without an active exception}). Obserwacje te sugerują, że chociaż system jest generalnie stabilny, mogą w nim występować chwilowe problemy z integralnością danych w strumieniu RTSP, co prowadzi do błędów w niższej warstwie przetwarzania wideo. Jest to kluczowy wniosek wskazujący na potencjalne obszary dalszego rozwoju, takie jak implementacja mechanizmów odporności na błędy (fault tolerance).
+W celu weryfikacji wydajności potoków multimedialnych oraz stabilności sterowania PTZ, przygotowano dedykowane środowisko badawcze. 
+System uruchomiono na stacji roboczej pełniącej rolę bramy IoT (Gateway), komunikującej się z kamerą wewnątrz odizolowanej sieci lokalnej.
 
-\subsubsection*{Analiza zużycia pamięci RAM (Test T03)}
-Test symulujący proces nagrywania wideo ujawnił krytyczną cechę architektury modułu zapisu. Zaobserwowano liniowy przyrost zużycia pamięci operacyjnej w tempie około \textbf{148.3 MB na sekundę}. Wynik ten jednoznacznie potwierdza, że mechanizm buforowania klatek w pamięci RAM jest nieskalowalny. Wnioskiem inżynierskim jest tu konieczność refaktoryzacji modułu zapisu w celu implementacji mechanizmu zapisu strumieniowego bezpośrednio na dysk (ang. \textit{stream-to-disk}), co pozwoli na realizację długotrwałych nagrań przy zachowaniu stałego, niskiego zużycia zasobów.
+\subsubsection*{Infrastruktura sprzętowa i systemowa (Host)}
+\label{subsubsec:host}
 
-\begin{figure}[h!]
+Głównym węzłem obliczeniowym, na którym uruchomiono konteneryzowaną aplikację, był komputer o następującej specyfikacji:
+
+\begin{table}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{Sources/wykres_stabilnosci_fps_aktualizacja.png}
-    \caption{Wykres stabilności FPS z N=347 próbek (Test T02).}
-    \label{fig:fps_stability}
-\end{figure}
+    \caption{Specyfikacja techniczna stacji roboczej (Host).}
+    \label{tab:specyfikacja_hosta}
+    \begin{tabularx}{\textwidth}{
+        >{\RaggedRight\hsize=0.6\hsize}X 
+        >{\RaggedRight\hsize=1.4\hsize}X 
+    }
+        \toprule
+        \textbf{Komponent} & \textbf{Parametry} \\
+        \midrule
+        Procesor (CPU) & 11th Gen Intel Core i7-11370H @ 4.8 GHz \\
+        \midrule
+        Pamięć RAM & 15.37 GiB \\
+        \midrule
+        Pamięć masowa & 474.92 GiB (system plików btrfs) \\
+        \midrule
+        System operacyjny & Arch Linux (Kernel 6.17.9-arch1-1) \\
+        \midrule
+        Architektura & x86\_64 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.9\textwidth]{Sources/wykres_zuzycia_ram.png}
-    \caption{Wykres liniowego wzrostu zużycia pamięci RAM (Test T03).}
-    \label{fig:ram_usage}
-\end{figure}
+\subsubsection*{Urządzenie końcowe i runtime}
+\label{subsubsec:urzadzenie_runtime}
+
+Do testów wykorzystano kamerę \textbf{TP-Link Tapo C200} (Firmware 1.3.1) skonfigurowaną w rozdzielczości \textbf{Full HD (1080p)} przy 30 FPS.
+Rozwiązanie zostało w pełni odizolowane od systemu operacyjnego poprzez stos technologiczny:
+
+\begin{itemize}
+    \item \textbf{Konteneryzacja:} Docker Engine (izolacja procesów).
+    \item \textbf{Interpreter:} Python 3.13.
+    \item \textbf{Zarządzanie pakietami:} Narzędzie \textit{uv} zapewniające determinizm bibliotek.
+\end{itemize}
+
+\subsubsection*{Parametry sieciowe}
+\label{subsubsec:siec}
+
+Testy przeprowadzono w stabilnej sieci bezprzewodowej LAN, aby zminimalizować błędy transmisji:
+\begin{itemize}
+    \item \textbf{Siła sygnału:} -45 dBm (bardzo dobra).
+    \item \textbf{Opóźnienie (RTT):} Średnio 3 ms do urządzenia.
+\end{itemize}
+
+\subsection{Przebieg scenariuszy testowych}
+\label{subsec:przebieg_testów}
+Poniżej przedstawiono szczegółowy opis procedur badawczych oraz uzyskane parametry techniczne dla poszczególnych modułów systemu.
+
+\subsubsection{Test T01: Analiza wydajności algorytmu detekcji ruchu }
+\label{subsubsec:test_t01}
+
+Celem pierwszego scenariusza testowego była weryfikacja charakterystyki wydajnościowej modułu \texttt{MotionDetector}. 
+Badanie miało dowieść, czy zaprojektowany algorytm analizy obrazu jest w stanie pracować w czasie rzeczywistym przy pełnej rozdzielczości sensora kamery Tapo C200.
+
+\paragraph*{Metodologia i przebieg badania}
+Test został przeprowadzony w kontrolowanym środowisku wykonawczym przy użyciu dedykowanego skryptu benchmarkowego. Procedura badawcza obejmowała następujące etapy:
+
+\begin{enumerate}
+    \item \textbf{Inicjalizacja środowiska:} Detektor ruchu został skonfigurowany z progiem czułości \texttt{min\_area=1000}, co odpowiada założeniom projektowym minimalizacji fałszywych alarmów.
+    \item \textbf{Faza stabilizacji:} Wykonano 10 iteracji rozgrzewkowych w celu ustabilizowania zasobów procesora oraz załadowania bibliotek OpenCV do pamięci podręcznej.
+    \item \textbf{Generowanie obciążenia:} Przeprowadzono 500 iteracji testowych na klatce o rozdzielczości \textbf{1080p} (1920x1080 px).
+    \item \textbf{Symulacja warunków rzeczywistych:} Do każdej klatki dodawano losowy szum cyfrowy (zakres 0–50) przy użyciu funkcji \texttt{cv2.add}, aby wymusić pełną ścieżkę obliczeniową algorytmu.
+\end{enumerate}
+
+\paragraph* {Jednostki i wyniki parametrów pomiarowych}
+W trakcie testu monitorowano dwa kluczowe wskaźniki inżynierskie:
 
 
-% \subsection{Podsumowanie}
-% \label{subsec:podsumowanie_roz4}
+
+\begin{itemize}
+    \item \textbf{Średni czas przetwarzania klatki ($t_{avg}$):} Wyrażony w milisekundach (ms), określa czas pełnego potoku analizy.
+    \begin{itemize}
+        \item Wynik: \textbf{65,1 ms}.
+    \end{itemize}
+    \item \textbf{Teoretyczna maksymalna wydajność ($FPS_{theor}$):} Obliczana jako odwrotność średniego czasu przetwarzania: $$FPS_{theor} = \frac{1}{t_{avg}}$$
+    \begin{itemize}
+        \item Wynik: \textbf{$\approx$15,36 FPS}.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Test T02: Stabilność i płynność strumieniowania wideo}
+\label{subsubsec:test_t02}
+
+Drugi scenariusz testowy koncentrował się na weryfikacji jakości transmisji obrazu w czasie rzeczywistym. Badanie zostało podzielone na dwa odrębne etapy: ocenę stabilności liczby wyświetlanych klatek na sekundę oraz pomiar całkowitego opóźnienia przesyłu danych od sensora do interfejsu użytkownika.
+
+\subsubsection*{Podtest A: Wydajność klatkowa i stabilność (FPS)}
+Celem badania było określenie końcowej przepustowości wizualnej systemu, uwzględniającej pełny potok przetwarzania: od przechwycenia strumienia RTSP, poprzez dekodowanie i skalowanie na serwerze, aż po renderowanie na płótnie HTML5 Canvas w przeglądarce klienta.
+
+\paragraph*{Metodologia i przebieg badania}
+Procedura testowa wymagała modyfikacji kodu źródłowego aplikacji w celu zaimplementowania mechanizmów logowania parametrów czasowych każdej wyrenderowanej klatki.
+\begin{enumerate}
+    \item Aplikacja została poddana trzem seriom pomiarowym, z których każda trwała 30 sekund.
+    \item Pomiędzy seriami następował restart systemu, co pozwoliło na wyeliminowanie wpływu ewentualnej fragmentacji pamięci lub przepełnienia buforów na wyniki końcowe.
+    \item Łącznie zgromadzono \textbf{347 próbek} danych pomiarowych.
+\end{enumerate}
+
+\paragraph*{Mierzone parametry i wyniki}
+W trakcie testu monitorowano chwilową wartość klatek na sekundę (FPS). Uzyskane dane statystyczne przedstawiają się następująco:
+\begin{itemize}
+    \item \textbf{Średnia wartość FPS:} 15,70.
+    \item \textbf{Odchylenie standardowe:} 1,57 FPS.
+    \item \textbf{Wartości krytyczne:} Odnotowano sporadyczne spadki płynności do poziomu 10 FPS.
+\end{itemize}
+
+W trakcie monitorowania logów systemowych zaobserwowano, że spadki wydajności występowały synchronicznie z błędami zgłaszanymi przez dekoder strumienia H.264 (np. \texttt{error while decoding MB}), co wskazuje na okresowe problemy z integralnością danych w warstwie transportowej.
+
+\subsubsection*{Podtest B: Opóźnienie przesyłu (End-to-End Latency)}
+Badanie opóźnienia miało na celu określenie całkowitego czasu potrzebnego na przejście informacji wizualnej przez wszystkie warstwy architektury rozwiązania.
+
+\paragraph*{Metodologia i przebieg badania} 
+Do realizacji pomiaru wykorzystano metodę porównawczą z użyciem wzorcowego źródła czasu.
+\begin{enumerate}
+    \item Kamera została skierowana na ekran monitora (Ekran nr 1), na którym uruchomiony został stoper cyfrowy o wysokiej precyzji.
+    \item Interfejs webowy projektowanej aplikacji wyświetlany był na drugim monitorze (Ekran nr 2).
+    \item Test polegał na wykonaniu serii zdjęć obu ekranów w tym samym momencie.
+    \item Wartość opóźnienia wyliczano jako bezwzględną różnicę pomiędzy czasem wyświetlanym na stoperze źródłowym a czasem widocznym na podglądzie w aplikacji.
+\end{enumerate}
+
+\paragraph*{Mierzone parametry i wyniki}
+Na podstawie 11 prób kontrolnych wyznaczono charakterystykę opóźnienia systemu:
+\begin{itemize}
+    \item \textbf{Średnie opóźnienie (Mean Latency):} 728 ms.
+    \item \textbf{Wartość minimalna:} 610 ms.
+    \item \textbf{Wartość maksymalna:} 800 ms.
+    \item \textbf{Zmienność opóźnienia (Jitter):} 57 ms.
+\end{itemize}
+
+Uzyskane wyniki pozwalają na ocenę responsywności systemu, co jest kluczowe w kontekście zdalnego sterowania mechaniką PTZ kamery oraz interakcji użytkownika z systemem.
+
+\subsubsection{Test T03: Wpływ procesu rejestracji na zasoby pamięci operacyjnej}
+\label{subsubsec:test_t03}
+
+Ostatni etap testów koncentrował się na analizie obciążenia pamięci RAM podczas procesu zapisu materiału wideo. Badanie to miało na celu zweryfikowanie skalowalności przyjętej architektury nagrywania, opartej na strategii odroczonego zapisu (ang. \textit{Deferred Writing}).
+
+\paragraph*{Metodologia i cel badania}
+Celem testu było określenie wpływu mechanizmu buforowania klatek w pamięci operacyjnej na stabilność systemu. W zaimplementowanym rozwiązaniu, podczas trwania nagrania, surowe dane wizyjne i foniczne są gromadzone w listach systemowych (\texttt{self.video\_frames}, \texttt{self.audio\_chunks}). Operacja zapisu na dysk następuje dopiero po zakończeniu sesji nagrywania. Pomiary przeprowadzono podczas ciągłej sesji rejestracji strumienia o rozdzielczości Full HD.
+
+\paragraph*{Wyniki pomiarów}
+W trakcie badania zaobserwowano bezpośrednią zależność między czasem trwania sesji a zajętością zasobów. Wyniki testu T03 wykazały:
+\begin{itemize}
+    \item \textbf{Charakterystyka wzrostu:} Zaobserwowano liniowy przyrost zużycia pamięci RAM.
+    \item \textbf{Tempo wzrostu:} System rezerwował średnio 148,3 MB na każdą sekundę nagranego materiału.
+\end{itemize}
+
+Zastosowany model matematyczny wzrostu można opisać wzorem:
+\begin{equation}
+    M(t) = a \cdot t
+\end{equation}
+Gdzie:
+\begin{itemize}
+    \item $M$ – całkowita zajętość pamięci przez bufor (MB),
+    \item $t$ – czas trwania nagrania w sekundach,
+    \item $a \approx 148,3$ MB/s – współczynnik przyrostu wynikający z rozmiaru nieskompresowanych klatek w pamięci.
+\end{itemize}
+
+\subsection{Wnioski i Analiza}
+\label{subsec:wnioski_z_testów}
+Głównym celem niniejszej sekcji jest interpretacja zależności pomiędzy zastosowanym stosem technologicznym (Python, OpenCV, Docker) a rzeczywistą wydajnością bramy IoT działającej w trybie czasu rzeczywistego.
+
+Wnioskowanie opiera się na konfrontacji teoretycznych założeń projektowych z fizycznymi ograniczeniami medium transmisyjnego oraz zasobami sprzętowymi hosta. Kluczowym aspektem analizy jest ocena, czy narzut obliczeniowy wprowadzony przez warstwy abstrakcji programowej (ang. \textit{Middleware}) mieści się w granicach akceptowalności dla systemów bezpieczeństwa, które wymagają wysokiej responsywności.
+
+Poniższa dyskusja weryfikuje również, czy osiągnięte parametry opóźnień (ang. \textit{latency}) oraz stabilności detekcji pozwalają na uznanie rozwiązania \textbf{Open Source} za pełnoprawną alternatywę dla ekosystemu chmurowego producenta, w kontekście wyzwań stawianych systemom strumieniowania wideo o niskim opóźnieniu.
+
+Analiza została podzielona na trzy kluczowe obszary, odpowiadające przeprowadzonym scenariuszom testowym: wydajność algorytmów brzegowych, jakość transmisji, zarządzanie pamięcią operacyjną.
+
+\subsubsection{Analiza wydajności algorytmu detekcji ruchu (Wnioski z testu T01)}
+\label{subsubsec:wnioski_t01}
+
+Na podstawie przeprowadzonych pomiarów wydajnościowych sformułowano następujące wnioski dotyczące działania modułu detekcji:
+
+\paragraph*{Potwierdzenie pracy w czasie rzeczywistym}
+Wyniki testów wykazały, że system osiągnął średnią wydajność przetwarzania na poziomie \textbf{15,36 FPS}. Wartość ta przewyższa nominalną prędkość nadawania strumienia przez kamerę, wynoszącą 15 FPS. Oznacza to, że nadrzędny cel inżynierski został spełniony – zaimplementowany algorytm jest w stanie przetwarzać obraz na bieżąco (ang. \textit{on-the-fly}), nie wprowadzając opóźnień w procesie przesyłu wideo, co jest kluczowe dla systemów monitoringu.
+
+\paragraph*{Wysoki koszt obliczeniowy dla rozdzielczości Full HD}
+Zauważono istotne obciążenie zasobów przy pracy z obrazem o wysokiej rozdzielczości. Mimo wykorzystania wydajnej jednostki centralnej (Intel Core i7), zarejestrowany zapas mocy obliczeniowej jest minimalny i wynosi zaledwie \textbf{0,36 FPS} powyżej wymaganego progu płynności. Wskazuje to jednoznacznie, że proces analizy każdej pojedynczej klatki w pełnej rozdzielczości 1920x1080 pikseli jest operacją wysoce wymagającą dla skryptu realizowanego w języku Python.
+
+\paragraph*{Skuteczność symulacji obciążenia granicznego}
+Zastosowana metodyka testowa polegająca na wprowadzaniu sztucznego szumu cyfrowego (z wykorzystaniem funkcji \texttt{cv2.add}) okazała się skuteczna. Zabieg ten wymusił na algorytmie pracę w najtrudniejszych warunkach obliczeniowych. Uzyskany wynik testu można zatem uznać za miarodajny dla scenariusza typu ,,najgorszy przypadek'' (ang. \textit{worst-case scenario}), obejmującego nagłe zmiany oświetlenia lub wystąpienie silnych zakłóceń obrazu.
+
+\paragraph*{Stabilność środowiska konteneryzacji}
+Badanie potwierdziło stabilność działania aplikacji w środowisku wirtualizowanym. Uruchomienie systemu wewnątrz kontenera Docker nie wpłynęło negatywnie na jego niezawodność. Brak błędów wykonawczych (ang. \textit{Runtime Errors}) podczas próby obejmującej 500 iteracji stanowi dowód na to, że przydzielone zasoby są wystarczające do zapewnienia ciągłej pracy detektora w izolowanym środowisku.
+
+\paragraph*{Narzut interpretacyjny języka Python}
+Zidentyfikowano ograniczenia wydajnościowe wynikające z wybranego języka programowania. W celu zwiększenia efektywności algorytmu i uzyskania większego marginesu bezpieczeństwa FPS, rekomendowane jest przeniesienie obliczeń macierzowych na procesor graficzny (GPU/CUDA) lub przepisanie krytycznych sekcji kodu (ang. \textit{hot paths}) do języka kompilowanego, takiego jak C++.
+
+\subsubsection{Analiza stabilności i płynności strumieniowania wideo (Wnioski z testu T02)}
+\label{subsubsec:wnioski_t02}
+
+Na podstawie danych zgromadzonych podczas testu strumieniowania, sformułowano wnioski dotyczące trzech kluczowych aspektów działania systemu: wydajności przetwarzania, opóźnień transmisji oraz stabilności obrazu.
+
+\paragraph*{Pełna przepustowość przetwarzania (Wydajność FPS)}
+Pomiary wykazały, że system osiągnął średnią prędkość odświeżania na poziomie \textbf{15,7 FPS} przy źródle nadającym nominalnie 15 FPS. Oznacza to, że aplikacja skutecznie przetwarza 100\% dostarczonego materiału wideo, a niewielka nadwyżka wynika z różnic w taktowaniu zegarów systemowych. Badanie potwierdziło brak występowania zjawiska ,,wąskiego gardła'' (ang. \textit{bottleneck}) zarówno po stronie serwera aplikacyjnego, jak i klienta webowego, co świadczy o efektywnej implementacji potoku \textit{Video Pipeline}.
+
+\paragraph*{Nadmiarowość sprzętowa i skalowalność}
+Analiza obciążenia wskazuje, że wykorzystanie procesora klasy Intel Core i7 do obsługi pojedynczego strumienia 1080p stanowi rozwiązanie z bardzo dużym zapasem mocy obliczeniowej. System wykazuje potencjał do skalowania wertykalnego – teoretycznie jest zdolny do równoległej obsługi wielu kamer bez degradacji płynności obrazu, co jest istotnym atutem w kontekście rozbudowy instalacji monitoringu.
+
+\paragraph*{Charakterystyka opóźnienia (Latency)}
+Zmierzone średnie opóźnienie typu \textit{end-to-end} na poziomie \textbf{728 ms} zidentyfikowano jako rezultat przyjętej architektury programowej, a nie braku zasobów sprzętowych. Głównymi czynnikami wpływającymi na ten wynik są mechanizmy wewnętrznego buforowania biblioteki OpenCV oraz narzut komunikacyjny protokołu WebSocket. Z perspektywy użyteczności, wartość ta jest w pełni akceptowalna dla zastosowań monitoringu pasywnego (obserwacji). Należy jednak odnotować, że podczas aktywnego sterowania mechaniką PTZ, opóźnienie bliskie jednej sekundy może być odczuwalne dla operatora, wpływając na precyzję manualnego śledzenia obiektów.
+
+\paragraph*{Stabilność transmisji i wrażliwość kodeka H.264}
+Zaobserwowane podczas testów artefakty wizualne (błędy dekodowania) potwierdziły specyfikę pracy z protokołem UDP w środowisku sieci bezprzewodowych. Choć protokół ten zapewnia szybszą transmisję niż TCP, brak mechanizmu retransmisji pakietów w połączeniu z charakterystyką kodeka H.264 (wysoka kompresja międzyklatkowa) sprawia, że nawet minimalna utrata danych w sieci Wi-Fi skutkuje widocznymi błędami w obrazie. Jest to akceptowalny kompromis projektowy na rzecz utrzymania charakterystyki czasu rzeczywistego.
+
+\subsubsection{Analiza wpływu procesu rejestracji na zasoby (Wnioski z testu T03)}
+\label{subsubsec:wnioski_t03}
+
+Test obciążeniowy pamięci operacyjnej (T03) dostarczył kluczowych danych dotyczących skalowalności modułu rejestracji (\texttt{Recorder}). Na podstawie zaobserwowanej charakterystyki zużycia zasobów sformułowano następujące wnioski krytyczne:
+
+\paragraph*{Dyskwalifikacja metody „Odroczonego Zapisu” w zastosowaniach ciągłych}
+Zastosowana strategia buforowania całego materiału wideo w pamięci RAM (ang. \textit{In-Memory Buffering}), opisana w sekcji 3.5.11, okazała się nieprzydatna w warunkach produkcyjnych wymagających ciągłości działania. Przy odnotowanym tempie konsumpcji pamięci na poziomie \textbf{148,3 MB/s}, rozwiązanie to jest ograniczone funkcjonalnie wyłącznie do rejestracji bardzo krótkich sekwencji zdarzeń (ang. \textit{Short Clips}), takich jak kilkusekundowe klipy z detekcji ruchu. Metoda ta nie może być stosowana do monitoringu ciągłego (24/7).
+
+\paragraph*{Istotny narzut technologiczny środowiska uruchomieniowego (Overhead)}
+Analiza porównawcza wykazała znaczącą nieefektywność strukturalną wybranego stosu technologicznego w kontekście przechowywania dużych wolumenów danych binarnych.
+\begin{itemize}
+    \item \textbf{Teoretyczny strumień danych:} $\approx$93 MB/s (dla nieskompresowanych klatek 1080p).
+    \item \textbf{Rzeczywiste zużycie:} $\approx$148 MB/s.
+\end{itemize}
+Różnica ta wskazuje na ok. \textbf{59\% narzut pamięciowy}, wynikający z narzutu obiektowego języka Python oraz sposobu alokacji pamięci dla list przechowujących obiekty biblioteki \texttt{NumPy}. Oznacza to, że środowisko uruchomieniowe zużywa ponad połowę alokowanych zasobów na obsługę samej struktury danych, a nie na użyteczną treść wideo.
+
+\paragraph*{Krytyczne ograniczenie czasu nagrywania (Time-to-Crash)}
+Mimo dysponowania stacją roboczą wyposażoną w ponad 15 GB pamięci RAM, stabilność systemu jest gwarantowana jedynie przez okres około \textbf{1 minuty i 40 sekund}. Przekroczenie tego czasu prowadzi do całkowitego wyczerpania dostępnej pamięci i awarii krytycznej aplikacji (ang. \textit{Crash}). Ekstrapolując te wyniki na standardowe urządzenia brzegowe IoT, takie jak Raspberry Pi (zazwyczaj 4 GB RAM), bezpieczny czas nagrywania uległby skróceniu do zaledwie $\approx$25 sekund, co drastycznie ogranicza użyteczność systemu na docelowej platformie sprzętowej.
+
+\paragraph*{Brak kompresji w czasie rzeczywistym jako przyczyna saturacji}
+Zidentyfikowano główną przyczynę problemu wydajnościowego, którą jest przechowywanie w pamięci „surowych” klatek obrazu (bitmap w formacie BGR/RGB). Brak implementacji kompresji strumieniowej (np. potokowego kodowania do H.264 w locie) sprawia, że dane buforowane w RAM zajmują setki razy więcej miejsca niż wynikowy, skompresowany plik wideo zapisywany ostatecznie na dysku. Wskazuje to na konieczność zmiany architektury modułu \texttt{Recorder} w przyszłych iteracjach projektu, np. poprzez bezpośrednie przekazywanie strumienia do procesu kodującego (ang. \textit{FFmpeg pipe}).
+
+
+\subsection{Synteza wniosków badawczych}
+\label{subsubsec:synteza_wnioskow}
+
+Przeprowadzone w niniejszym rozdziale badania wydajnościowe oraz testy weryfikacyjne (T01–T03) pozwoliły na empiryczną ocenę stopnia realizacji celu głównego pracy, jakim było stworzenie niezależnego systemu monitoringu opartego na rozwiązaniach \textbf{Open Source}. Analiza wyników umożliwiła również identyfikację kluczowych ograniczeń technologicznych zaprojektowanego rozwiązania.
+
+\begin{enumerate}
+    \item \textbf{Stopień realizacji celu głównego i celów szczegółowych} \\
+    Należy uznać, że cel inżynierski został osiągnięty. Zbudowano i wdrożono funkcjonalny, skonteneryzowany system, który skutecznie uniezależnia użytkownika od infrastruktury chmurowej producenta, rozwiązując problem \textit{vendor lock-in}.
+    \begin{itemize}
+        \item \textbf{Płynność obrazu:} System osiągnął pełną wydajność przetwarzania (średnio 15,7 FPS przy nadawaniu 15 FPS), co potwierdza weryfikację pozytywną założenia o możliwości pracy w czasie rzeczywistym.
+        \item \textbf{Skalowalność i stabilność:} Środowisko kontenerowe Docker wykazało pełną stabilność operacyjną, nie generując mierzalnych błędów narzutowych, co spełnia postulat dotyczący modułowości i przenośności systemu.
+    \end{itemize}
+
+    \item \textbf{Ograniczenia wydajnościowe (CPU i narzut środowiska Python)} \\
+    Analiza wyników testu T01 na platformie referencyjnej (Intel Core i7-11370H) wykazała, że interpretowany język Python stanowi istotne wąskie gardło (ang. \textit{bottleneck}) dla przetwarzania obrazu o wysokiej rozdzielczości (Full HD $1920 \times 1080$ px). Mimo wykorzystania jednostki CPU o wysokim taktowaniu (do 4.8 GHz), zarejestrowany zapas mocy obliczeniowej był marginalny (zaledwie 0,36 FPS powyżej progu płynności).
+    Obserwacja ta potwierdza słuszność decyzji projektowej o wyłączeniu z zakresu pracy implementacji zaawansowanych modeli głębokiego uczenia (np. YOLO). Skoro podstawowa detekcja różnicowa utylizuje niemal pełne zasoby wątku procesora, wdrożenie złożonej analityki AI wymagałoby zastosowania akceleracji sprzętowej (GPU) lub migracji krytycznych sekcji kodu do języka kompilowanego (C++).
+
+    \item \textbf{Wpływ opóźnień na sterowanie mechaniką PTZ} \\
+    Weryfikacja w warunkach sieci bezprzewodowej (Test T02) wykazała średnie opóźnienie typu \textit{end-to-end} na poziomie 728 ms. Jest to wartość w pełni akceptowalna dla zastosowań monitoringu pasywnego. Jednakże, w kontekście aktywnego sterowania kamerą (PTZ), opóźnienie to staje się odczuwalne dla operatora i obniża precyzję manualnego pozycjonowania głowicy. Należy podkreślić, że latencja ta wynika głównie z mechanizmów buforowania biblioteki OpenCV oraz narzutu protokołów komunikacyjnych, a nie z niedostatków mocy obliczeniowej.
+
+    \item \textbf{Krytyczna ocena strategii zapisu wideo} \\
+    Test T03 negatywnie zweryfikował przyjętą strategię „Odroczonego Zapisu”, polegającą na buforowaniu surowych klatek w pamięci RAM.
+    \begin{itemize}
+        \item \textbf{Nieefektywność alokacji:} Przechowywanie nieskompresowanych obiektów tablicowych generuje zużycie pamięci rzędu 148 MB/s.
+        \item \textbf{Awaryjność:} Nawet przy dyspozycji stacji roboczej z 16 GB pamięci RAM, system ulega awarii krytycznej po ok. 100 sekundach nagrania.
+        \item \textbf{Wniosek inżynierski:} W systemach wbudowanych klasy IoT niezbędna jest implementacja kompresji strumieniowej w czasie rzeczywistym (np. potokowanie danych bezpośrednio do enkodera H.264), a rezygnacja z buforowania surowych bitmap jest warunkiem koniecznym dla stabilności procesu rejestracji.
+    \end{itemize}
+
+    \item \textbf{Stabilność transmisji w środowisku bezprzewodowym} \\
+    Wykorzystanie protokołu UDP do transmisji wideo w sieci Wi-Fi (przy sile sygnału -45 dBm) zapewniło pożądane niskie opóźnienia, odbyło się to jednak kosztem integralności wizualnej obrazu. Wysoka wrażliwość kodeka H.264 na utratę pakietów skutkowała okresowym pojawianiem się artefaktów. Dla środowisk produkcyjnych rekomendowane jest zastosowanie połączenia przewodowego (Ethernet) lub wdrożenie programowego bufora korekcyjnego (ang. \textit{jitter buffer}), co jednak wiązałoby się z kompromisem w postaci zwiększonego opóźnienia.
+\end{enumerate}

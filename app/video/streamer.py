@@ -61,4 +61,4 @@ class VideoStreamer:
                     b64_frame = base64.b64encode(buffer).decode('utf-8')
                     self.socketio.emit('video_frame', {'frame': b64_frame}) 
 
-            self.socketio.sleep(0.04)
+            self.socketio.sleep(0.033)
