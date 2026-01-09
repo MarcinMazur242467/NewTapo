@@ -1,26 +1,77 @@
 \section*{Wnioski Końcowe}
+\label{sec:wnioski_koncowe}
 \addcontentsline{toc}{section}{Wnioski Końcowe}
 
-% Niniejsza praca inżynierska zrealizowała postawiony cel główny, tworząc kompletne i modułowe rozwiązanie Open Source dla kamer TP-Link Tapo C200. Projekt udowodnił, że bariera \textbf{vendor lock-in} może być skutecznie przełamana za pomocą inżynierii wstecznej protokołów własnościowych i integracji sprawdzonych narzędzi (Docker, FFmpeg, OpenCV).
+Przeprowadzona analiza teoretyczna, proces implementacji oraz weryfikacja empiryczna prototypu systemu pozwalają na sformułowanie ostatecznych wniosków dotyczących stopnia realizacji założeń pracy. Projekt miał na celu rozwiązanie istotnego problemu inżynierskiego, jakim jest uzależnienie funkcjonalności sprzętu IoT od ekosystemu producenta (ang. \textit{vendor lock-in}), na przykładzie kamery TP-Link Tapo C200.
 
-% Osiągnięte wyniki potwierdzają:
-% \begin{enumerate}
-%     \item Pełną i stabilną kontrolę PTZ z poziomu autorskiego interfejsu.
-%     \item Możliwość lokalnego streamingu wideo z minimalnymi opóźnieniami.
-%     \item Skuteczną implementację autorskiej detekcji ruchu, oferującej większą konfigurowalność niż wbudowane funkcje kamery.
-% \end{enumerate}
+\subsection*{Stopień realizacji celu głównego}
+\label{subsec:realizacja_celu_glownego}
 
-\subsection*{Kierunki dalszego rozwoju}
-\addcontentsline{toc}{subsection}{Kierunki dalszego rozwoju}
+Cel główny pracy, zdefiniowany jako opracowanie kompletnego, modułowego rozwiązania programistycznego opartego na otwartym oprogramowaniu (\textbf{Open Source}), umożliwiającego uniezależnienie kamery od chmury producenta, został osiągnięty w stopniu pełnym.
 
-% Dalsze prace mogą koncentrować się na:
-% \begin{itemize}
-%     \item Integracji z protokołami Smart Home (np. MQTT) w celu komunikacji z systemami takimi jak Home Assistant.
-%     \item Zastosowaniu WebRTC (Web Real-Time Communication) w celu dalszej redukcji opóźnień streamingu.
-%     \item Wdrożeniu lekkich modeli uczenia maszynowego (np. YOLOv5 Nano) dla zaawansowanej detekcji obiektów, wykorzystujących akcelerację sprzętową GPU hosta.
-% \end{itemize}
+Zbudowany system, wykorzystujący język Python, bibliotekę OpenCV oraz konteneryzację Docker, skutecznie przejmuje kontrolę nad strumieniami audio-wideo oraz mechaniką kamery w izolowanej sieci lokalnej. Udowodniono, że zastosowanie inżynierii wstecznej oraz otwartych standardów pozwala na bezpieczną eksploatację konsumenckich urządzeń IoT z pominięciem dedykowanych aplikacji mobilnych i infrastruktury zewnętrznej.
 
-\subsection*{Podsumowanie pracy}
-\addcontentsline{toc}{subsection}{Podsumowanie pracy}
+\subsection*{Analiza realizacji celów szczegółowych}
+\label{subsec:realizacja_celow_szczegolowych}
 
-% Opracowany prototyp stanowi w pełni funkcjonalną i otwartą alternatywę dla zamkniętego ekosystemu producenta, oferując użytkownikowi pełną suwerenność nad gromadzonymi danymi i możliwością rozbudowy systemu.
+Weryfikacja celów szczegółowych, oparta na wynikach testów T01–T03 (opisanych w Rozdziale 4), przedstawia się następująco:
+
+\begin{enumerate}
+    \item \textbf{Stabilne wyświetlanie obrazu w czasie rzeczywistym} \\
+    \textbf{Status:} Cel osiągnięty. \\
+    \textbf{Uzasadnienie:} Pomiary wykazały średnią płynność na poziomie \textbf{15,7 FPS}, co w pełni pokrywa nominalną prędkość nadawania kamery (15 FPS). System nie gubi klatek w procesie przetwarzania. Zmierzone opóźnienie (ang. \textit{latency}) rzędu 728 ms jest wartością akceptowalną dla systemów nadzoru wizyjnego realizowanych w technologiach webowych, choć stanowi pewne wyzwanie przy precyzyjnym sterowaniu manualnym.
+
+    \item \textbf{Sterowanie funkcjami PTZ (Pan/Tilt/Zoom)} \\
+    \textbf{Status:} Cel osiągnięty. \\
+    \textbf{Uzasadnienie:} Poprzez implementację warstwy abstrakcji sprzętowej (HAL) i wykorzystanie biblioteki \texttt{PyTapo}, udało się skutecznie zemulować szyfrowaną komunikację z API kamery. System umożliwia pełne sterowanie silnikami krokowymi urządzenia z poziomu przeglądarki, co stanowi funkcjonalność niedostępną w standardowym protokole ONVIF dla tego modelu kamery.
+
+    \item \textbf{Implementacja algorytmu wykrywania ruchu na serwerze} \\
+    \textbf{Status:} Cel osiągnięty. \\
+    \textbf{Uzasadnienie:} Zaimplementowany algorytm adaptacyjnego modelowania tła (ang. \textit{Background Subtraction}) skutecznie identyfikuje zdarzenia w czasie rzeczywistym. Testy wydajnościowe (T01) potwierdziły, że system jest w stanie przetwarzać obraz Full HD z prędkością \textbf{15,36 FPS}. Należy jednak odnotować, że proces ten generuje wysokie obciążenie jednostki CPU, co wskazuje na narzut interpretowanego języka Python przy operacjach na dużych macierzach danych.
+
+    \item \textbf{Skalowalność i reprodukowalność (Docker)} \\
+    \textbf{Status:} Cel osiągnięty. \\
+    \textbf{Uzasadnienie:} Zastosowanie technologii Docker oraz menedżera pakietów \texttt{uv} zapewniło pełną izolację środowiska uruchomieniowego. Testy potwierdziły stabilność działania aplikacji w kontenerze, eliminując problemy z konfliktami bibliotek systemowych (np. \texttt{libgl1}, \texttt{ffmpeg}). Architektura ta umożliwia łatwe wdrożenie rozwiązania na platformach wbudowanych.
+
+    \item \textbf{Zapis nagrań wideo i odtwarzanie} \\
+    \textbf{Status:} Cel osiągnięty z ograniczeniami eksploatacyjnymi. \\
+    \textbf{Uzasadnienie:} Funkcjonalność zapisu i odtwarzania została zaimplementowana i działa poprawnie – system generuje pliki MP4 z synchronizacją audio/wideo, które są dostępne w interfejsie webowym. Jednakże, analiza testu T03 ujawniła krytyczną wadę architektoniczną w postaci strategii buforowania w pamięci RAM (ang. \textit{Deferred Writing}). Przy zużyciu pamięci na poziomie $\approx$148 MB/s, rozwiązanie w obecnym kształcie nadaje się wyłącznie do rejestracji krótkich zdarzeń (tzw. klipów alarmowych), a nie do ciągłego monitoringu 24/7. Jest to obszar wymagający optymalizacji w przyszłych wersjach oprogramowania.
+\end{enumerate}
+
+Niniejsza praca udowadnia, że możliwe jest zbudowanie profesjonalnej bramy IoT (ang. \textit{Gateway}) dla tanich kamer konsumenckich przy użyciu wyłącznie technologii \textbf{Open Source}. Zaprojektowana architektura trójwarstwowa (Prezentacja – Logika – Sprzęt) zdała egzamin, zapewniając separację logiki biznesowej od specyfiki sprzętowej.
+
+Głównym wnioskiem płynącym z realizacji pracy jest fakt, że „uwolnienie” sprzętu od producenta wiąże się z koniecznością przejęcia przez programistę odpowiedzialności za optymalizację niskopoziomową. Wybór wysokopoziomowych narzędzi (Python/OpenCV), choć przyspieszył proces prototypowania (ang. \textit{Rapid Prototyping}), ujawnił swoje ograniczenia wydajnościowe przy przetwarzaniu strumieni HD w czasie rzeczywistym. Mimo to, stworzony system stanowi funkcjonalną, bezpieczną i prywatną alternatywę dla rozwiązań chmurowych.
+
+\section*{Kierunki dalszego rozwoju}
+\label{sec:kierunki_rozwoju}
+\addcontentsline{toc}{section}{Kierunki dalszego rozwoju}
+
+Zrealizowany w ramach niniejszej pracy projekt inżynierski stanowi funkcjonalny prototyp (ang. \textit{Proof of Concept}), który skutecznie demonstruje możliwość przełamania bariery \textit{vendor lock-in} w konsumenckich kamerach IoT. Przeprowadzona w Rozdziale 4 analiza wydajnościowa zidentyfikowała jednak szereg ograniczeń architektury, które wyznaczają ścieżkę dalszej ewolucji oprogramowania. Rozwój systemu powinien koncentrować się na optymalizacji zarządzania zasobami, skalowalności oraz implementacji zaawansowanych mechanizmów analitycznych i bezpieczeństwa.
+
+\subsection*{Optymalizacja podsystemu rejestracji: Przejście na Zapis Strumieniowy}
+Najpilniejszym wyzwaniem inżynierskim, wynikającym bezpośrednio z krytycznych wniosków testu T03 (saturacja pamięci RAM), jest fundamentalna przebudowa modułu \texttt{Recorder}. Obecna strategia \textit{Deferred Writing} (odroczonego zapisu), polegająca na buforowaniu pełnych sesji nagraniowych w pamięci operacyjnej, jest nieakceptowalna w środowisku produkcyjnym.
+
+Rozwiązaniem docelowym jest implementacja strategii Zapisu Strumieniowego (ang. \textit{Stream Writing}). Nowa architektura modułu powinna opierać się na wzorcu projektowym Producent-Konsument (ang. \textit{Producer-Consumer Pattern}):
+\begin{itemize}
+    \item \textbf{Bufor cykliczny (FIFO):} Pamięć RAM powinna służyć jedynie jako tymczasowy bufor (kolejka) dla kilkunastu klatek oczekujących na przetworzenie, co ustabilizuje zużycie pamięci na stałym, niskim poziomie, niezależnie od długości nagrania.
+    \item \textbf{Asynchroniczny zapis:} Dedykowany wątek zapisu (Konsument) powinien na bieżąco pobierać klatki z kolejki i przekazywać je do enkodera (np. klasy \texttt{cv2.VideoWriter} w OpenCV lub potoku FFmpeg).
+    \item \textbf{Kompresja w locie:} Kluczowe jest, aby dane trafiające na dysk były natychmiast kompresowane (np. kodekiem H.264), co wyeliminuje problem przechowywania surowych bitmap.
+\end{itemize}
+Taka zmiana architektury pozwoli na przekształcenie systemu z narzędzia do rejestracji krótkich klipów w pełnowartościowy rejestrator NVR (ang. \textit{Network Video Recorder}), zdolny do pracy w trybie ciągłym 24/7.
+
+\subsection*{Implementacja warstwy persystencji danych}
+Obecna wersja systemu przechowuje stan aplikacji oraz konfigurację w sposób ulotny lub w prostych plikach płaskich (JSON). W celu podniesienia niezawodności i możliwości analitycznych, konieczne jest wdrożenie relacyjnej bazy danych (np. SQLite dla małych wdrożeń lub PostgreSQL dla systemów rozproszonych). Baza danych umożliwi:
+\begin{itemize}
+    \item Trwałe przechowywanie logów zdarzeń (detekcja ruchu, błędy połączenia).
+    \item Zarządzanie metadanymi nagrań wideo (indeksowanie po czasie, typie zdarzenia), co przyspieszy ich wyszukiwanie.
+    \item Przechowywanie konfiguracji użytkownika oraz profili ustawień dla różnych scenariuszy monitoringu.
+\end{itemize}
+
+\subsection*{Skalowalność: Obsługa wielu kamer}
+Architektura obecnego rozwiązania opiera się na wzorcu Singleton dla obiektu kamery, co ogranicza system do obsługi jednego urządzenia. Rozwój w kierunku obsługi wielu strumieni wideo wymaga refaktoryzacji warstwy \textit{Middleware}. Należy wprowadzić dynamiczne zarządzanie instancjami klasy \texttt{VideoStreamer}, gdzie każdy wątek obsługuje niezależne urządzenie, identyfikowane unikalnym ID. Wyzwaniem w tym obszarze będzie optymalizacja zużycia procesora (CPU), co może wymagać zastosowania wieloprocesowości (ang. \textit{multiprocessing}) zamiast wielowątkowości, aby ominąć ograniczenia blokady GIL (ang. \textit{Global Interpreter Lock}) w języku Python.
+
+\subsection*{Bezpieczeństwo i dostęp zdalny}
+Finalnym etapem rozwoju powinno być utwardzenie bezpieczeństwa aplikacji (ang. \textit{Hardening}) oraz umożliwienie bezpiecznego dostępu spoza sieci lokalnej. Planowane działania obejmują:
+\begin{itemize}
+    \item \textbf{Bezpieczny tunel:} Zamiast wystawiania portów aplikacji bezpośrednio do Internetu, rekomendowane jest zintegrowanie systemu z rozwiązaniami typu VPN (np. WireGuard) lub tunelami Cloudflare, co pozwoli na bezpieczny dostęp zdalny bez kompromitowania sieci lokalnej.
+\end{itemize}
