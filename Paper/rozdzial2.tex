@@ -1,240 +1,217 @@
-\section{Analiza Kamery TP-Link TAPO C200}
-\label{sec:analiza_tapo_c200}
+% \subsection{Analiza kamery TP-Link Tapo C200}
+% \label{sec:analiza_tapo_c200}
 
-\subsection{Charakterystyka Ogólna i Pozycja Rynkowa}
-\label{subsec:charakterystyka_ogolna}
+% \subsubsection{Charakterystyka ogólna}
+% \label{subsec:charakterystyka_ogolna}
 
-Kamera TP-Link Tapo C200 jest pozycjonowana na rynku jako flagowy przykład konsumenckiego urządzenia \textbf{Internetu Rzeczy (IoT)} w kategorii \textbf{„Smart Home”}. Jej podstawowym celem rynkowim jest dostarczenie masowemu odbiorcy niedrogiego, łatwego w obsłudze i bogatego w funkcje systemu monitoringu wewnętrznego, który jest w pełni zarządzany za pomocą aplikacji mobilnej. Strategia TP-Link polega na oferowaniu zaawansowanych możliwości sprzętowych w wysoce konkurencyjnej cenie, co ma na celu szybkie zdobycie udziału w rynku i wprowadzenie użytkowników do zamkniętego ekosystemu usług firmy.
+% Kamera TP-Link Tapo C200 jest pozycjonowana na rynku jako flagowy przykład konsumenckiego urządzenia \textbf{Internetu Rzeczy (IoT)} w kategorii \textbf{„Smart Home”}. Jej podstawowym celem rynkowym jest dostarczenie masowemu odbiorcy niedrogiego, łatwego w obsłudze i bogatego w funkcje systemu monitoringu wewnętrznego, który jest w pełni zarządzany za pomocą aplikacji mobilnej. Strategia TP-Link polega na oferowaniu zaawansowanych możliwości sprzętowych w wysoce konkurencyjnej cenie, co ma na celu szybkie zdobycie udziału w rynku i wprowadzenie użytkowników do zamkniętego ekosystemu usług firmy.
 
-Kluczowe funkcje reklamowane w oficjalnej specyfikacji technicznej stanowią fundament jej propozycji wartości:
-\begin{itemize}
-    \item \textbf{Wysoka jakość obrazu:} Kamera oferuje natywną rozdzielczość $1080\text{p Full HD}$ ($1920 \times 1080$ pikseli) przy płynnej prędkości $30 \text{ klatek na sekundę}$. Stanowi to standard rynkowy dla nowoczesnych systemów monitoringu, pozwalający na wyraźną identyfikację szczegółów.
-    \item \textbf{Mechanizm Pan/Tilt (PTZ):} Urządzenie jest wyposażone w zmotoryzowaną głowicę, umożliwiającą zdalny obrót w poziomie (Pan) w zakresie $360^{\circ}$ oraz pochylenie w pionie (Tilt). Ta funkcja eliminuje martwe strefy i pozwala na monitorowanie całego pomieszczenia za pomocą jednego urządzenia.
-    \item \textbf{Tryb nocny (Noktowizja):} Zintegrowane diody LED podczerwieni (IR) o długości fali $850 \text{ nm}$ zapewniają widoczność w całkowitej ciemności na deklarowany dystans do $40 \text{ stóp}$ (około $12 \text{ metrów}$).
-    \item \textbf{Dwukierunkowe audio:} Wbudowany mikrofon i głośnik umożliwiają komunikację w czasie rzeczywistym, co przekształca kamerę z pasywnego sensora w interaktywny interkom.
-    \item \textbf{Zaawansowana detekcja:} Poza standardową detekcją ruchu, Tapo C200 reklamuje funkcje oparte na sztucznej inteligencji (AI), w tym \textbf{„Detekcję Osób” (Person Detection)} oraz \textbf{„Detekcję Płaczu Dziecka” (Baby Crying Detection)}.
-\end{itemize}
+% Kluczowe funkcje reklamowane w oficjalnej specyfikacji technicznej stanowią fundament jej propozycji wartości:
+% \begin{itemize}
+%     \item \textbf{Wysoka jakość obrazu:} Kamera oferuje natywną rozdzielczość $1080\text{p Full HD}$ ($1920 \times 1080$ pikseli) przy płynnej prędkości $30 \text{ klatek na sekundę}$. Stanowi to standard rynkowy dla nowoczesnych systemów monitoringu, pozwalający na wyraźną identyfikację szczegółów.
+%     \item \textbf{Mechanizm Pan/Tilt:} Urządzenie jest wyposażone w zmotoryzowaną głowicę, umożliwiającą zdalny obrót w poziomie w zakresie $360^{\circ}$ oraz pochylenie w pionie. Ta funkcja eliminuje martwe strefy i pozwala na monitorowanie całego pomieszczenia za pomocą jednego urządzenia.
+%     \item \textbf{Tryb nocny (Noktowizja):} Zintegrowane diody LED podczerwieni o długości fali $850 \text{ nm}$ zapewniają widoczność w całkowitej ciemności na deklarowany dystans do $40 \text{ stóp}$ (około $12 \text{ metrów}$).
+%     \item \textbf{Dwukierunkowe audio:} Wbudowany mikrofon i głośnik umożliwiają komunikację w czasie rzeczywistym, co przekształca kamerę z pasywnego sensora w interaktywny interkom.
+%     \item \textbf{Zaawansowana detekcja:} Poza standardową detekcją ruchu, Tapo C200 reklamuje funkcje oparte na sztucznej inteligencji (AI), w tym \textbf{„Detekcję Osób” (Person Detection)} oraz \textbf{„Detekcję Płaczu Dziecka” (Baby Crying Detection)}.
+% \end{itemize}
 
-Należy jednak podkreślić, że zamierzony przez producenta model operacyjny (\textbf{Intended Operational Model}) jest fundamentalnie oparty na koncepcji \textbf{„zamkniętego ogrodu” (walled garden)}. Pełna funkcjonalność, począwszy od krytycznego procesu pierwszej konfiguracji (provisioningu), aż po dostęp do zaawansowanych funkcji detekcji i zdalnego podglądu, jest nierozerwalnie związana z autorską aplikacją mobilną Tapo oraz infrastrukturą chmurową TP-Link.
-Ten model stanowi centralny problem badawczy niniejszej pracy. Tytułowe \textbf{„Wykorzystanie oprogramowania Open-Source do współpracy z kamerami TP-Link TAPO”} jest bezpośrednią odpowiedzią inżynierską na wyzwanie, jakim jest obejście tych sztucznych ograniczeń. Niniejszy rozdział dokonuje systematycznej dekonstrukcji kamery Tapo C200, aby precyzyjnie zidentyfikować, które jej komponenty są otwarte i możliwe do integracji, a które zostały celowo zamknięte przez producenta w ramach strategii \textbf{„vendor lock-in”}. Analiza ta stanowi techniczne uzasadnienie dla zaprojektowania i implementacji niestandardowego oprogramowania opisanego w kolejnych rozdziałach pracy.
+% Pełna funkcjonalność, począwszy od krytycznego procesu pierwszej konfiguracji (provisioningu), aż po dostęp do zaawansowanych funkcji detekcji i zdalnego podglądu, jest nierozerwalnie związana z autorską aplikacją mobilną Tapo oraz infrastrukturą chmurową TP-Link.
+% Ten model stanowi centralny problem badawczy niniejszej pracy. Tytułowe \textbf{„Wykorzystanie oprogramowania Open-Source do współpracy z kamerami TP-Link TAPO”} jest bezpośrednią odpowiedzią inżynierską na wyzwanie, jakim jest obejście tych sztucznych ograniczeń. Niniejszy rozdział dokonuje systematycznej dekonstrukcji kamery Tapo C200, aby precyzyjnie zidentyfikować, które jej komponenty są otwarte i możliwe do integracji, a które zostały celowo zamknięte przez producenta w ramach strategii \textbf{„vendor lock-in”}. Analiza ta stanowi techniczne uzasadnienie dla zaprojektowania i implementacji niestandardowego oprogramowania opisanego w kolejnych rozdziałach pracy.
 
-\subsection{Architektura Sprzętowa}
-\label{subsec:architektura_sprzetowa}
+% \subsubsection{Architektura sprzętowa}
+% \label{subsec:architektura_sprzetowa}
 
-Analiza architektury sprzętowej jest kluczowa dla zrozumienia zarówno potencjału, jak i ograniczeń kamery. Komponenty fizyczne definiują surowe możliwości urządzenia, które oprogramowanie układowe (\textbf{firmware}) następnie eksponuje – lub ukrywa – użytkownikowi.
+% Analiza architektury sprzętowej jest kluczowa dla zrozumienia zarówno potencjału, jak i ograniczeń kamery. Komponenty fizyczne definiują surowe możliwości urządzenia, które oprogramowanie układowe (\textbf{firmware}) następnie eksponuje – lub ukrywa – użytkownikowi.
 
-Sercem każdej kamery IP jest jej przetwornik obrazu. Tapo C200 wykorzystuje sensor \textbf{$1/2.8''$ Progressive Scan CMOS}. Jest to kluczowa informacja, ponieważ rozmiar sensora i typ technologii CMOS determinują bazową jakość obrazu, czułość na światło (kluczową dla noktowizji) oraz zakres dynamiczny. Jest to fundament, na którym opiera się cały potok przetwarzania wideo.
+% Poniższa tabela syntetyzuje kluczowe specyfikacje sprzętowe, które stanowią bazę dla dalszej analizy oprogramowania i funkcjonalności.
 
-W zakresie systemów peryferyjnych, kamera wyposażona jest w zintegrowany mikrofon i głośnik, co stanowi techniczną podstawę dla funkcji dwukierunkowego audio. Interfejs sieciowy jest ograniczony wyłącznie do komunikacji bezprzewodowej w paśmie $2.4 \text{ GHz}$, obsługując standardy $IEEE 802.11\text{b/g/n}$. Brak portu Ethernet oraz nieobsługiwanie pasma $5 \text{ GHz}$ jednoznacznie pozycjonują C200 jako urządzenie klasy konsumenckiej, gdzie priorytetem jest łatwość instalacji bezprzewodowej, a nie maksymalna stabilność i przepustowość połączenia, jakiej wymagałyby zastosowania profesjonalne.
+% \begin{table}[H]
+%     \centering
+%     \caption{Kluczowe Specyfikacje Techniczne TP-Link Tapo C200}
+%     \label{tab:spec_tapo_c200}
+%     \begin{tabularx}{0.7\textwidth}{L L}
+%         \toprule
+%         \textbf{Kategoria} & \textbf{Specyfikacja} \\
+%         \midrule
+%         Przetwornik Obrazu & $1/2.8''$ Progressive Scan CMOS \\
+%         \midrule
+%         Obiektyw & Ogniskowa: 4 mm, Przysłona: F2.0 \\
+%         \midrule
+%         Noktowizja & Dioda IR LED 850 nm (zasięg do 40 stóp / 12 m) \\
+%         \midrule
+%         Rozdzielczość & $1080\text{P HD}$ ($1920 \times 1080 \text{ px}$) \\
+%         \midrule
+%         Szybkość Klatek & $30 \text{ fps}$ \\
+%         \midrule
+%         Kompresja Wideo & H.264 \\
+%         \midrule
+%         System Audio & Wbudowany mikrofon i głośnik \\
+%         \midrule
+%         Standard Wi-Fi & $IEEE 802.11\text{b/g/n}$, $2.4 \text{ GHz}$ \\
+%         \midrule
+%         Zapis Lokalny & Gniazdo microSD (do $512 \text{ GB}$) \\
+%         \bottomrule
+%     \end{tabularx}
+% \end{table}
 
-Centralną jednostką obliczeniową urządzenia jest wysoce zintegrowany układ \textbf{System-on-a-Chip (SoC)}. Chociaż oficjalna specyfikacja nie wymienia konkretnego modelu, analiza typowych architektur dla tego segmentu urządzeń wskazuje na użycie procesora integrującego wiele funkcji w jednym układzie (np. z serii Ingenic T31). Taki SoC łączy w sobie główny procesor (CPU), dedykowany procesor sygnału obrazu (ISP) odpowiedzialny za operacje takie jak demozaikowanie i redukcja szumów, oraz – co najważniejsze – sprzętowy koder wideo H.264.
+% W zakresie systemów peryferyjnych, kamera wyposażona jest w zintegrowany mikrofon i głośnik, co stanowi techniczną podstawę dla funkcji dwukierunkowego audio. Interfejs sieciowy jest ograniczony wyłącznie do komunikacji bezprzewodowej w paśmie $2.4 \text{ GHz}$, obsługując standardy $IEEE 802.11\text{b/g/n}$. Brak portu Ethernet oraz nieobsługiwanie pasma $5 \text{ GHz}$ jednoznacznie pozycjonują C200 jako urządzenie klasy konsumenckiej, gdzie priorytetem jest łatwość instalacji bezprzewodowej, a nie maksymalna stabilność i przepustowość połączenia, jakiej wymagałyby zastosowania profesjonalne.
 
-Wybór takiej architektury SoC jest kluczową decyzją inżynieryjną i biznesową. Z jednej strony, wysoka integracja drastycznie obniża koszty produkcji (\textbf{Bill of Materials - BOM}), co pozwala na oferowanie kamery w atrakcyjnej cenie. Z drugiej strony, taka monolityczna architektura ma głębokie implikacje dla otwartości systemu. Oznacza to, że każda pojedyncza funkcja urządzenia – od ruchu silnikami PTZ, przez odczyt z sensora CMOS, aż po kompresję H.264 i zarządzanie interfejsem sieciowym – jest kontrolowana przez jeden, monolityczny obraz oprogramowania układowego dostarczany i podpisywany cyfrowo przez TP-Link. Ten wybór sprzętowy jest technicznym fundamentem, który umożliwia skuteczną implementację biznesowego modelu \textbf{„vendor lock-in”}, który zostanie szczegółowo omówiony w sekcji 2.5.
+% Centralną jednostką obliczeniową urządzenia jest wysoce zintegrowany układ \textbf{System-on-a-Chip (SoC)}. Chociaż oficjalna specyfikacja nie wymienia konkretnego modelu, analiza typowych architektur dla tego segmentu urządzeń wskazuje na użycie procesora integrującego wiele funkcji w jednym układzie (np. z serii Ingenic T31). Taki SoC łączy w sobie główny procesor (CPU), dedykowany procesor sygnału obrazu (ISP) odpowiedzialny za operacje takie jak demozaikowanie i redukcja szumów, oraz – co najważniejsze – sprzętowy koder wideo H.264.
 
-Poniższa tabela syntetyzuje kluczowe specyfikacje sprzętowe, które stanowią bazę dla dalszej analizy oprogramowania i funkcjonalności.
+% Wybór takiej architektury SoC jest kluczową decyzją inżynieryjną i biznesową. Z jednej strony, wysoka integracja drastycznie obniża koszty produkcji (\textbf{Bill of Materials - BOM}), co pozwala na oferowanie kamery w atrakcyjnej cenie. Z drugiej strony, taka monolityczna architektura ma głębokie implikacje dla otwartości systemu. Oznacza to, że każda pojedyncza funkcja urządzenia – od ruchu silnikami PTZ, przez odczyt z sensora CMOS, aż po kompresję H.264 i zarządzanie interfejsem sieciowym – jest kontrolowana przez jeden, monolityczny obraz oprogramowania układowego dostarczany i podpisywany cyfrowo przez TP-Link. Ten wybór sprzętowy jest technicznym fundamentem, który umożliwia skuteczną implementację biznesowego modelu \textbf{„vendor lock-in”}, który zostanie szczegółowo omówiony w sekcji 2.5.
 
-\begin{table}[H]
-    \centering
-    \caption{Kluczowe Specyfikacje Techniczne TP-Link Tapo C200}
-    \label{tab:spec_tapo_c200}
-    \begin{tabularx}{0.7\textwidth}{L L}
-        \toprule
-        \textbf{Kategoria} & \textbf{Specyfikacja} \\
-        \midrule
-        Przetwornik Obrazu & $1/2.8''$ Progressive Scan CMOS \\
-        \midrule
-        Obiektyw & Ogniskowa: 4 mm, Przysłona: F2.0 \\
-        \midrule
-        Noktowizja & Dioda IR LED 850 nm (zasięg do 40 stóp / 12 m) \\
-        \midrule
-        Rozdzielczość & $1080\text{P HD}$ ($1920 \times 1080 \text{ px}$) \\
-        \midrule
-        Szybkość Klatek & $30 \text{ fps}$ \\
-        \midrule
-        Kompresja Wideo & H.264 \\
-        \midrule
-        System Audio & Wbudowany mikrofon i głośnik \\
-        \midrule
-        Standard Wi-Fi & $IEEE 802.11\text{b/g/n}$, $2.4 \text{ GHz}$ \\
-        \midrule
-        Zapis Lokalny & Gniazdo microSD (do $512 \text{ GB}$) \\
-        \bottomrule
-    \end{tabularx}
-\end{table}
+% \subsubsection{Architektura oprogramowania i protokoły komunikacyjne}
+% \label{subsec:architektura_oprogramowania}
 
-\subsection{Architektura Oprogramowania i Protokoły Komunikacyjne}
-\label{subsec:architektura_oprogramowania}
+% Warstwa oprogramowania jest miejscem, w którym realizowana jest strategia producenta. To tutaj potencjał sprzętowy jest albo udostępniany poprzez otwarte standardy, albo celowo ograniczany przez zamknięte protokoły. Analiza Tapo C200 ujawnia świadome i celowe rozdzielenie tych dwóch podejść.
 
-Warstwa oprogramowania jest miejscem, w którym realizowana jest strategia producenta. To tutaj potencjał sprzętowy jest albo udostępniany poprzez otwarte standardy, albo celowo ograniczany przez zamknięte protokoły. Analiza Tapo C200 ujawnia świadome i celowe rozdzielenie tych dwóch podejść.
+% \paragraph*{Oprogramowanie Układowe (Firmware)}
 
-\subsubsection*{Oprogramowanie Układowe (Firmware)}
+% Urządzenie działa pod kontrolą zamkniętego oprogramowania układowego, bazującego najprawdopodobniej na zmodyfikowanej dystrybucji Linuksa, co jest powszechną praktyką w urządzeniach IoT. Ten firmware stanowi \textbf{„czarną skrzynkę”}, która zarządza całym sprzętem i udostępnia wszystkie usługi sieciowe. Aktualizacje firmware'u są dostarczane przez producenta w formie binarnych plików, które są cyfrowo podpisywane, co uniemożliwia użytkownikom instalację zmodyfikowanych wersji. Ta praktyka jest kluczowym elementem strategii zabezpieczeń TP-Link, ale jednocześnie stanowi barierę dla społeczności open-source, która chciałaby wprowadzać własne modyfikacje lub poprawki bezpieczeństwa.
 
-Urządzenie działa pod kontrolą zamkniętego (\textbf{closed-source}) oprogramowania układowego, bazującego najprawdopodobniej na zmodyfikowanej dystrybucji Linuksa, co jest powszechną praktyką w urządzeniach IoT. Ten firmware stanowi \textbf{„czarną skrzynkę”}, która zarządza całym sprzętem i udostępnia wszystkie usługi sieciowe. Jak wykazano w sekcji 2.6, ten monolityczny i nieaudytowalny charakter firmware'u jest sam w sobie znaczącym wektorem ataku.
+% \paragraph*{Standardowy Stos Sieciowy}
 
-\subsubsection*{Standardowy Stos Sieciowy i „Iluzja Otwartości”}
+% Na poziomie sieciowym, kamera implementuje standardowy stos TCP/IP, aby móc funkcjonować w typowej sieci domowej. Obejmuje to podstawowe usługi, takie jak DHCP do automatycznej konfiguracji adresu IP, DNS do rozwiązywania nazw oraz NTP do synchronizacji czasu. Ponadto, kamera wykorzystuje HTTPS, co wskazuje na szyfrowaną komunikację, jednak ta komunikacja jest przeznaczona wyłącznie dla serwerów chmurowych TP-Link.
 
-Na poziomie sieciowym, kamera implementuje standardowy stos TCP/IP, aby móc funkcjonować w typowej sieci domowej. Obejmuje to podstawowe usługi, takie jak DHCP do automatycznej konfiguracji adresu IP, DNS do rozwiązywania nazw oraz NTP do synchronizacji czasu. Ponadto, kamera wykorzystuje HTTPS , co wskazuje na szyfrowaną komunikację, jednak ta komunikacja jest przeznaczona niemal wyłącznie dla serwerów chmurowych TP-Link.
+% Prawdziwa analiza pod kątem integracji open-source zaczyna się od protokołów warstwy aplikacji, gdzie obserwujemy dychotomię:
 
-Prawdziwa analiza pod kątem integracji open-source zaczyna się od protokołów warstwy aplikacji, gdzie obserwujemy strategiczną dychotomię:
-
-\begin{description}
-    \item[RTSP (Real-Time Streaming Protocol):] Specyfikacja techniczna potwierdza wsparcie dla RTSP. Jest to absolutnie kluczowy, otwarty i ustandaryzowany protokół, który pozwala na dostęp do surowego, skompresowanego strumienia wideo (H.264) i audio. Dostępność strumienia RTSP jest fundamentalnym umożliwiaczem (enabler) dla całego projektu niniejszej pracy. To właśnie ten protokół pozwala narzędziom takim jak FFmpeg i OpenCV na przechwycenie obrazu i jego dalszą analizę w sposób całkowicie niezależny od ekosystemu producenta.
+% \begin{description}
+%     \item[RTSP (Real-Time Streaming Protocol):] Specyfikacja techniczna potwierdza wsparcie dla RTSP. Jest to absolutnie kluczowy, otwarty i ustandaryzowany protokół, który pozwala na dostęp do surowego, skompresowanego strumienia wideo i audio. Dostępność strumienia RTSP jest fundamentalnym umożliwiaczem dla całego projektu niniejszej pracy.
     
-    \item[ONVIF (Open Network Video Interface Forum):] Specyfikacja również deklaruje zgodność z ONVIF. Jest to jednak przykład strategicznego \textbf{„open-washingu”} – marketingowego wykorzystania otwartego standardu w sposób, który sugeruje interoperacyjność, jednocześnie jej nie dostarczając. Jak potwierdzają badania oraz liczne raporty społeczności open-source, implementacja ONVIF w Tapo C200 jest celowo okrojona. Ogranicza się ona w najlepszym razie do minimalnego zestawu funkcji (np. Profile S, co oznacza jedynie możliwość udostępniania strumienia wideo, co i tak jest już realizowane przez RTSP). Co najważniejsze, implementacja ta nie udostępnia kluczowej funkcjonalności sterowania PTZ.
+%     \item[ONVIF (Open Network Video Interface Forum):] Specyfikacja również deklaruje zgodność z ONVIF. Jest to jednak przykład strategicznego \textbf{„open-washingu”} – marketingowego wykorzystania otwartego standardu w sposób, który sugeruje interoperacyjność, jednocześnie jej nie dostarczając. Ogranicza się ona w najlepszym razie do minimalnego zestawu funkcji (np. Profile S, co oznacza jedynie możliwość udostępniania strumienia wideo, co i tak jest już realizowane przez RTSP). Co najważniejsze, implementacja ta nie udostępnia kluczowej funkcjonalności sterowania PTZ.
     
-    \item[Rzeczywisty Mechanizm Sterowania: Własnościowe API]
-    Skoro ONVIF nie pozwala na sterowanie kamerą, powstaje pytanie, w jaki sposób realizuje to oficjalna aplikacja Tapo. Odpowiedź leży w istnieniu nieudokumentowanego, własnościowego (\textbf{proprietary}) protokołu sterowania.
-\end{description}
+%     \item[Rzeczywisty Mechanizm Sterowania: Własnościowe API]
+%     Skoro ONVIF nie pozwala na sterowanie kamerą, powstaje pytanie, w jaki sposób realizuje to oficjalna aplikacja Tapo. Odpowiedź leży w istnieniu nieudokumentowanego, własnościowego protokołu sterowania. Aplikacja mobilna Tapo komunikuje się z kamerą w sieci lokalnej za pomocą niestandardowego, API. Analiza aplikacji wykryła zaszyfrowane lub zakodowane żądania w celu wykonania operacji takich jak ruch Pan/Tilt, włączenie trybu nocnego, czy zmiana ustawień detekcji.
 
-Badania społecznościowe wykazały, że aplikacja mobilna Tapo komunikuje się z kamerą w sieci lokalnej za pomocą niestandardowego, opartego na HTTP (lub HTTPS) API. Wysyła ona zaszyfrowane lub zakodowane żądania w celu wykonania operacji takich jak ruch Pan/Tilt, włączenie trybu nocnego, czy zmiana ustawień detekcji.
+% \end{description}
 
-Ten zamknięty protokół jest technicznym narzędziem egzekwowania \textbf{„vendor lock-in”}. Ponieważ jest nieudokumentowany i może ulec zmianie przy każdej aktualizacji firmware'u, uniemożliwia on standardowym, otwartym platformom (jak Home Assistant, ZoneMinder czy openHAB) natywną kontrolę nad urządzeniem.
+% Poniższa tabela podsumowuje analizę protokołów komunikacyjnych kamery.
 
-To właśnie ta bariera zrodziła potrzebę inżynierii wstecznej (\textbf{reverse-engineering}) po stronie społeczności. Biblioteka PyTapo, która jest jednym z kluczowych narzędzi wykorzystywanych w niniejszej pracy, jest bezpośrednim rezultatem tego procesu. PyTapo implementuje logikę tego nieudokumentowanego protokołu, hermetyzując jego złożoność i pozwalając na programistyczne sterowanie kamerą z poziomu Pythona. Zależność niniejszej pracy od PyTapo jest sama w sobie dowodem na istnienie i celowość bariery w postaci zamkniętego API.
+% \begin{table}[H]
+%     \centering
+%     \caption{Analiza Protokołów Komunikacyjnych Tapo C200 pod kątem Integracji Open-Source}
+%     \label{tab:protokoly_tapo_c200}
+%     \begin{tabularx}{\textwidth}{
+%         >{\RaggedRight\hsize=0.7\hsize}X % Protokol (waski)
+%         >{\RaggedRight\hsize=1.1\hsize}X % Cel (sredni)
+%         >{\RaggedRight\hsize=0.8\hsize}X % Status (waski)
+%         >{\RaggedRight\hsize=0.8\hsize}X % Dostepnosc (waski)
+%         >{\RaggedRight\hsize=1.6\hsize}X % Uzytecznosc (szeroki)
+%     }
+%         \toprule
+%         \textbf{Protokół} & \textbf{Cel} & \textbf{Status} & \textbf{Dostępność} & \textbf{Użyteczność dla Projektu} \\
+%         \midrule
+%         RTSP & Dostęp do strumienia \textit{A/V} & Otwarty Standard & Tak & Kluczowa. Stanowi podstawę do przechwytywania i analizy wideo (\textit{FFmpeg/OpenCV}). \\
+%         \midrule
+%         ONVIF & Interoperacyjność (\textit{Stream} + Sterowanie) & Otwarty Standard & Pozornie Tak & Znikoma. Implementacja jest okrojona i nie udostępnia sterowania \textit{PTZ}. Nazywana \enquote{open-washingiem}. \\
+%         \midrule
+%         API & Pełne sterowanie urządzeniem (\textit{PTZ}, ustawienia) & Zamknięty / Własnościowy & Brak informacji & Kluczowa (Pośrednio). Wymaga \textbf{inżynierii wstecznej}. Projekt wykorzystuje \textit{PyTapo} do obsługi tego API. \\
+%         \midrule
+%         Protokół Chmurowy (\textit{HTTPS}) & Zdalny dostęp, alerty, \textit{provisioning} & Zamknięty / Własnościowy & Brak informacji & Brak. Jest to mechanizm, który projekt ma na celu ominąć, aby \textbf{uniezależnić się od producenta}. \\
+%         \bottomrule
+%     \end{tabularx}
+% \end{table}
 
-Poniższa tabela podsumowuje krytyczną analizę protokołów komunikacyjnych kamery.
+% \subsubsection{Analiza możliwości funkcjonalnych}
+% \label{subsec:analiza_funkcjonalna}
 
-\begin{table}[H]
-    \centering
-    \caption{Analiza Protokołów Komunikacyjnych Tapo C200 pod kątem Integracji Open-Source}
-    \label{tab:protokoly_tapo_c200}
-    \begin{tabularx}{\textwidth}{
-        >{\RaggedRight\hsize=0.8\hsize}X % Protokol (waski)
-        >{\RaggedRight\hsize=1.0\hsize}X % Cel (sredni)
-        >{\RaggedRight\hsize=0.8\hsize}X % Status (waski)
-        >{\RaggedRight\hsize=0.8\hsize}X % Dostepnosc (waski)
-        >{\RaggedRight\hsize=1.6\hsize}X % Uzytecznosc (szeroki)
-    }
-        \toprule
-        \textbf{Protokół} & \textbf{Cel} & \textbf{Status} & \textbf{Dostępność} & \textbf{Użyteczność dla Projektu} \\
-        \midrule
-        RTSP & Dostęp do strumienia \textit{A/V} & Otwarty Standard & Tak & Kluczowa. Stanowi podstawę do przechwytywania i analizy wideo (\textit{FFmpeg/OpenCV}). \\
-        \midrule
-        ONVIF & Interoperacyjność (\textit{Stream} + Sterowanie) & Otwarty Standard & Pozornie Tak & Znikoma. Implementacja jest okrojona i nie udostępnia sterowania \textit{PTZ}. Nazywana \enquote{open-washingiem}. \\
-        \midrule
-        Proprietary API & Pełne sterowanie urządzeniem (\textit{PTZ}, ustawienia) & Zamknięty / Własnościowy & Brak informacji & Kluczowa (Pośrednio). Wymaga \textbf{inżynierii wstecznej}. Projekt wykorzystuje \textit{PyTapo} do obsługi tego API. \\
-        \midrule
-        Protokół Chmurowy (\textit{HTTPS}) & Zdalny dostęp, alerty, \textit{provisioning} & Zamknięty / Własnościowy & Brak informacji & Brak. Jest to mechanizm, który projekt ma na celu ominąć, aby \textbf{uniezależnić się od producenta}. \\
-        \bottomrule
-    \end{tabularx}
-\end{table}
+% Sekcja ta dokonuje ponownej oceny funkcji reklamowanych w sekcji 2.1, tym razem przez pryzmat inżynierski, oceniając ich rzeczywistą dostępność dla dewelopera open-source, w przeciwieństwie do ich teoretycznej obecności w urządzeniu.
 
-\subsection{Analiza Możliwości Funkcjonalnych}
-\label{subsec:analiza_funkcjonalna}
+% \paragraph*{Przetwarzanie i Strumieniowanie Wideo}
 
-Sekcja ta dokonuje ponownej oceny funkcji reklamowanych w sekcji 2.1, tym razem przez pryzmat inżynierski, oceniając ich rzeczywistą dostępność dla dewelopera open-source, w przeciwieństwie do ich teoretycznej obecności w urządzeniu.
+% Ta funkcja jest w pełni dostępna. Kamera niezawodnie dostarcza wysokiej jakości strumień H.264 ($1080\text{p}$ przy $30 \text{ fps}$) poprzez otwarty protokół RTSP. Z punktu widzenia projektu, jest to solidny i wystarczający fundament. Pozwala na pobranie „surowca” (danych wideo), który następnie może być przetwarzany lokalnie przez autorskie algorytmy. Dostępność ta jest warunkiem koniecznym dla powodzenia całego projektu.
 
-\subsubsection*{Przetwarzanie i Strumieniowanie Wideo}
+% \paragraph*{Funkcjonalność PTZ (Pan/Tilt/Zoom)}
 
-Ta funkcja jest w pełni dostępna. Kamera niezawodnie dostarcza wysokiej jakości strumień H.264 ($1080\text{p}$ przy $30 \text{ fps}$) poprzez otwarty protokół RTSP. Z punktu widzenia projektu, jest to solidny i wystarczający fundament. Pozwala na pobranie „surowca” (danych wideo), który następnie może być przetwarzany lokalnie przez autorskie algorytmy. Dostępność ta jest warunkiem koniecznym dla powodzenia całego projektu.
+% W tym przypadku obserwujemy fundamentalne rozłączenie między możliwością sprzętową a dostępnością programową. Mechanizmy (silniki) do obrotu i pochylenia są fizycznie obecne w urządzeniu. Jednak, jak ustalono w sekcji 2.3, są one niedostępne przez jakikolwiek otwarty standard, taki jak ONVIF.
 
-\subsubsection*{Funkcjonalność PTZ (Pan/Tilt/Zoom)}
+% W konsekwencji, z perspektywy dewelopera open-source, kamera Tapo C200 bez dodatkowej inżynierii wstecznej jest funkcjonalnie kamerą statyczną. Dopiero zastosowanie biblioteki PyTapo „odblokowuje” tę natywną funkcję sprzętową, co jest jednym z głównych celów implementacyjnych niniejszej pracy.
 
-W tym przypadku obserwujemy fundamentalne rozłączenie między możliwością sprzętową a dostępnością programową. Mechanizmy (silniki) do obrotu i pochylenia są fizycznie obecne w urządzeniu. Jednak, jak ustalono w sekcji 2.3, są one niedostępne przez jakikolwiek otwarty standard, taki jak ONVIF. Dostęp do nich jest strzeżony przez własnościowe API.
+% \paragraph*{Wbudowane Funkcje AI}
 
-W konsekwencji, z perspektywy dewelopera open-source, kamera Tapo C200 bez dodatkowej inżynierii wstecznej jest funkcjonalnie kamerą statyczną. Dopiero zastosowanie biblioteki PyTapo „odblokowuje” tę natywną funkcję sprzętową, co jest jednym z głównych celów implementacyjnych niniejszej pracy.
+% Najbardziej złożona sytuacja dotyczy wbudowanych funkcji „AI Detection”, takich jak wykrywanie osób i płaczu dziecka. Problem nie polega na tym, że te funkcje nie działają. Można założyć, że algorytmy uczenia maszynowego (prawdopodobnie uruchamiane na wyspecjalizowanym koprocesorze w ramach SoC) skutecznie analizują obraz i generują zdarzenia. Problem polega na niedostępności wyjścia tych algorytmów.
 
-\subsubsection*{Wbudowane Funkcje AI: Problem „Czarnej Skrzynki”}
+% Model operacyjny TP-Link dla tych zdarzeń jest następujący:
+% \begin{enumerate}
+%     \item Wbudowany algorytm AI na kamerze wykrywa zdarzenie (np. „osoba”).
+%     \item Kamera nie emituje tego zdarzenia w sieci lokalnej (LAN) w formie otwartego komunikatu (np. przez MQTT, ONVIF Events, czy nawet prosty webhook).
+%     \item Zamiast tego, kamera wysyła zaszyfrowany komunikat o zdarzeniu wyłącznie do serwerów chmurowych TP-Link.
+%     \item Serwery TP-Link przetwarzają ten komunikat i wysyłają powiadomienie push do aplikacji mobilnej użytkownika.
+% \end{enumerate}
 
-Najbardziej złożona sytuacja dotyczy wbudowanych funkcji „AI Detection”, takich jak wykrywanie osób i płaczu dziecka. Stanowią one istotę „Wyzwania Open Source” (tytuł sekcji 2.3 w).
+% Ten model, w którym metadane zdarzeń są „brane jako zakładnik” (\textbf{„data hostage”}) przez infrastrukturę chmurową, czyni całą zaawansowaną, wbudowaną analitykę AI całkowicie bezużyteczną dla lokalnych systemów automatyki. Niemożliwe jest stworzenie w prosty sposób automatyzacji w systemie Home Assistant typu: „JEŻELI kamera Tapo wykryje osobę, TO włącz światło w korytarzu”.
 
-Problem nie polega na tym, że te funkcje nie działają. Można założyć, że algorytmy uczenia maszynowego (prawdopodobnie uruchamiane na wyspecjalizowanym koprocesorze w ramach SoC) skutecznie analizują obraz i generują zdarzenia. Problem polega na niedostępności wyjścia tych algorytmów.
+% Ta celowa blokada dostępu do danych o zdarzeniach ma kluczową implikację dla niniejszej pracy: zmusza ona do \textbf{reimplementacji} funkcjonalności, która już istnieje w urządzeniu. Skoro nie można odczytać zdarzenia „detekcja ruchu” z kamery, projekt musi sam pobrać surowy strumień wideo (przez RTSP) i przeprowadzić własną, serwerową analizę detekcji ruchu.
 
-Model operacyjny TP-Link dla tych zdarzeń jest następujący:
-\begin{enumerate}
-    \item Wbudowany algorytm AI na kamerze wykrywa zdarzenie (np. „osoba”).
-    \item Kamera nie emituje tego zdarzenia w sieci lokalnej (LAN) w formie otwartego komunikatu (np. przez MQTT, ONVIF Events, czy nawet prosty webhook).
-    \item Zamiast tego, kamera wysyła zaszyfrowany komunikat o zdarzeniu wyłącznie do serwerów chmurowych TP-Link.
-    \item Serwery TP-Link przetwarzają ten komunikat i wysyłają powiadomienie push do aplikacji mobilnej użytkownika.
-\end{enumerate}
+% \subsubsection{Ograniczenia i zjawisko „vendor lock-in”}
+% \label{subsec:vendor_lock_in}
 
-Ten model, w którym metadane zdarzeń są „brane jako zakładnik” (\textbf{„data hostage”}) przez infrastrukturę chmurową, czyni całą zaawansowaną, wbudowaną analitykę AI całkowicie bezużyteczną dla lokalnych systemów automatyki. Niemożliwe jest stworzenie w prosty sposób automatyzacji w systemie Home Assistant typu: „JEŻELI kamera Tapo wykryje osobę, TO włącz światło w korytarzu”.
+% Synteza analizy sprzętu, oprogramowania i funkcjonalności prowadzi do jednoznacznego wniosku: ograniczenia kamery Tapo C200 nie są wynikiem braków technicznych, lecz świadomą strategią biznesową ograniczenia potencjału sprzętowego znaną jako \textbf{„vendor lock-in”} (uzależnienie od dostawcy).
 
-Ta celowa blokada dostępu do danych o zdarzeniach ma kluczową implikację dla niniejszej pracy: zmusza ona do \textbf{reimplementacji} funkcjonalności, która już istnieje w urządzeniu. Skoro nie można odczytać zdarzenia „detekcja ruchu” z kamery, projekt musi sam pobrać surowy strumień wideo (przez RTSP) i przeprowadzić własną, serwerową analizę detekcji ruchu (np. za pomocą OpenCV). Jest to kluczowe uzasadnienie dla jednego z głównych celów szczegółowych pracy – implementacji własnego algorytmu detekcji.
+% Z technicznego punktu widzenia, strategia „vendor lock-in” w przypadku Tapo C200 opiera się na trzech filarach:
+% \begin{enumerate}
+%     \item \textbf{Zamknięte API Sterowania (Proprietary Control API):} Jak omówiono w sekcji 2.3, brak otwartego standardu sterowania PTZ zmusza użytkowników do korzystania wyłącznie z oficjalnej aplikacji lub polegania na niestabilnych, reverse-engineeryjnych rozwiązaniach, takich jak PyTapo.
+%     \item \textbf{Uchwycenie Metadanych AI (AI Metadata Capture):} Jak omówiono w sekcji 2.4, przesyłanie zdarzeń detekcji wyłącznie do chmury uniemożliwia lokalną automatyzację i wymusza na użytkowniku poleganie na infrastrukturze producenta w zakresie otrzymywania alertów.
+%     \item \textbf{Szyfrowany i Chmurowy Provisioning:} Jest to pierwszy i najbardziej fundamentalny zamek. Proces inicjalizacji kamery i jej podłączenia do sieci Wi-Fi (provisioning) jest nieudokumentowany, szyfrowany i wymaga obowiązkowej weryfikacji po stronie chmury TP-Link. Oznacza to, że kamery nie można nawet uruchomić w sieci lokalnej bez użycia oficjalnej aplikacji mobilnej i aktywnego połączenia z internetem. Jest to tak złożona bariera, że niniejsza praca musi ją zaakceptować jako ograniczenie: w założeniach projektu stwierdza się, że „praca zakłada, że kamera została jednorazowo skonfigurowana w sieci Wi-Fi przy użyciu oficjalnej aplikacji mobilnej”.
+% \end{enumerate}
 
-\subsection{Ograniczenia i Zjawisko „Vendor Lock-in”}
-\label{subsec:vendor_lock_in}
+% Wniosek z tej analizy jest jasny: „Wyzwanie Open Source” nie jest przypadkowym niedopatrzeniem inżynierów TP-Link. Jest to precyzyjnie zaprojektowany zestaw barier technicznych, których celem jest ochrona modelu biznesowego firmy. Praktyczna implementacja opisana w Rozdziale 3 niniejszej pracy jest zatem w swojej istocie aktem inżynierii obchodzenia (\textbf{bypass engineering}) tych celowo narzuconych ograniczeń.
 
-Synteza analizy sprzętu, oprogramowania i funkcjonalności prowadzi do jednoznacznego wniosku: ograniczenia kamery Tapo C200 nie są wynikiem braków technicznych, lecz świadomą strategią biznesową znaną jako \textbf{„vendor lock-in”} (uzależnienie od dostawcy).
+% \subsubsection{Aspekty bezpieczeństwa i prywatności}
+% \label{subsec:bezpieczenstwo}
 
-Krytyka tego modelu biznesowego wskazuje, że kamera jest traktowana jako niskomarżowy \textbf{„koń trojański”}. Rzeczywistym celem nie jest jednorazowa sprzedaż sprzętu, ale \textbf{„uwięzienie”} użytkownika w zamkniętym ekosystemie Tapo, co otwiera drogę do generowania przychodów cyklicznych, np. poprzez sprzedaż subskrypcji na przechowywanie nagrań w chmurze (Tapo Care).
+% Ostatnia warstwa analizy dotyczy bezpieczeństwa i prywatności. Jest to najważniejszy argument przemawiający za koniecznością stworzenia otwartego, lokalnego rozwiązania. Model „vendor lock-in” nie tylko ogranicza funkcjonalność, ale także generuje poważne i udokumentowane zagrożenia dla użytkowników.
 
-Z technicznego punktu widzenia, strategia „vendor lock-in” w przypadku Tapo C200 opiera się na trzech filarach:
-\begin{enumerate}
-    \item \textbf{Zamknięte API Sterowania (Proprietary Control API):} Jak omówiono w sekcji 2.3, brak otwartego standardu sterowania PTZ zmusza użytkowników do korzystania wyłącznie z oficjalnej aplikacji lub polegania na niestabilnych, reverse-engineeryjnych rozwiązaniach, takich jak PyTapo.
-    \item \textbf{Uchwycenie Metadanych AI (AI Metadata Capture):} Jak omówiono w sekcji 2.4, przesyłanie zdarzeń detekcji wyłącznie do chmury uniemożliwia lokalną automatyzację i wymusza na użytkowniku poleganie na infrastrukturze producenta w zakresie otrzymywania alertów.
-    \item \textbf{Szyfrowany i Chmurowy Provisioning:} Jest to pierwszy i najbardziej fundamentalny zamek. Proces inicjalizacji kamery i jej podłączenia do sieci Wi-Fi (provisioning) jest nieudokumentowany, szyfrowany i wymaga obowiązkowej weryfikacji po stronie chmury TP-Link. Oznacza to, że kamery nie można nawet uruchomić w sieci lokalnej bez użycia oficjalnej aplikacji mobilnej i aktywnego połączenia z internetem. Jest to tak złożona bariera, że niniejsza praca musi ją zaakceptować jako ograniczenie: w założeniach projektu stwierdza się, że „praca zakłada, że kamera została jednorazowo skonfigurowana w sieci Wi-Fi przy użyciu oficjalnej aplikacji mobilnej”.
-\end{enumerate}
+% \paragraph*{Ryzyka dla Prywatności}
 
-Wniosek z tej analizy jest jasny: „Wyzwanie Open Source” nie jest przypadkowym niedopatrzeniem inżynierów TP-Link. Jest to precyzyjnie zaprojektowany zestaw barier technicznych, których celem jest ochrona modelu biznesowego firmy. Praktyczna implementacja opisana w Rozdziale 3 niniejszej pracy jest zatem w swojej istocie aktem inżynierii obchodzenia (\textbf{bypass engineering}) tych celowo narzuconych ograniczeń.
+% Model operacyjny oparty na subskrypcji zapisu nagrań w chmurze zachęca do fundamentalnego kompromisu w zakresie prywatności. Wymaga on przesyłania wrażliwych danych – materiału audio i wideo z wnętrza prywatnego domu – na serwery firmy trzeciej. Taka architektura generuje trzy ryzyka:
+% \begin{itemize}
+%     \item \textbf{Ryzyko wycieku danych:} Pomyślny atak na infrastrukturę chmurową TP-Link mógłby skutkować masowym wyciekiem prywatnych nagrań tysięcy użytkowników.
+%     \item \textbf{Ryzyko nadużycia:} Użytkownik traci suwerenność nad swoimi danymi i musi ufać, że pracownicy dostawcy lub jego podwykonawcy nie uzyskają nieautoryzowanego dostępu do jego danych.
+%     \item \textbf{Ryzyko prawne:} Dane przechowywane w chmurze podlegają jurysdykcji prawnej kraju, w którym znajdują się serwery, i mogą być przedmiotem żądań organów ścigania bez wiedzy użytkownika.
+% \end{itemize}
 
-\subsection{Aspekty Bezpieczeństwa i Prywatności}
-\label{subsec:bezpieczenstwo}
+% Lokalne rozwiązanie, do którego dąży niniejsza praca, całkowicie eliminuje te ryzyka, ponieważ dane nigdy nie opuszczają sieci lokalnej użytkownika.
 
-Ostatnia warstwa analizy dotyczy bezpieczeństwa i prywatności. Jest to najważniejszy argument przemawiający za koniecznością stworzenia otwartego, lokalnego rozwiązania. Model „vendor lock-in” nie tylko ogranicza funkcjonalność, ale także generuje poważne i udokumentowane zagrożenia dla użytkowników.
+% \paragraph*{Zidentyfikowane Luki w Zabezpieczeniach}
 
-\subsubsection*{Ryzyka dla Prywatności}
-
-Model operacyjny oparty na chmurze zmusza użytkownika do fundamentalnego kompromisu w zakresie prywatności. Wymaga on przesyłania wrażliwych danych – strumieni audio i wideo z wnętrza prywatnego domu – na serwery firmy trzeciej. Taka architektura generuje trzy główne ryzyka:
-\begin{itemize}
-    \item \textbf{Ryzyko wycieku danych:} Pomyślny atak na infrastrukturę chmurową TP-Link mógłby skutkować masowym wyciekiem prywatnych nagrań tysięcy użytkowników.
-    \item \textbf{Ryzyko nadużycia:} Użytkownik traci suwerenność nad swoimi danymi i musi ufać, że pracownicy dostawcy lub jego podwykonawcy nie uzyskają nieautoryzowanego dostępu do jego strumieni.
-    \item \textbf{Ryzyko prawne:} Dane przechowywane w chmurze podlegają jurysdykcji prawnej kraju, w którym znajdują się serwery, i mogą być przedmiotem żądań organów ścigania bez wiedzy użytkownika.
-\end{itemize}
-
-Lokalne rozwiązanie, do którego dąży niniejsza praca, całkowicie eliminuje te ryzyka, ponieważ dane nigdy nie opuszczają sieci lokalnej użytkownika.
-
-\subsubsection*{Zidentyfikowane Luki w Zabezpieczeniach}
-
-Zamknięty, nieaudytowalny firmware kamery Tapo C200 okazał się być podatny na krytyczne luki bezpieczeństwa. Nie jest to już teoretyczne ryzyko; jest to udokumentowany fakt.
-\begin{enumerate}
-    \item \textbf{CVE-2021-4045: Krytyczna Luka RCE}
+% Zamknięty, nieaudytowalny firmware kamery Tapo C200 okazał się być podatny na krytyczne luki bezpieczeństwa. Nie jest to już teoretyczne ryzyko; jest to udokumentowany fakt.
+% \begin{enumerate}
+%     \item \textbf{CVE-2021-4045: Krytyczna Luka RCE}
     
-    Najpoważniejszą znaną luką jest CVE-2021-4045, której przyznano ocenę $9.8$ (KRYTYCZNA) w skali CVSS.
-    \begin{itemize}
-        \item \textbf{Problem:} Luka typu „unauthenticated Remote Code Execution” (nieuwierzytelnione zdalne wykonanie kodu).
-        \item \textbf{Wektor:} Luka znajduje się w binarnym pliku uhttpd – tym samym wbudowanym serwerze WWW, który jest używany do obsługi... własnościowego API sterującego.
-        \item \textbf{Wpływ:} Serwer uhttpd działa z uprawnieniami użytkownika root (najwyższymi możliwymi). Oznacza to, że nieuwierzytelniony atakujący w tej samej sieci (np. gość korzystający z Wi-Fi) mógł zdalnie przejąć całkowitą kontrolę nad kamerą. Mógł ją wyłączyć, podsłuchiwać, podglądać, a także – co być może najgroźniejsze – wykorzystać ją jako „przyczółek” (beachhead) do ataku na inne urządzenia w sieci lokalnej użytkownika (np. komputer lub dysk NAS).
-        \item \textbf{Zasięg:} Luka dotyczyła oprogramowania w wersji 1.1.15 i starszych.
-    \end{itemize}
+%     Najpoważniejszą znaną luką jest CVE-2021-4045, której przyznano ocenę $9.8$ w skali CVSS \cite{hacefresko:rce}.
+%     \begin{itemize}
+%         \item \textbf{Problem:} Luka typu „unauthenticated Remote Code Execution” (nieuwierzytelnione zdalne wykonanie kodu).
+%         \item \textbf{Wektor:} Luka znajdowała się w binarnym pliku uhttpd – tym samym wbudowanym serwerze WWW, który był używany do obsługi własnościowego API sterującego.
+%         \item \textbf{Wpływ:} Serwer uhttpd działał z uprawnieniami użytkownika root (najwyższymi możliwymi). Oznacza to, że nieuwierzytelniony atakujący w tej samej sieci mógł zdalnie przejąć całkowitą kontrolę nad kamerą. Mógł ją wyłączyć, podsłuchiwać, podglądać, a także – co być może najgroźniejsze – wykorzystać ją do ataku na inne urządzenia w sieci lokalnej użytkownika.
+%         \item \textbf{Zasięg:} Luka dotyczyła oprogramowania w wersji 1.1.15 i starszych.
+%     \end{itemize}
     
-    \item \textbf{Inne Wyniki Testów Penetracyjnych}
-    
-    Niezależne badania bezpieczeństwa potwierdziły istnienie wielu innych słabości:
-    \begin{itemize}
-        \item Badanie Ariefianto / Biondi et al., w ramach którego opracowano metodykę PETIoT, wykorzystało Tapo C200 jako studium przypadku i zidentyfikowało trzy nieznane wcześniej (zero-day) luki: Denial of Service (DoS), podsłuchiwanie strumienia wideo (video eavesdropping) oraz nowy typ ataku nazwany „Motion Oracle”.
-        \item Inna praca dyplomowa (KTH) przeprowadzająca testy penetracyjne C200, zidentyfikowała podatności na ataki typu brute force, RCE, Man-in-the-Middle (MITM) oraz replay attack, wskazując na fundamentalne problemy z szyfrowaniem firmware'u i protokołami komunikacyjnymi.
-        \item Ogólnym zagrożeniem dla wszystkich słabo zabezpieczonych urządzeń IoT, w tym kamer, jest ryzyko rekrutacji do botnetu (np. Mirai), który wykorzystuje ich moc obliczeniową do przeprowadzania zmasowanych ataków DDoS.
-    \end{itemize}
-\end{enumerate}
+%     \item \textbf{Inne Wyniki Testów Penetracyjnych}
+        
+%     Niezależne badania bezpieczeństwa potwierdziły istnienie wielu innych słabości:
+%     \begin{itemize}
+%         \item Badanie autorstwa Bella, Biondi et al. \cite{Bella:2023:PETIoT}, w ramach którego opracowano metodykę PETIoT, wykorzystało Tapo C200 jako studium przypadku. Zidentyfikowano w nim trzy nieznane wcześniej (zero-day) luki:
+%         \begin{itemize}
+%             \item Możliwość awarii kamery w wyniku intensywnego skanowania portów czyli Denial of Service(DoS).
+%             \item Przechwytywanie nieszyfrowanego strumienia wideo H.264 podczas korzystania z oprogramowania firm trzecich (np. przez RTSP).
+%             \item  Możliwość odgadnięcia, czy kamera wykryła ruch, na podstawie stałego rozmiaru szyfrowanych powiadomień, co stanowiło wyciek informacji.
+%         \end{itemize}
+%         \item Ogólnym zagrożeniem dla wszystkich słabo zabezpieczonych urządzeń IoT, w tym kamer, jest ryzyko rekrutacji do botnetu (np. Mirai), który wykorzystuje ich moc obliczeniową do przeprowadzania zmasowanych ataków DDoS.
+%     \end{itemize}
+% \end{enumerate}
 
-\subsubsection*{Wniosek Końcowy: Związek „Vendor Lock-in” z Lukami w Zabezpieczeniach}
+% \paragraph*{Ostateczne Uzasadnienie dla Projektu}
 
-Niniejsza analiza wykazuje istnienie bezpośredniego związku przyczynowego między modelem biznesowym „vendor lock-in” a katastrofalnymi lukami bezpieczeństwa.
+% Powyższa analiza bezpieczeństwa i prywatności stanowi ostateczne i najsilniejsze uzasadnienie dla celu niniejszej pracy. Projektowane rozwiązanie open-source nie jest jedynie ćwiczeniem z inżynierii wstecznej w celu odblokowania funkcji PTZ. Jest to fundamentalna interwencja w zakresie bezpieczeństwa.
 
-Logika jest następująca:
-\begin{enumerate}
-    \item Aby zrealizować strategię „vendor lock-in”, TP-Link musiał zrezygnować z otwartego standardu ONVIF do sterowania.
-    \item Wymusiło to stworzenie własnościowego, zamkniętego API.
-    \item Aby to API było dostępne, kamera musi uruchamiać niestandardowy, wbudowany serwer WWW (uhttpd).
-    \item Aby ten serwer mógł kontrolować sprzęt (silniki PTZ, diody IR), musiał otrzymać najwyższe uprawnienia systemowe (root).
-    \item W ten sposób stworzono idealny wektor ataku: skomplikowaną, nieaudytowalną, autorską usługę sieciową działającą z maksymalnymi uprawnieniami.
-    \item Dokładnie w tym miejscu – w serwerze uhttpd – odkryto krytyczną lukę RCE (CVE-2021-4045).
-\end{enumerate}
+% Tworząc w pełni funkcjonalny, lokalny serwer sterujący, rozwiązanie to daje użytkownikowi możliwość wykonania kluczowego kroku hardeningu: całkowitego zablokowania kamerze dostępu do Internetu na poziomie routera (firewalla).
 
-Wniosek: To nie przypadek. To decyzja biznesowa o zamknięciu ekosystemu bezpośrednio doprowadziła do stworzenia architektury oprogramowania, która była fundamentalnie niebezpieczna.
+% Taka konfiguracja, niemożliwa przy korzystaniu z oficjalnej aplikacji, natychmiast:
+% \begin{itemize}
+%     \item Rozwiązuje problem prywatności: Dane audio/wideo nigdy nie opuszczają sieci lokalnej.
+%     \item Neutralizuje ryzyko botnetu: Kamera nie może komunikować się z serwerami zewnetrznymi, więc nie może zostać zrekrutowana do botnetu.
+%     \item Omija podatny na ataki serwer: Użytkownik komunikuje się z bezpiecznym, audytowalnym serwerem Python hostowanym lokalnie, zamiast z zamkniętym firmwarem kamery.
+% \end{itemize}
 
-\subsubsection*{Ostateczne Uzasadnienie dla Projektu}
-
-Powyższa analiza bezpieczeństwa i prywatności stanowi ostateczne i najsilniejsze uzasadnienie dla celu niniejszej pracy. Projektowane rozwiązanie open-source nie jest jedynie ćwiczeniem z inżynierii wstecznej w celu odblokowania funkcji PTZ. Jest to fundamentalna interwencja w zakresie bezpieczeństwa.
-
-Tworząc w pełni funkcjonalny, lokalny serwer sterujący, rozwiązanie to daje użytkownikowi możliwość wykonania kluczowego kroku hardeningu: całkowitego zablokowania kamerze dostępu do Internetu na poziomie routera (firewalla).
-
-Taka konfiguracja, niemożliwa przy korzystaniu z oficjalnej aplikacji, natychmiast:
-\begin{itemize}
-    \item Rozwiązuje problem prywatności: Dane audio/wideo nigdy nie opuszczają sieci lokalnej.
-    \item Neutralizuje ryzyko botnetu: Kamera nie może komunikować się z serwerami C\&C (Command and Control).
-    \item Omija podatny na ataki serwer: Użytkownik komunikuje się z bezpiecznym, audytowalnym serwerem Python (rozwiązaniem z pracy), zamiast z dziurawym, działającym jako root uhttpd.
-\end{itemize}
-
-Rozdział ten udowodnił, że TP-Link Tapo C200 jest idealnym studium przypadku konfliktu IoT. Stanowi on techniczne uzasadnienie, dlaczego proponowana w niniejszej pracy architektura – lokalna, oparta na otwartym oprogramowaniu i przywracająca użytkownikowi kontrolę – jest nie tylko pożądana z punktu widzenia funkcjonalności, ale wręcz konieczna z punktu widzenia prywatności i cyberbezpieczeństwa.
+% Rozdział ten udowodnił, że TP-Link Tapo C200 jest idealnym studium przypadku konfliktu IoT. Stanowi on techniczne uzasadnienie, dlaczego proponowana w niniejszej pracy architektura – lokalna, oparta na otwartym oprogramowaniu i przywracająca użytkownikowi kontrolę – jest nie tylko pożądana z punktu widzenia funkcjonalności, ale wręcz konieczna z punktu widzenia prywatności i cyberbezpieczeństwa.

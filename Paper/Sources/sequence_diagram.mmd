@@ -1,0 +1,94 @@
+sequenceDiagram
+    participant User as User<br/>Browser
+    participant Web as Web Client<br/>JavaScript
+    participant SocketIO as SocketIO<br/>Server
+    participant Handler as Socket Handler<br/>handle_start_recording()
+    participant Recorder as Recorder<br/>Instance
+    participant VideoThread as VideoStreamer<br/>Thread
+    participant AudioThread as AudioStreamer<br/>Thread
+    participant Disk as Disk<br/>Storage
+
+    User->>Web: Click "Start Recording"
+    activate Web
+    Web->>SocketIO: emit('start_recording')
+    deactivate Web
+
+    activate SocketIO
+    SocketIO->>Handler: on_start_recording()
+    deactivate SocketIO
+
+    activate Handler
+    Handler->>Recorder: start_recording()
+    deactivate Handler
+
+    activate Recorder
+    Recorder->>Recorder: video_frames = []<br/>audio_chunks = []<br/>is_recording = True<br/>start_time = now()
+    Recorder->>Recorder: filename = recording_YYYY-MM-DD_HH-MM-SS.mp4
+    Recorder->>Recorder: Return filename
+    deactivate Recorder
+
+    activate SocketIO
+    SocketIO->>User: emit('recording_status',<br/>{status: 'started'})
+    deactivate SocketIO
+
+    Note over User: Status: Recording Started 🔴
+
+    par Concurrent Streaming
+        activate VideoThread
+        loop Every Frame (continuous)
+            VideoThread->>VideoThread: raw_frame = camera.read_frame()
+            alt is_recording == True
+                VideoThread->>Recorder: add_frame(raw_frame)
+                activate Recorder
+                Recorder->>Recorder: video_frames.append(frame)
+                deactivate Recorder
+            end
+            VideoThread->>SocketIO: emit('video_frame', {...})
+        end
+        deactivate VideoThread
+    and
+        activate AudioThread
+        loop Every Audio Chunk (continuous)
+            AudioThread->>AudioThread: audio_array = resample_audio(stream)
+            alt is_recording == True
+                AudioThread->>Recorder: add_audio(audio_array)
+                activate Recorder
+                Recorder->>Recorder: audio_chunks.append(audio_array)
+                deactivate Recorder
+            end
+            AudioThread->>SocketIO: emit('audio_chunk', {...})
+        end
+        deactivate AudioThread
+    end
+
+    Note over VideoThread,AudioThread: Recording continues until<br/>stop_recording() is called
+
+    User->>Web: Click "Stop Recording"
+    activate Web
+    Web->>SocketIO: emit('stop_recording')
+    deactivate Web
+
+    activate SocketIO
+    SocketIO->>Handler: on_stop_recording()
+    deactivate SocketIO
+
+    activate Handler
+    Handler->>Recorder: stop_recording()
+    deactivate Handler
+
+    activate Recorder
+    Recorder->>Recorder: is_recording = False<br/>elapsed_time = now() - start_time
+    Recorder->>Recorder: real_fps = len(video_frames) / elapsed_time
+    Recorder->>Recorder: video_clip = ImageSequenceClip(video_frames, fps=real_fps)
+    Recorder->>Recorder: full_audio = concatenate(audio_chunks)<br/>audio_clip = AudioArrayClip(full_audio)
+    Recorder->>Recorder: video_clip.with_audio(audio_clip)
+    Recorder->>Disk: write_videofile(filename, codec='libx264')
+    Recorder->>Recorder: Return filename
+    deactivate Recorder
+
+    activate SocketIO
+    SocketIO->>User: emit('recording_status',<br/>{status: 'stopped', file: filename})
+    deactivate SocketIO
+
+    Note over User: Status: Recording Saved ✅
+    Note over Disk: File: recording_2026-01-05_14-30-45.mp4

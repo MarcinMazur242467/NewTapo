@@ -3,6 +3,14 @@
 \section*{Streszczenie}
 \addcontentsline{toc}{section}{Streszczenie}
 
+Niniejsza praca inżynierska podejmuje problematykę ograniczonego potencjału sprzętowego oraz uzależnienia od infrastruktury chmurowej (zjawisko vendor lock-in) w konsumenckich kamerach IoT, na przykładzie modelu TP-Link Tapo C200.
+
+Głównym celem pracy było zaprojektowanie i implementacja autorskiego, modułowego oprogramowania typu Open Source, pozwalającego na pełną obsługę kamery w sieci lokalnej, z pominięciem dedykowanej aplikacji producenta. Projekt zrealizowano zgodnie z metodyką Double Diamond, a rozwiązanie wdrożono w języku Python 3.13 z wykorzystaniem konteneryzacji Docker.
+
+W warstwie technologicznej zastosowano bibliotekę OpenCV do przetwarzania obrazu i autorskiej detekcji ruchu, PyAV do obsługi ścieżki audio oraz bibliotekę PyTapo do sterowania mechaniką PTZ (Pan-Tilt-Zoom) poprzez inżynierię wsteczną protokołów producenta. Interfejs użytkownika zbudowano w oparciu o serwer Flask i protokół WebSocket, co pozwoliło na komunikację i podgląd w czasie rzeczywistym.
+
+Przeprowadzone testy wydajnościowe potwierdziły osiągnięcie stabilnego strumieniowania wideo (średnio 15,7 FPS) oraz skuteczność algorytmu detekcji ruchu działającego na brzegu sieci. Zidentyfikowano również ograniczenia związane z narzutem środowiska Python oraz zarządzaniem pamięcią RAM podczas rejestracji nagrań. Finalny produkt stanowi funkcjonalną bramę IoT.
+
 \vspace{1cm}
 \section*{Słowa kluczowe}
 \addcontentsline{toc}{subsection}{Słowa kluczowe}

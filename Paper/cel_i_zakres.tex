@@ -3,7 +3,7 @@
 \section*{Cel i zakres pracy}
 \addcontentsline{toc}{section}{Cel i zakres pracy}
 \subsection*{Cel}
-\textbf{Celem głównym} niniejszej pracy inżynierskiej jest opracowanie oraz implementacja kompletnego, modułowego rozwiązania programistycznego opartego wyłącznie na \textbf{otwartym oprogramowaniu (Open Source)}, które umożliwi pełne wykorzystanie funkcjonalności kamery IP TP-Link Tapo C200 w środowisku lokalnym i uniezależni użytkownika od zamkniętej infrastruktury producenta (problem \textit{vendor lock-in}).\\
+\textbf{Celem głównym} niniejszej pracy inżynierskiej jest opracowanie oraz implementacja kompletnego, modułowego rozwiązania programistycznego opartego na \textbf{otwartym oprogramowaniu (Open Source)}, które umożliwi pełne wykorzystanie funkcjonalności kamery IP TP-Link Tapo C200 w środowisku lokalnym i uniezależni użytkownika od zamkniętej infrastruktury producenta.\\
 
 Osiągnięcie celu głównego jest weryfikowane poprzez realizację następujących, \textbf{konkretnych i mierzalnych} celów szczegółowych:
 
@@ -19,15 +19,14 @@ Osiągnięcie celu głównego jest weryfikowane poprzez realizację następując
 
 \subsection*{Zakres Pracy}
 
-Zakres pracy inżynierskiej obejmuje projektowanie, implementację oraz testowanie modułowego systemu klient-serwer. Praca stanowi odpowiedź na problem \textit{vendor lock-in} w segmencie kamer IoT, uzasadniając wybór tematu rosnącą potrzebą na otwarte i bezpieczne systemy zarządzania danymi.
+Zakres pracy inżynierskiej obejmuje projektowanie, implementację oraz testowanie modułowego systemu klient-serwer. Praca stanowi odpowiedź na problem \textit{ograniczonego potencjału sprzętowego} w segmencie kamer IoT, uzasadniając wybór tematu rosnącą potrzebą na otwarte systemy zarządzania danymi.
 
 \subsubsection*{Aspekty objęte zakresem pracy}
 
 \begin{itemize}
-    \item Projekt trójwarstwowej architektury kontenerowej (Docker) dla warstwy dostępu do sprzętu, logiki biznesowej (Flask/WebSocket's) oraz warstwy prezentacji (Web Client).
-    \item Wykorzystanie biblioteki \texttt{PyTapo} do obsługi nieudokumentowanego API komend sterujących kamery (PTZ, tryb nocny, aktywacja usług).
-    \item Praca skupia się na przechwytywaniu jednokierunkowego strumienia wideo i audio. Implementacja pełnej komunikacji zwrotnej w czasie rzeczywistym jest \textbf{poza zakresem} projektu.
-    \item Przeprowadzenie \textbf{testów wydajnościowych} skupiających się na \textbf{zużyciu zasobów (CPU/RAM)} hosta podczas ciągłej analizy strumienia wideo.
+    \item Projekt trójwarstwowej architektury kontenerowej dla warstwy dostępu do sprzętu, logiki biznesowej oraz warstwy prezentacji.
+    \item Praca skupia się na przechwytywaniu jednokierunkowego strumienia wideo i audio. 
+    \item Przeprowadzenie \textbf{testów wydajnościowych} skupiających się na \textbf{zużyciu zasobów} hosta podczas ciągłej analizy strumienia wideo.
 \end{itemize}    
 
 \subsubsection*{Wyłączenia z zakresu pracy}
@@ -35,6 +34,6 @@ Zakres pracy inżynierskiej obejmuje projektowanie, implementację oraz testowan
 W celu zachowania osiągalności i weryfikowalności celów w ramach pracy inżynierskiej, poniższe aspekty zostały wykluczone, ze względu na ich złożoność badawczą lub techniczną:
 
 \begin{itemize}
-    \item Protokół inicjalizacji - \textbf{Provisioning} - kamery Tapo w trybie Access Point (AP) jest nieudokumentowany, szyfrowany i opiera się na wymianie kluczy sesyjnych, co wymaga weryfikacji po stronie chmury TP-Link. Odtworzenie tego protokołu jest zadaniem na poziomie projektu badawczego i \textbf{wykracza poza ramy niniejszej pracy}. W konsekwencji, praca zakłada, że \textbf{kamera została jednorazowo skonfigurowana w sieci Wi-Fi} przy użyciu oficjalnej aplikacji mobilnej.
-    \item Implementacja modeli \textbf{uczenia maszynowego} (np. rozpoznawanie twarzy, klasyfikacja obiektów - YOLO), ze względu na wysokie wymagania obliczeniowe i złożoność czasową, \textbf{została wykluczona}. Praca koncentruje się na detekcji ruchu opartej na różnicy klatek (\texttt{OpenCV}).
+    \item Implementacja protokołu inicjalizacji(Provisioning) została wyłączona z zakresu pracy inżynierskiej. Protokół inicjalizacji kamer Tapo jest nieudokumentowany, szyfrowany i opiera się na wymianie kluczy sesji, za pośrednictwem chmury TP-Link. W konsekwencji, praca zakłada, że \textbf{kamera została jednorazowo skonfigurowana w sieci Wi-Fi} przy użyciu oficjalnej aplikacji mobilnej.
+    \item Implementacja modeli \textbf{uczenia maszynowego} (np. rozpoznawanie twarzy, klasyfikacja obiektów), ze względu na wysokie wymagania obliczeniowe i złożoność czasową, \textbf{została wykluczona}.
    \end{itemize}

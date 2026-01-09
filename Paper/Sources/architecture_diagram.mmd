@@ -1,0 +1,88 @@
+graph TB
+    %% ===== CLIENTS =====
+    WEB_CLIENT["🌐 Web Browser Client"]
+    CAMERA["📷 Tapo Camera IP Device"]
+    
+    %% ===== ENTRY POINT =====
+    MAIN["run.py<br/>Entry Point"]
+    
+    %% ===== APPLICATION LAYER =====
+    FLASK["Flask Application<br/>Web Server"]
+    SOCKETIO["SocketIO<br/>Real-time WebSocket"]
+    
+    %% ===== INITIALIZATION =====
+    CREATE_APP["create_app()<br/>Initialization"]
+    CONFIG["load_config()"]
+    
+    %% ===== CORE COMPONENTS =====
+    TAPO_CAM["TapoCamera<br/>- RTSP Stream<br/>- Device Control"]
+    
+    %% ===== THREADING LAYER =====
+    VIDEO_THREAD["🔴 VideoStreamer<br/><<Thread>><br/>- Frame Capture<br/>- Motion Detection<br/>- FPS Monitoring"]
+    AUDIO_THREAD["🔊 AudioStreamer<br/><<Thread>><br/>- Audio Capture<br/>- Resampling<br/>- 16kHz Mono"]
+    
+    %% ===== SHARED STATE =====
+    SHARED["📦 shared.py<br/>Global Registry<br/>- camera<br/>- video_streamer<br/>- audio_streamer<br/>- recorder"]
+    
+    %% ===== PROCESSING =====
+    MOTION_DETECTOR["MotionDetector<br/>Motion Analysis"]
+    RECORDER["Recorder<br/>- Video Buffer<br/>- Audio Buffer<br/>- MP4 Writer"]
+    
+    %% ===== WEB ROUTES =====
+    ROUTES["Routes<br/>- /move<br/>- /recordings<br/>- /play"]
+    HANDLERS["Socket Handlers<br/>- start_recording<br/>- stop_recording<br/>- move_camera"]
+    
+    %% ===== OUTPUT =====
+    DISK["💾 Disk Storage<br/>recordings/"]
+    
+    %% ===== CONNECTIONS: CLIENT TO SERVER =====
+    WEB_CLIENT -->|HTTP Requests| FLASK
+    WEB_CLIENT -->|WebSocket| SOCKETIO
+    
+    %% ===== CONNECTIONS: INITIALIZATION =====
+    MAIN --> FLASK
+    MAIN --> SOCKETIO
+    FLASK --> CREATE_APP
+    CREATE_APP --> CONFIG
+    CONFIG --> TAPO_CAM
+    TAPO_CAM -->|connects| CAMERA
+    
+    %% ===== CONNECTIONS: SHARED STATE =====
+    CREATE_APP --> SHARED
+    SHARED -->|holds instance| TAPO_CAM
+    SHARED -->|holds instance| VIDEO_THREAD
+    SHARED -->|holds instance| AUDIO_THREAD
+    SHARED -->|holds instance| RECORDER
+    
+    %% ===== CONNECTIONS: THREADING =====
+    CREATE_APP -->|creates & starts| VIDEO_THREAD
+    CREATE_APP -->|creates & starts| AUDIO_THREAD
+    
+    VIDEO_THREAD -->|reads frames| TAPO_CAM
+    AUDIO_THREAD -->|reads audio stream| TAPO_CAM
+    
+    VIDEO_THREAD --> MOTION_DETECTOR
+    VIDEO_THREAD -->|add_frame| RECORDER
+    AUDIO_THREAD -->|add_audio| RECORDER
+    
+    VIDEO_THREAD -->|emit video_frame| SOCKETIO
+    AUDIO_THREAD -->|emit audio_chunk| SOCKETIO
+    VIDEO_THREAD -->|emit motion_status| SOCKETIO
+    
+    %% ===== CONNECTIONS: WEB LAYER =====
+    ROUTES -->|access| SHARED
+    HANDLERS -->|access| SHARED
+    FLASK --> ROUTES
+    SOCKETIO --> HANDLERS
+    
+    %% ===== CONNECTIONS: CONTROL FLOW =====
+    ROUTES -->|camera.move()| TAPO_CAM
+    HANDLERS -->|start_recording()| RECORDER
+    HANDLERS -->|stop_recording()| RECORDER
+    
+    %% ===== CONNECTIONS: OUTPUT =====
+    RECORDER -->|writes MP4| DISK
+    ROUTES -->|serve files| DISK
+    
+    %% ===== SOCKETIO BROADCASTS =====
+    SOCKETIO -->|broadcast| WEB_CLIENT

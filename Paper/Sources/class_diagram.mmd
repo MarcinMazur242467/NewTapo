@@ -1,0 +1,114 @@
+classDiagram
+    %% ===== CORE CLASSES =====
+    class TapoCamera {
+        -ip: str
+        -user: str
+        -password: str
+        -cloudPassword: str
+        -cap: cv2.VideoCapture
+        -admin: Tapo
+        +connect() bool
+        +read_frame() ndarray
+        +move(direction, step) dict
+        +release() void
+    }
+
+    class VideoStreamer {
+        -camera: TapoCamera
+        -socketio: SocketIO
+        -is_running: bool
+        -thread: Thread
+        -detector: MotionDetector
+        -motion_active: bool
+        +start_streaming() void
+        -_capture_loop() void
+    }
+
+    class AudioStreamer {
+        -camera: TapoCamera
+        -socketio: SocketIO
+        -is_running: bool
+        -thread: Thread
+        +start_streaming() void
+        -_stream_loop() void
+    }
+
+    class Recorder {
+        -is_recording: bool
+        -video_frames: list
+        -audio_chunks: list
+        -filename: str
+        -start_time: float
+        -save_dir: str
+        +start_recording() str
+        +add_frame(frame) void
+        +add_audio(audio_data) void
+        +stop_recording() void
+    }
+
+    class MotionDetector {
+        -min_area: int
+        +detect(frame) tuple
+    }
+
+    %% ===== WEB LAYER =====
+    class Routes {
+        +index() html
+        +move_camera() json
+        +list_recordings() html
+        +play_recording(filename) file
+        +download_recording(filename) file
+        +delete_recording(filename) void
+    }
+
+    class SocketHandlers {
+        +handle_start_recording() void
+        +handle_stop_recording() void
+        +handle_move_camera(data) void
+    }
+
+    %% ===== APPLICATION SETUP =====
+    class Application {
+        +create_app() Flask
+        +socketio: SocketIO
+    }
+
+    %% ===== SHARED MODULE (pseudo-class representation) =====
+    class Shared {
+        +camera: TapoCamera
+        +video_streamer: VideoStreamer
+        +audio_streamer: AudioStreamer
+        +recorder: Recorder
+    }
+
+    %% ===== RELATIONSHIPS =====
+    %% Composition - Streamers use Camera
+    VideoStreamer --> TapoCamera : uses
+    AudioStreamer --> TapoCamera : uses
+    
+    %% Dependency - Streamers use Recorder
+    VideoStreamer --> Recorder : sends frames to
+    AudioStreamer --> Recorder : sends audio to
+    
+    %% Composition - VideoStreamer uses MotionDetector
+    VideoStreamer --> MotionDetector : contains
+    
+    %% Dependency - Application creates instances
+    Application --> TapoCamera : creates
+    Application --> VideoStreamer : creates
+    Application --> AudioStreamer : creates
+    Application --> Recorder : creates
+    Application --> Shared : populates
+    
+    %% Dependency - Web layer uses shared objects
+    Routes --> Shared : accesses
+    SocketHandlers --> Shared : accesses
+    
+    %% Dependency - Web layer uses socketio
+    Routes --> Application : uses
+    SocketHandlers --> Application : uses
+    
+    %% Note about threading
+    note for VideoStreamer "<<Thread>>\nRuns continuously"
+    note for AudioStreamer "<<Thread>>\nRuns continuously"
+    note for Shared "Global Registry\nHolds singleton instances"

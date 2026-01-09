@@ -1,11 +1,11 @@
-\section{Wprowadzenie technologiczne Kamer IP}
+\section{Wprowadzenie technologiczne kamer IP}
 \label{sec:wprowadzenie_kamer_ip}
-Rozdział ten ma za zadanie ugruntować zrozumienie złożoności systemów kamer IP i precyzyjnie wskazać na luki w otwartych standardach, które musi wypełnić zaprojektowane rozwiązanie.
+Rozdział ten ma za zadanie ugruntować wiedzę a propos złożoności systemów kamer IP.
 Współczesne systemy monitoringu wizyjnego oparte na kamerach IP stanowią kluczowy element infrastruktury bezpieczeństwa, wykraczając funkcjonalnością poza tradycyjne, analogowe systemy CCTV.
 Ewolucja ta jest ściśle związana z rozwojem sieci komputerowych i koncepcji IoT, gdzie urządzenia peryferyjne uzyskują zdolność do przetwarzania i autonomicznej komunikacji w ramach sieci.
 Z inżynierskiego punktu widzenia, kamera IP jest zaawansowanym systemem wbudowanym, łączącym optykę, cyfrowe przetwarzanie sygnału, kompresję danych oraz kompleksowy stos protokołów sieciowych.
 
-\subsection{Zastosowanie Kamer IP}
+\subsection{Zastosowanie kamer IP}
 \label{subsec:zastosowanie_kamer_ip}
 \begin{table}[H]
     \centering
@@ -34,102 +34,91 @@ Z inżynierskiego punktu widzenia, kamera IP jest zaawansowanym systemem wbudowa
         \bottomrule
     \end{tabularx}
 \end{table}
-
-
-Zastosowanie monitoringu wizyjnego opartego na kamerach IP jest obecnie wielosektorowe i dynamiczne.
-Urządzenia te, integrujące funkcje sensora i procesora danych, stały się podstawą \textbf{systemów analitycznych} w kluczowych obszarach gospodarki i bezpieczeństwa.
-W kontekście dalszego rozwoju monitoringu wizyjnego, szczególne znaczenie zyskuje \textbf{sztuczna inteligencja (AI)} i \textbf{uczenie maszynowe (ML)}.
-Nowoczesne algorytmy pozwalają na automatyczną detekcję zagrożeń, eliminację fałszywych alarmów oraz identyfikację i śledzenie obiektów w czasie rzeczywistym.
-Integracja tych zaawansowanych technik z \textbf{otwartym oprogramowaniem} — co jest celem niniejszej pracy — otwiera drogę do stworzenia bardziej zaawansowanych, konfigurowalnych i niezależnych narzędzi wspierających bezpieczeństwo oraz analitykę zdarzeń.
-Dzięki temu, system monitorujący może automatycznie filtrować szum wizualny i koncentrować uwagę na zdarzeniach o wysokim prawdopodobieństwie zagrożenia lub anomalii.
-Technologie te transformują surowe dane wideo w zorganizowane i użyteczne metadane, co jest fundamentalne dla automatyki i bezpieczeństwa.
-
+Kamery IP znalazły szerokie zastosowanie w różnych sektorach przemysłu i usług, stanowiąc kluczowy element infrastruktury bezpieczeństwa i zarządzania.
 \subsubsection{Monitoring}
 \label{subsubsec:monitoring}
 
 Podstawowym i historycznym zastosowaniem kamery IP jest \textbf{nadzór wizyjny (monitoring)}.
-W odróżnieniu od analogowego CCTV, monitoring oparty na protokole internetowym umożliwia przesyłanie strumienia wideo wysokiej rozdzielczości (np. 1080p w Tapo C200) oraz metadanych poprzez standardowe sieci LAN/WLAN.
-Z technicznego punktu widzenia, monitoring realizowany jest poprzez ciągłe kodowanie wideo (standardy H.264/H.265), strumieniowanie za pomocą protokołów czasu rzeczywistego (\textbf{RTSP}) oraz zapis cyfrowy na nośnikach lokalnych (microSD, serwer NVR) lub w chmurze.
+W odróżnieniu od analogowego CCTV, monitoring oparty na protokole internetowym umożliwia przesyłanie strumienia wideo wysokiej rozdzielczości (np. 1080p) oraz metadanych poprzez standardowe sieci LAN/WLAN.
+Z technicznego punktu widzenia, monitoring realizowany jest poprzez ciągłe kodowanie wideo, strumieniowanie za pomocą protokołów czasu rzeczywistego oraz zapis cyfrowy na nośnikach lokalnych (np. karty microSD), serwerach NVR(Network Video Recorder) lub w chmurze.
 
-\subsubsection{Kontrola Dostępu}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{./Sources/monitoring.png}
+    \caption{Monitoring wizyjny z wykorzystaniem kamer IP w infrastrukturze miejskiej. Źródło: \cite{adobe_stock_monitoring}.}
+    \label{fig:monitoring_kamery_ip}
+\end{figure}
+
+\subsubsection{Kontrola dostępu}
 \label{subsubsec:kontrola_dostepu}
 
 Kamery IP są coraz częściej integrowane z systemami \textbf{Kontroli Dostępu (Access Control Systems - ACS)}.
-Ich rola wykracza poza zwykłe weryfikowanie tożsamości. Dzięki wykorzystaniu AI, kamery stają się kluczowym sensorem w bezdotykowej autoryzacji.
+Ich rola wykracza poza zwykłe weryfikowanie tożsamości. Kamery stają się kluczowym sensorem w bezdotykowej autoryzacji.
 Przykłady zastosowań inżynierskich obejmują:
 \begin{enumerate}
-    \item \textbf{Rozpoznawanie Twarzy:} Zastosowanie algorytmów głębokiego uczenia do identyfikacji i weryfikacji osób uprawnionych, automatycznie odblokowując wejścia.
+    \item \textbf{Rozpoznawanie Twarzy:} Zastosowanie algorytmów głębokiego uczenia(Deep Learning) do identyfikacji i weryfikacji osób uprawnionych, automatycznie odblokowując wejścia.
 \item \textbf{Rozpoznawanie Tablic Rejestracyjnych:} Automatyczne zezwalanie na wjazd pojazdów do strzeżonych stref (np. parkingów pracowniczych) na podstawie analizy obrazu z kamery.
 \end{enumerate}
-% Tablice rejestracyjne - https://www.researchgate.net/profile/Halina-Kwasnicka/publication/228702352_License_plate_localization_and_recognition_in_camera_pictures/links/0fcfd50be4c1b30fc2000000/License-plate-localization-and-recognition-in-camera-pictures.pdf
 Takie rozwiązania minimalizują ryzyko błędów ludzkich i zwiększają bezpieczeństwo poprzez ciągłe logowanie zdarzeń wejścia i wyjścia, stanowiąc integralną część zabezpieczeń fizycznych i sieciowych.
-\subsubsection{Zarządzanie Procesami Biznesowymi}
+\subsubsection{Zarządzanie procesami biznesowymi}
 \label{subsubsec:zarzadzanie_procesami_biznesowymi}
 
 Wykorzystanie kamer IP w zarządzaniu procesami biznesowymi koncentruje się na optymalizacji operacyjnej poprzez zbieranie danych o efektywności i bezpieczeństwie pracy.
 W sektorach takich jak produkcja i logistyka, kamery są używane do:
-\begin{enumerate}
-    \item \textbf{Kontroli Jakości:} Monitorowanie linii produkcyjnych w celu automatycznego wykrywania defektów, niezgodności montażu lub nieprawidłowej sekwencji działań.
-\item \textbf{Optymalizacji Przepływu Pracy:} Analiza ścieżek ruchu pracowników i pojazdów w celu identyfikacji wąskich gardeł w magazynach i centrach dystrybucyjnych.
-\end{enumerate}
-Te zastosowania wymagają wysokiej precyzji metadanych i niskiego opóźnienia, co stawia wysokie wymagania przed \textbf{algorytmami analizy brzegowej (Edge Analytics)}, które muszą działać na poziomie procesora kamery lub serwera lokalnego.
+\textbf{Kontroli Jakości.} Monitorowanie linii produkcyjnych w celu automatycznego wykrywania defektów, niezgodności montażu lub nieprawidłowej sekwencji działań.Analiza ścieżek ruchu pracowników i pojazdów w celu identyfikacji wąskich gardeł w magazynach i centrach dystrybucyjnych. Te zastosowania wymagają wysokiej precyzji metadanych i niskiego opóźnienia, co stawia wysokie wymagania przed \textbf{algorytmami analizy brzegowej}, które muszą działać na poziomie procesora kamery lub serwera lokalnego.
+
 \subsubsection{Technologie Smart}
 \label{subsubsec:technologie_smart}
 
 Kamery IP są fundamentalnym elementem \textbf{ekosystemów Smart Home i Smart City}.
 W tych kontekstach, kamera pełni rolę czujnika behawioralnego, dostarczając danych do zautomatyzowanych systemów decyzyjnych.
-W budownictwie inteligentnym, Tapo C200, podobnie jak inne urządzenia IoT, jest zintegrowana za pomocą protokołów API z platformami takimi jak \textbf{Google Assistant i Amazon Alexa} (jak wskazano w dokumentacji Tapo).
-%cytowanie https://ieeexplore.ieee.org/abstract/document/6785516
-Przykłady zastosowań to:
-\begin{enumerate}
-    \item \textbf{Automatyzacja Zdarzeniowa:} Detekcja ruchu lub dźwięku (np. wykrywanie płaczu dziecka w Tapo C200) uruchamia inne urządzenia (np. włącza światło, wysyła alert do systemu zarządzania domem).
-\item \textbf{Zarządzanie Energią:} Wykrycie braku obecności osób w pomieszczeniu może prowadzić do automatycznego obniżenia temperatury lub wyłączenia niepotrzebnych urządzeń, przyczyniając się do zwiększenia efektywności energetycznej.
-\end{enumerate}
-\subsubsection{Analiza Danych}
+W budownictwie inteligentnym, kamery Tapo, podobnie jak inne urządzenia IoT, jest zintegrowana za pomocą protokołów API z platformami takimi jak \textbf{Google Assistant i Amazon Alexa}. Pozwalają one np. na automatyzacje zdarzeniową która po wykryciu incydentu włącza lub wyłącza inne urządzenia w ekosystemie Smart Home. \cite{homecontrol2023}
+
+
+\subsubsection{Analiza danych}
 \label{subsubsec:analiza_danych}
 
 % https://www.techscience.com/iasc/v24n1/39733/pdf Cytowanie 
 
-Kamera IP, połączona ze sztuczną inteligencją (AI), przestaje być pasywnym urządzeniem rejestrującym, a staje się aktywnym sensorem generującym \textbf{metadane strukturalne}.
+Kamera IP, połączona ze sztuczną inteligencją, przestaje być pasywnym urządzeniem rejestrującym, a staje się aktywnym sensorem generującym \textbf{metadane strukturalne}.
 W kontekście systemów Big Data, strumień wideo jest intensywnie przetwarzany, stanowiąc bazę dla analityki w czasie rzeczywistym i prognozowania zdarzeń.
 Efektywne wykorzystanie danych wizyjnych do celów analitycznych obejmuje trzy główne poziomy inżynierskie:
-\begin{enumerate}
-    \item \textbf{Ekstrakcja Danych Statystycznych:} Dotyczy pomiarów ilościowych, takich jak gęstość obiektów, liczenie przepływu (\textit{flow counting}) oraz generowanie map ciepła (\textit{heatmaps}).
+\begin{itemize}
+    \item \textbf{Ekstrakcja Danych Statystycznych:} Dotyczy pomiarów ilościowych, takich jak gęstość obiektów czy generowanie map ciepła (\textit{heatmaps}).
 \item \textbf{Analiza Behawioralna i Wzorce Trendów:} Identyfikacja nietypowych sekwencji zdarzeń, które mogą sugerować incydent bezpieczeństwa (np. pozostawiony pakunek).
 \item \textbf{Analityka Predykcyjna:} Przewidywanie potencjalnych przyszłych zdarzeń na podstawie historycznych i bieżących metadanych.
 Wymaga to integracji i walidacji danych z wielu źródeł IoT.
-\end{enumerate}
+\end{itemize}
 \subsection{Budowa}
 \label{subsec:budowa}
-Zrozumienie architektury kamery IP jest kluczowe dla identyfikacji ograniczeń narzucanych przez producentów i zaprojektowania skutecznego, otwartego oprogramowania.
-
-Z perspektywy inżynierskiej, kamera IP nie jest monolitycznym urządzeniem, lecz złożonym systemem wbudowanym, składającym się ze ściśle zintegrowanych komponentów sprzętowych (hardware) i dedykowanego oprogramowania (firmware), które zarządza ich pracą .
+Kamera IP nie jest monolitycznym urządzeniem, lecz złożonym systemem wbudowanym, składającym się ze ściśle zintegrowanych komponentów sprzętowych (hardware) i dedykowanego oprogramowania (firmware), które zarządza ich pracą .
 Poniższe podrozdziały szczegółowo omawiają te dwie warstwy.
 
-\subsubsection{Budowa Fizyczna - Hardware}
+\subsubsection{Budowa fizyczna - hardware}
 \label{subsubsec:hardware}
-Warstwa sprzętowa stanowi fizyczny fundament kamery, odpowiadając za akwizycję, przetwarzanie i transmisję danych audiowizualnych.
-W celu dogłębnej analizy, jej kluczowe komponenty zostaną omówione w dedykowanych podrozdziałach.
-\paragraph{Matryca (Przetwornik obrazu)}
-\label{para:matryca} % dodac link do YT jako zrodlo https://www.youtube.com/watch?v=IipdBSZCcgk
-Matryca, nazywana również przetwornikiem lub sensorem obrazu, jest kluczowym elementem półprzewodnikowym, który inicjuje cały proces wizyjny.
-Jej fundamentalnym zadaniem jest konwersja energii fotonów (światła) padających na jej powierzchnię na mierzalny sygnał elektryczny.
-Proces ten, znany jako wewnętrzne zjawisko fotoelektryczne, stanowi podstawę cyfrowego przetwarzania obrazu.
-We współczesnych kamerach IP, w tym w analizowanym modelu TP-Link Tapo C200, dominującą technologią jest \textbf{CMOS (Complementary Metal-Oxide-Semiconductor)}.
-Przetworniki CMOS wyparły starszą technologię CCD głównie ze względu na niższy koszt produkcji, mniejsze zużycie energii oraz możliwość integracji dodatkowych obwodów logicznych (np. przetworników analogowo-cyfrowych, układów redukcji szumów) bezpośrednio na tej samej płytce krzemowej, co jest zgodne z architekturą System-on-a-Chip (SoC).
-Z inżynierskiego punktu widzenia, jakość generowanego obrazu jest determinowana przez następujące parametry techniczne matrycy:
-\begin{itemize}
-    \item \textbf{Rozdzielczość:} Określa liczbę pikseli, z których składa się obraz, np.
-1920x1080 (Full HD) w kamerze Tapo C200. Wyższa rozdzielczość pozwala na zarejestrowanie większej liczby szczegółów, ale jednocześnie generuje większy strumień danych, co stanowi wyzwanie dla przepustowości sieci i zasobów obliczeniowych.
-\item \textbf{Rozmiar fizyczny i rozmiar piksela:} Fizyczny rozmiar matrycy (np. 1/2.9 cala) w połączeniu z jej rozdzielczością definiuje rozmiar pojedynczego piksela.
-Większe piksele są w stanie przechwycić więcej światła, co przekłada się na lepszą jakość obrazu w warunkach słabego oświetlenia i wyższy stosunek sygnału do szumu (SNR).
-\item \textbf{Czułość:} Mierzona w luksach (lux), określa minimalną ilość światła potrzebną do wygenerowania użytecznego obrazu.
-Jest to parametr krytyczny dla funkcji noktowizyjnych, gdzie matryca musi efektywnie współpracować z oświetlaczem podczerwieni (IR).
-\item \textbf{Zakres dynamiki:} Zdolność matrycy do jednoczesnego rejestrowania bardzo jasnych i bardzo ciemnych obszarów w tej samej scenie.
-Szeroki zakres dynamiki (WDR) jest kluczowy w scenach o dużym kontraście, np. w pomieszczeniu z oknem w słoneczny dzień.
-\end{itemize}
-Zrozumienie tych parametrów jest niezbędne do oceny ograniczeń sprzętowych kamery i świadomego projektowania algorytmów przetwarzania obrazu, takich jak detekcja ruchu, które muszą operować na danych wyjściowych dostarczanych przez matrycę.
-\subsubsection{Oprogramowanie - Firmware}
+\paragraph{Obiektyw}
+Obiektyw stanowi „oko” kamery – jest układem soczewek skupiających światło na matrycy przetwornika. To on definiuje kąt widzenia, głębię ostrości oraz stopień zniekształceń obrazu na brzegach kadru.
+
+\paragraph{Przetwornik obrazu (matryca)}
+Przetwornik obrazu, najczęściej typu CMOS, zamienia padające przez obiektyw fotony na sygnał elektryczny, który następnie jest digitalizowany. Jego rozdzielczość, wielkość pikseli i czułość bezpośrednio determinują szczegółowość, dynamikę i jakość rejestrowanego obrazu.
+
+\paragraph{Procesor}
+Procesor pełni rolę „mózgu” kamery. Jest to zazwyczaj układ System-on-a-Chip (SoC), który integruje  dedykowane bloki sprzętowe wymagane do optymalnej pracy kamery. Procesor zarządza przetwarzaniem sygnału, kodowaniem strumienia, obsługą sieci i interfejsem użytkownika.
+
+\paragraph{Pamięć}
+Pamięć w kamerze IP pełni dwie kluczowe funkcje: przechowuje firmware urządzenia oraz buforuje lub archiwizuje nagrania wideo. Najczęściej wykorzystuje się pamięć Flash oraz gniazdo na kartę microSD, a w rozwiązaniach profesjonalnych także zewnętrzne rejestratory NVR lub zasoby chmurowe, co umożliwia długoterminowe i bezpieczne składowanie danych.
+
+\paragraph{Moduł sieciowy}
+Moduł sieciowy odpowiada za komunikację z infrastrukturą IP. Może przyjmować formę przewodowego interfejsu Ethernet (gniazdo RJ45, często z obsługą PoE) lub układu radiowego Wi‑Fi, realizującego bezprzewodowe połączenie z routerem lub punktem dostępowym.
+
+\paragraph{Obudowa}
+Obudowa zapewnia ochronę mechaniczną i środowiskową dla elektroniki kamery. W zależności od klasy urządzenia może być wykonana z metalu lub wytrzymałego tworzywa, a także spełniać normy odporności na wodę, pył i akty wandalizmu.
+
+\paragraph{Zasilanie}
+Układ zasilania dostarcza energię do wszystkich komponentów kamery. W systemach profesjonalnych często stosuje się zasilanie PoE, które przesyła energię i dane jednym przewodem Ethernet, natomiast w zastosowaniach domowych popularne są oddzielne zasilacze sieciowe.
+
+
+\subsubsection{Oprogramowanie - firmware}
 \label{subsubsec:firmware}
 Firmware to dedykowane oprogramowanie wbudowane w pamięć Flash kamery, które pełni rolę systemu operacyjnego i warstwy aplikacyjnej.
 Jest ono "pomostem" między fizycznym sprzętem a funkcjonalnością dostępną dla użytkownika.
@@ -143,105 +132,109 @@ Firmware realizuje kluczowe zadania, takie jak:
 
 \subsection{Zasada działania}
 \label{subsec:zasada_dzialania}
-Niniejszy podrozdział stanowi dogłębną analizę mechanizmów operacyjnych, które definiują funkcjonalność nowoczesnej kamery IP. Urządzenie to, dalekie od bycia prostym peryferium, jest w rzeczywistości zaawansowanym, autonomicznym systemem wbudowanym, w którym zbiegają się dziedziny inżynierii sprzętowej, oprogramowania firmware oraz złożonych protokołów sieciowych. Celem tej analizy jest dekonstrukcja logiki działania kamery na cztery fundamentalne, wzajemnie powiązane domeny. Rozpoczniemy od zbadania jej architektury komunikacyjnej, czyli stosu protokołów, który umożliwia jej funkcjonowanie jako węzła w sieci. Następnie przeanalizujemy krytyczny proces provisioningu, czyli bezpiecznego włączania urządzenia do infrastruktury sieciowej. W trzeciej części prześledzimy wewnętrzny potok przetwarzania danych, od momentu konwersji zjawisk fizycznych – fotonów światła i fal akustycznych – na surowe dane cyfrowe, aż po ich kompresję do formatu gotowego do transmisji. Na końcu szczegółowo omówimy mechanizmy strumieniowania, które pozwalają na przesyłanie tych danych w czasie rzeczywistym. Zrozumienie synergii między wyspecjalizowanym układem scalonym (SoC), sensorami, oprogramowaniem układowym i protokołami sieciowymi jest kluczowe do pełnego pojęcia, jak kamera IP realizuje swoje zadania – od prostego monitoringu po zaawansowaną analitykę danych.
+Niniejszy podrozdział stanowi analizę mechanizmów operacyjnych, które definiują funkcjonalność nowoczesnej kamery IP.
 
-\subsubsection{Architektura Komunikacji Sieciowej: Stos Protokołów}
+\subsubsection{Komunikacja sieciowa}
 
-Komunikacja kamery IP opiera się na warstwowej architekturze modelu TCP/IP, co zapewnia modularność i interoperacyjność systemu. Poniżej przedstawiono esencję technologiczną poszczególnych warstw w kontekście analizowanego rozwiązania \cite{tanenbaum2011computer}.
+Komunikacja kamery IP opiera się na warstwowej architekturze opisanej w książce \cite{tanenbaum2011computer}, co zapewnia modularność i interoperacyjność systemu. Poniżej przedstawiono esencję technologiczną poszczególnych warstw w kontekście analizowanego rozwiązania.
 
-\paragraph{Warstwa Dostępu do Sieci}
-Warstwa ta definiuje fizyczną transmisję danych. W kamerach Tapo kluczowe są standardy bezprzewodowe oraz mechanizmy zabezpieczeń:
+\paragraph{Warstwa Fizyczna}
+Warstwa fizyczna stanowi najniższy poziom modelu opisanego w książce i jest fundamentem działania każdej kamery sieciowej. Odpowiada za przesyłanie nieuformowanych ciągów bitów poprzez medium transmisyjne. Definiuje ona specyfikacje elektryczne, mechaniczne oraz funkcjonalne interfejsów urządzenia. W inżynierii systemów wizyjnych warstwę tę realizuje się głównie w dwóch standardach:
 \begin{itemize}
-    \item \textbf{IEEE 802.11n/ac:} Standardy Wi-Fi zapewniające przepustowość niezbędną dla strumieni Full HD. Wybór pasma (2.4 GHz vs 5 GHz) determinuje zasięg oraz odporność na zakłócenia.
-    \item \textbf{WPA2/WPA3:} Protokoły szyfrowania (AES). WPA3 wprowadza mechanizm \textit{Simultaneous Authentication of Equals}, chroniący przed atakami typu brute-force oraz zapewniający \textit{forward secrecy}.
+\item{\textbf{Interfejs przewodowy (Ethernet)}}
+Najpowszechniejszym standardem w profesjonalnych instalacjach CCTV jest standard IEEE 802.3. Fizycznym medium transmisyjnym jest tu miedziana skrętka komputerowa (najczęściej kategorii 5e lub 6) zakończona wtykiem RJ45. Standard ten definiuje różne prędkości transmisji (10/100/1000 Mbps) oraz wcześniej wspomniany mechanizmy zasilania urządzeń poprzez kabel sieciowy, co upraszcza instalację i zwiększa niezawodność systemu monitoringu.
+
+\item{\textbf{Interfejs bezprzewodowy (Wi-Fi)}}
+W kamerach konsumenckich warstwa fizyczna często opiera się na standardzie IEEE 802.11 (Wi-Fi). Medium transmisyjnym są w tym przypadku fale radiowe w pasmach 2.4 GHz (zapewniające lepszą przenikalność przez przeszkody) lub 5 GHz (oferujące wyższą przepustowość). W kontekście inżynierii sieciowej, kluczowe znaczenie ma tu modulacja sygnału oraz mechanizmy zarządzania dostępem do medium (CSMA/CA), które minimalizują kolizje i optymalizują wykorzystanie pasma.
 \end{itemize}
 
-\paragraph{Warstwa Internetowa}
-Odpowiada za adresowanie i routing pakietów w sieciach IP.
-\begin{itemize}
-    \item \textbf{Adresacja IP:} Kamera uzyskuje tożsamość sieciową dynamicznie (DHCP) lub poprzez stałą konfigurację (statyczny adres IP). W profesjonalnych implementacjach zalecany jest statyczny adres IP, co gwarantuje stabilność połączenia dla zewnętrznych systemów sterujących.
-\end{itemize}
+\paragraph{Warstwa Łącza Danych}
+Warstwa łącza danych odpowiada za niezawodną wymianę informacji pomiędzy urządzeniami znajdującymi się w tym samym segmencie sieci lokalnej. Jej kluczowym zadaniem jest pakowanie danych z warstw wyższych w struktury zwane ramkami oraz zarządzanie dostępem do medium transmisyjnego. W kontekście systemów monitoringu IP, warstwa ta pełni dwie krytyczne funkcje: adresację fizyczną oraz segmentację ruchu.
+
+\paragraph*{Adresacja fizyczna (MAC)}
+Każda kamera IP posiada unikalny adres fizyczny MAC (\textit{Medium Access Control}), wypalony na etapie produkcji w karcie sieciowej urządzenia. Jest to 48-bitowy identyfikator, który w inżynierii systemów bezpieczeństwa wykorzystywany jest do:
+\begin{enumerate}
+    \item \textbf{Identyfikacji urządzenia:} Umożliwia jednoznaczną identyfikację kamery w sieci lokalnej, co jest kluczowe dla zarządzania wieloma punktami końcowymi w systemach CCTV.
+    \item \textbf{Rezerwacji adresacji (DHCP Reservation):} Gwarantuje, że kamera po każdym restarcie otrzyma ten sam adres IP od routera, co jest kluczowe dla stabilności nagrywania.
+    \item \textbf{Filtracji dostępu (MAC Filtering):} Zabezpieczenia sieci poprzez dopuszczenie do komunikacji wyłącznie urządzeń o znanych identyfikatorach sprzętowych.
+\end{enumerate}
+
+\paragraph*{Protokół ARP}
+Protokół ARP pełni funkcję "tłumacza" na styku warstwy drugiej i trzeciej, mapując logiczne adresy IP na fizyczne adresy MAC. W systemach monitoringu jest on niezbędny, aby rejestrator NVR lub komputer klienta mógł zlokalizować kamerę w sieci lokalnej i przesłać do niej ramkę.
+Należy jednak zaznaczyć, że bezstanowość tego protokołu stanowi istotny wektor zagrożenia. Kamery IP są podatne na ataki typu \textbf{ARP Spoofing} (zatruwanie tablicy ARP), w których atakujący rozsyła fałszywe pakiety ARP, podszywając się pod bramę sieciową. Pozwala to na realizację ataku \textit{Man-in-the-Middle}, umożliwiającego przechwycenie strumienia wideo.
+
+\paragraph{Warstwa Sieciowa}
+Warstwa sieciowa odpowiada za adresowanie logiczne oraz wyznaczanie tras (routing) pakietów pomiędzy różnymi sieciami. To właśnie na tym poziomie, kamera przestaje być widoczna tylko jako urządzenie lokalne spięte kablem lub falą radiową, a staje się autonomicznym węzłem w strukturze protokołu internetowego. Kluczowe zadania tej warstwy w systemach wizyjnych to:
+
+\subparagraph{Adresacja logiczna (IPv4)}
+W przeciwieństwie do niezmiennego adresu fizycznego MAC, adres IP jest przydzielany programowo i określa lokalizację urządzenia w topologii sieci. W kamerach Tapo i większości systemów CCTV dominuje protokół IPv4 (32-bitowy).
+Z inżynierskiego punktu widzenia, krytyczny jest sposób przydzielania tego adresu:
+\begin{enumerate}
+    \item \textbf{Dynamiczny:} Automatyczne przypisanie adresu IP przez serwer DHCP (zazwyczaj wbudowany w router). Jest to wygodne rozwiązanie dla użytkowników domowych, jednakże może prowadzić do zmiany adresu IP kamery po restarcie urządzenia.
+    \item \textbf{Statyczny:} Ręczne przypisanie adresu w konfiguracji urządzenia. Jest to \textbf{obligatoryjna praktyka} w profesjonalnych wdrożeniach, gwarantująca, że punkt końcowy API kamery będzie zawsze dostępny pod tym samym adresem.
+\end{enumerate}
 
 \paragraph{Warstwa Transportowa}
-Determinuje sposób przesyłania danych pomiędzy procesami, wykorzystując dwa odmienne podejścia:
+Warstwa transportowa odpowiada za logiczne połączenie między procesami ("end-to-end") oraz zarządzanie przepływem danych. W inżynierii strumieniowania wideo jest to miejsce kluczowej decyzji projektowej: wybór między niezawodnością dostarczenia danych a minimalizacją opóźnień. Kamery IP wykorzystują równolegle dwa protokoły transportowe, obsługujące różne aspekty swojego działania.
+
+\paragraph*{Protokół UDP (User Datagram Protocol)}
+UDP jest protokołem bezpołączeniowym, charakteryzującym się minimalnym nagłówkiem i brakiem mechanizmów potwierdzania odbioru.
+W kontekście kamer IP jest on domyślnym fundamentem dla transportu właściwego strumienia wideo.
+Z inżynierskiego punktu widzenia, użycie UDP jest podyktowane specyfiką danych czasu rzeczywistego: spóźniony pakiet jest bezużyteczny. W monitoringu "na żywo" znacznie korzystniejsze jest porzucenie uszkodzonej klatki obrazu, niż zatrzymanie strumienia w celu oczekiwania na retransmisję, co generowałoby narastające opóźnienia i efekt "buforowania".
+
+\paragraph*{Protokół TCP (Transmission Control Protocol)}
+TCP jest protokołem połączeniowym, gwarantującym dostarczenie wszystkich pakietów w poprawnej kolejności. Kamery IP wykorzystują go w obszarach, gdzie integralność danych jest ważniejsza niż czas:
+\begin{enumerate}
+    \item \textbf{Płaszczyzna sterowania:} Obsługa negocjacji sesji (RTSP handshake), przesyłanie poleceń PTZ oraz komunikacja z API kamery. Utrata komendy "przesuń w lewo" jest niedopuszczalna, stąd wymóg użycia TCP.
+    \item \textbf{Aktualizacje firmware'u:} Proces ten wymaga niezawodnego transferu dużych plików binarnych, gdzie każdy błąd może skutkować uszkodzeniem oprogramowania układowego. TCP zapewnia mechanizmy kontroli błędów i retransmisji, co jest kluczowe dla integralności aktualizacji.
+\end{enumerate}
+
+\paragraph*{Porty i multipleksacja usług}
+Warstwa czwarta wprowadza pojęcie portów, co pozwala kamerze na jednoczesne działanie jako serwer wielu usług pod jednym adresem IP. Typowa mapa portów nowoczesnej kamery obejmuje:
 \begin{itemize}
-    \item \textbf{TCP (Transmission Control Protocol):} Protokół połączeniowy, gwarantujący dostarczenie i kolejność pakietów. Wykorzystywany do zadań krytycznych: obsługi interfejsu konfiguracyjnego oraz przesyłania poleceń sterujących PTZ (\textit{Pan-Tilt-Zoom}) poprzez HTTP API.
-    \item \textbf{UDP (User Datagram Protocol):} Protokół bezpołączeniowy o niskim narzucie, optymalny dla transmisji czasu rzeczywistego. Stanowi fundament dla protokołu RTP, umożliwiając strumieniowanie wideo przy minimalnych opóźnieniach kosztem dopuszczalnej utraty pojedynczych klatek.
+    \item \textbf{Port 554:} Standardowy port dla strumieniowania RTSP.
+    \item \textbf{Port 80 / 443:} Serwer HTTP/HTTPS obsługujący interfejs webowy oraz API dla aplikacji mobilnych (np. Tapo App).
+\item \textbf{Port 2020:} Często zarezerwowany dla protokołu integracyjnego ONVIF.
 \end{itemize}
 
 \paragraph{Warstwa Aplikacji}
-Najwyższa warstwa realizująca konkretne funkcje systemowe:
+Warstwa aplikacji jest najwyższym poziomem modelu OSI, stanowiącym bezpośredni interfejs dla użytkownika końcowego oraz zewnętrznych systemów informatycznych. To tutaj zachodzi właściwa interpretacja danych i realizacja konkretnych usług biznesowych. W ekosystemie kamer IP warstwa ta integruje szereg protokołów definiujących sposób, w jaki urządzenie jest wykrywane, sterowane i w jaki sposób udostępnia strumień mediów.
+
+\subparagraph{Strumieniowanie i Sterowanie (RTSP/ONVIF)}
+Najważniejszą usługą aplikacyjną jest \textbf{RTSP (Real-Time Streaming Protocol)}. Pełni on rolę "pilota zdalnego sterowania" dla sesji multimedialnej. RTSP działa w tandemie z protokołem RTP (Real-Time Transport Protocol), który odpowiada za faktyczny transport danych multimedialnych. Oba te protokoły zostaną opisane w dalszej części pracy.
+Dla zapewnienia interoperacyjności kluczowy jest standard \textbf{ONVIF (Open Network Video Interface Forum)}. Jest to zbiór usług Web Services opartych na języku XML/SOAP, który standaryzuje komunikację. Dzięki niemu aplikacja napisana w Pythonie może w ten sam sposób wysterować obrót PTZ kamery marki TP-Link, jak i urządzenia w pełni profesjonalnego, np. Axis czy Hikvision.
+
+\subparagraph{GUI i API (HTTP/HTTPS)}
+Protokół HTTP, stanowiący fundament Internetu, w kamerach IP pełni podwójną rolę:
+\begin{enumerate}
+    \item \textbf{Interfejs Webowy:} Serwuje graficzny panel konfiguracyjny (GUI) dostępny przez przeglądarkę, umożliwiając zmianę ustawień sieciowych, parametrów obrazu czy aktualizację firmware'u.
+    \item \textbf{API:} Służy jako nośnik dla programistycznych interfejsów sterowania. W przypadku kamer Tapo, komunikacja z aplikacją mobilną odbywa się poprzez szyfrowane zapytania HTTPS przesyłające ładunki JSON, co pozwala na bezpieczne sterowanie urządzeniem z poziomu smartfona.
+\end{enumerate}
+
+Poprawne funkcjonowanie warstwy aplikacji zależy od szeregu usług tła:
 \begin{itemize}
-    \item \textbf{HTTP API:} Interfejs programistyczny umożliwiający zewnętrznym aplikacjom (np. napisanym w Pythonie) sterowanie kamerą i odczyt jej stanu.
-    \item \textbf{NTP (Network Time Protocol):} Kluczowy dla synchronizacji czasu, co jest niezbędne do prawidłowego generowania znaczników czasu (\textit{timestamps}) w strumieniu wideo oraz logowania zdarzeń o charakterze kryminalistycznym.
+    \item \textbf{DHCP (Dynamic Host Configuration Protocol):} Automatyzuje proces konfiguracji sieciowej, pobierając adres IP, maskę i bramę od routera tuż po uruchomieniu kamery.
+    \item \textbf{NTP (Network Time Protocol):} Jest krytyczny dla materiału dowodowego. Synchronizuje wewnętrzny zegar kamery z globalnym wzorcem czasu. Brak synchronizacji (np. data z roku 1970) może sprawić, że nagranie z włamania zostanie odrzucone przez sąd jako niewiarygodne.
+    \item \textbf{DNS (Domain Name System):} Umożliwia kamerze komunikację z chmurą producenta przy użyciu nazw domenowych zamiast trudnych do zapamiętania i zmiennych adresów IP.
 \end{itemize}
 
-\begin{table}[H]
-    \centering
-    \caption{Porównanie protokołów transportowych w systemie kamery IP.}
-    \label{tab:tcp_vs_udp_short}
-    \begin{tabularx}{\textwidth}{L L L}
-        \toprule
-        \textbf{Cecha} & \textbf{TCP} & \textbf{UDP (RTP)} \\
-        \midrule
-        \textbf{Zastosowanie} & Sterowanie (API), konfiguracja & Strumieniowanie mediów \\
-        \textbf{Zaleta} & Niezawodność i integralność danych & Minimalne opóźnienia (\textit{latency}) \\
-        \textbf{Narzut} & Większy (retransmisje, potwierdzenia) & Minimalny (brak kontroli błędów) \\
-        \bottomrule
-    \end{tabularx}
-\end{table}
+\subsubsection{Przetwarzanie sygnału audiowizualnego}
+Sercem kamery IP jest jej zdolność do przekształcania zjawisk fizycznych – światła i dźwięku – w ustrukturyzowany, skompresowany strumień danych cyfrowych, gotowy do transmisji przez sieć. Proces ten nie jest prostą konwersją, lecz złożonym, wieloetapowym potokiem przetwarzania, realizowanym w czasie rzeczywistym przez wyspecjalizowane komponenty sprzętowe wewnątrz układu System-on-a-Chip (SoC). Architektura SoC jest tu kluczowa; zamiast obciążać uniwersalny procesor zadaniami intensywnymi obliczeniowo, deleguje je do dedykowanych, wysoce wydajnych bloków sprzętowych. Dzięki temu kamera działa nie jak tradycyjny komputer, ale jak wyspecjalizowana "rafineria danych", której jedynym celem jest nieustanne przekształcanie ogromnego strumienia surowych danych sensorycznych w zoptymalizowany, użyteczny produkt końcowy – skompresowany strumień audiowizualny.
 
-\subsubsection{Provisioning: Inicjalizacja i Uwierzytelnianie Urządzenia}
-Zanim nowa kamera IP stanie się funkcjonalnym i zaufanym elementem sieci, musi przejść przez krytyczny proces zwany provisioningiem. Nie jest to jedynie techniczna konfiguracja, ale fundamentalny proces ustanawiania cyfrowej tożsamości urządzenia i zakotwiczania zaufania, który przekształca anonimowy sprzęt prosto z pudełka w zweryfikowany i bezpieczny węzeł sieciowy.
 
-\paragraph{Definicja i Cel Provisioningu}
-Provisioning (w polskim kontekście często nazywany inicjalizacją, udostępnianiem lub aprowizacją) to kompleksowy proces bezpiecznego wprowadzania nowego urządzenia do środowiska sieciowego. Obejmuje on cały cykl życia, od pierwszego uruchomienia, poprzez konfigurację, uwierzytelnienie, aż po zarządzanie operacyjne i ewentualne wycofanie z użytku. Głównym celem provisioningu jest zapewnienie, że tylko autoryzowane, bezpieczne i prawidłowo skonfigurowane urządzenia uzyskują dostęp do sieci i jej zasobów. Jest to pierwsza i najważniejsza linia obrony w ekosystemie Internetu Rzeczy (IoT), gdzie potencjalnie miliony urządzeń mogą stanowić wektor ataku, jeśli nie zostaną prawidłowo zweryfikowane.
-
-Proces ten opiera się na fundamentalnej zasadzie bezpieczeństwa znanej jako Zero Trust. Sieć nie ufa żadnemu urządzeniu domyślnie, nawet jeśli znajduje się ono fizycznie w jej zasięgu. Każde urządzenie musi najpierw udowodnić swoją tożsamość i uzyskać autoryzację, zanim zostanie dopuszczone do komunikacji. W przypadku kamer IP, których strumień wideo jest daną wrażliwą, solidny proces provisioningu jest absolutnie kluczowy.
-
-\paragraph{Przykładowy Proces Provisioningu dla Kamery Wi-Fi}
-Proces provisioningu dla typowej konsumenckiej kamery Wi-Fi, takiej jak modele TP-Link Tapo, jest zaprojektowany tak, aby był jak najprostszy dla użytkownika końcowego, jednocześnie realizując niezbędne kroki bezpieczeństwa. Zazwyczaj odbywa się on za pośrednictwem dedykowanej aplikacji mobilnej producenta i można go podzielić na trzy główne etapy.
-
-\subparagraph{1. Rejestracja (Enrollment)}
-Pierwszym krokiem jest zarejestrowanie fizycznego urządzenia w systemie zarządzania producenta.
-\begin{itemize}
-    \item \textbf{Tryb Access Point (AP):} Po pierwszym podłączeniu do zasilania, kamera nie próbuje łączyć się z żadną istniejącą siecią. Zamiast tego, uruchamia własną, tymczasową sieć Wi-Fi o niewielkim zasięgu, działając w trybie punktu dostępowego (Access Point). Ta sieć jest zazwyczaj otwarta lub zabezpieczona prostym, domyślnym hasłem.
-    \item \textbf{Połączenie z Aplikacją:} Użytkownik, postępując zgodnie z instrukcjami w aplikacji mobilnej, łączy swój smartfon z tą tymczasową siecią Wi-Fi emitowaną przez kamerę. W tym momencie smartfon i kamera znajdują się w tej samej, izolowanej sieci, co pozwala aplikacji na bezpośrednie "odkrycie" kamery i nawiązanie z nią bezpiecznej komunikacji.
-    \item \textbf{Identyfikacja Urządzenia:} Aplikacja odczytuje unikalny identyfikator sprzętowy kamery (np. adres MAC lub numer seryjny) i rejestruje go na koncie użytkownika w chmurze producenta. Ten krok formalnie przypisuje to konkretne urządzenie do tego konkretnego użytkownika.
-\end{itemize}
-
-\subparagraph{2. Konfiguracja (Configuration)}
-Po nawiązaniu bezpośredniego połączenia, aplikacja mobilna przekazuje kamerze niezbędne dane konfiguracyjne, aby mogła ona funkcjonować w docelowej sieci.
-\begin{itemize}
-    \item \textbf{Przekazanie Poświadczeń Sieciowych:} Najważniejszym elementem tego etapu jest bezpieczne przekazanie kamerze nazwy (SSID) i hasła do domowej sieci Wi-Fi użytkownika. Aplikacja szyfruje te dane i wysyła je bezpośrednio do kamery.
-    \item \textbf{Ustawienia Dodatkowe:} W tym kroku mogą być również przekazywane inne ustawienia, takie jak nazwa kamery (np. "Salon"), strefa czasowa, a także może zostać zainicjowana automatyczna aktualizacja oprogramowania firmware do najnowszej wersji.
-\end{itemize}
-
-\subparagraph{3. Uwierzytelnianie (Authentication)}
-Jest to kulminacyjny i najważniejszy z punktu widzenia bezpieczeństwa etap provisioningu.
-\begin{itemize}
-    \item \textbf{Restart i Połączenie z Siecią Docelową:} Po otrzymaniu konfiguracji, kamera kończy działanie w trybie AP i restartuje się. Następnie próbuje połączyć się z domową siecią Wi-Fi, używając otrzymanych poświadczeń.
-    \item \textbf{Uwierzytelnianie w Chmurze:} Po pomyślnym połączeniu z siecią lokalną i uzyskaniu dostępu do internetu, kamera nawiązuje połączenie z serwerami chmurowymi producenta. W tym momencie następuje kluczowy proces uwierzytelniania. Kamera przedstawia serwerowi swój unikalny, wbudowany fabrycznie certyfikat cyfrowy (np. w standardzie X.509). Ten certyfikat działa jak niezaprzeczalny, kryptograficzny dowód tożsamości.
-    \item \textbf{Weryfikacja i Udzielenie Dostępu:} Serwer chmurowy weryfikuje ten certyfikat, sprawdzając, czy pochodzi on z zaufanego źródła (czyli od samego producenta) i czy odpowiada urządzeniu, które zostało wcześniej zarejestrowane na koncie użytkownika. Jak zauważono w dokumentacji źródłowej, cały ten proces jest szyfrowany i wymaga weryfikacji po stronie chmury TP-Link, co świadczy o jego złożoności i krytycznym znaczeniu. Dopiero po pomyślnej weryfikacji certyfikatu, serwer uznaje kamerę za w pełni uwierzytelnioną i zaufaną. Od tego momentu kamera uzyskuje pełen dostęp do usług chmurowych (np. zdalnego podglądu, powiadomień push) i staje się w pełni funkcjonalnym urządzeniem.
-\end{itemize}
-Ten wieloetapowy proces, choć dla użytkownika sprowadza się do kilku kliknięć w aplikacji, jest w rzeczywistości starannie zaprojektowaną sekwencją operacji kryptograficznych i sieciowych. Wbudowany fabrycznie certyfikat pełni rolę "cyfrowego aktu urodzenia" kamery, jednoznacznie i niepodrabialnie poświadczając jej pochodzenie. Pomyślne uwierzytelnienie w chmurze jest momentem, w którym ta tożsamość zostaje oficjalnie potwierdzona, a urządzenie otrzymuje "pozwolenie na pracę" w sieci. Jest to fundamentalny mechanizm, który chroni zarówno użytkownika, jak i całą infrastrukturę IoT przed wprowadzeniem do niej fałszywych lub skompromitowanych urządzeń.
-
-\subsubsection{Przetwarzanie Sygnału Audiowizualnego}
-Sercem kamery IP jest jej zdolność do przekształcania zjawisk fizycznych – światła i dźwięku – w ustrukturyzowany, skompresowany strumień danych cyfrowych, gotowy do transmisji przez sieć. Proces ten nie jest prostą konwersją, lecz złożonym, wieloetapowym potokiem przetwarzania (pipeline), realizowanym w czasie rzeczywistym przez wyspecjalizowane komponenty sprzętowe wewnątrz układu System-on-a-Chip (SoC). Architektura SoC jest tu kluczowa; zamiast obciążać uniwersalny procesor (CPU) zadaniami intensywnymi obliczeniowo, deleguje je do dedykowanych, wysoce wydajnych bloków sprzętowych. Dzięki temu kamera działa nie jak tradycyjny komputer, ale jak wyspecjalizowana "rafineria danych", której jedynym celem jest nieustanne przekształcanie ogromnego strumienia surowych danych sensorycznych w zoptymalizowany, użyteczny produkt końcowy – skompresowany strumień AV.
-
-\paragraph{Ścieżka Przetwarzania Obrazu (Image Pipeline)}
-Droga, jaką przebywa informacja wizualna od obiektywu do interfejsu sieciowego, jest najbardziej złożonym procesem wewnątrz kamery.
-
-\paragraph{Ścieżka Przetwarzania Obrazu (Image Pipeline)}
+\paragraph{Ścieżka Przetwarzania Obrazu }
 Droga, jaką przebywa informacja wizualna od obiektywu do interfejsu sieciowego, jest najbardziej złożonym procesem wewnątrz kamery.
 
 \subparagraph{1. Akwizycja w Matrycy CMOS}
-Wszystko zaczyna się w przetworniku obrazu, którym w nowoczesnych kamerach jest niemal wyłącznie matryca CMOS (Complementary Metal-Oxide-Semiconductor) \cite{gonzalez2018digital}.
+Wszystko zaczyna się w przetworniku obrazu, którym w nowoczesnych kamerach jest niemal wyłącznie matryca CMOS (Complementary Metal-Oxide-Semiconductor).
 \begin{itemize}
     \item \textbf{Konwersja fotonów na ładunek:} Gdy światło przechodzi przez obiektyw, fotony uderzają w siatkę milionów światłoczułych elementów na matrycy, zwanych fotodiodami. Każda fotodioda, pod wpływem energii fotonów, generuje ładunek elektryczny, którego wielkość jest wprost proporcjonalna do intensywności padającego na nią światła.
-    \item \textbf{Filtr Bayera:} Fotodiody same w sobie są "ślepe" na kolory – mierzą jedynie natężenie światła (luminancję). Aby uzyskać informację o kolorze, powierzchnia matrycy jest pokryta mozaiką mikroskopijnych filtrów w trzech podstawowych kolorach: czerwonym (R), zielonym (G) i niebieskim (B). Najczęściej stosowany jest tzw. filtr Bayera, w którym na każdy kwadrat 2x2 piksele przypadają dwa filtry zielone, jeden czerwony i jeden niebieski. Wynika to z faktu, że ludzkie oko jest najbardziej wrażliwe na światło zielone \cite{gonzalez2018digital}. W rezultacie, na wyjściu z matrycy otrzymujemy surowy, "mozaikowy" obraz o pikselach tylko o jednym kolorze.
-    \item \textbf{Odczyt i digitalizacja:} W przeciwieństwie do starszych matryc CCD, w technologii CMOS każda fotodioda (lub mała grupa) ma swój własny, zintegrowany wzmacniacz i obwody odczytu. Pozwala to na szybki, bezpośredni odczyt wartości ładunku z każdego piksela i jego konwersję na sygnał cyfrowy (proces A/D) jeszcze na poziomie samego sensora lub w jego bezpośrednim sąsiedztwie.
+    \item \textbf{Filtr Bayera:} Fotodiody same w sobie są "ślepe" na kolory – mierzą jedynie luminancję(natężenie światła). Aby uzyskać informację o kolorze, powierzchnia matrycy jest pokryta mozaiką mikroskopijnych filtrów w trzech podstawowych kolorach: czerwonym (R), zielonym (G) i niebieskim (B). Najczęściej stosowany jest tzw. filtr Bayera, w którym na każdy kwadrat 2x2 piksele przypadają dwa filtry zielone, jeden czerwony i jeden niebieski. Wynika to z faktu, że ludzkie oko jest najbardziej wrażliwe na światło zielone. W rezultacie, na wyjściu z matrycy otrzymujemy surowy, "mozaikowy" obraz, w którym każdy piksel zawiera informację tylko o jednym z trzech kolorów.
+    \item \textbf{Odczyt i digitalizacja:} W przeciwieństwie do starszych matryc CCD, w technologii CMOS każda fotodioda (lub mała grupa) ma swój własny, zintegrowany wzmacniacz i obwody odczytu. Pozwala to na szybki, bezpośredni odczyt wartości ładunku z każdego piksela i jego konwersję na sygnał cyfrowy jeszcze na poziomie samego sensora lub w jego bezpośrednim sąsiedztwie.
 \end{itemize}
+
+\subparagraph{2. Przetwarzanie w ISP (Image Signal Processor)}
+Surowy, zdigitalizowany obraz w formacie Bayera jest następnie przekazywany do dedykowanego koprocesora – Procesora Sygnału Obrazu (ISP). ISP to potężny, wyspecjalizowany układ, często będący częścią głównego SoC, który w czasie rzeczywistym wykonuje serię skomplikowanych operacji w celu przekształcenia surowych danych w pełnowartościowy, estetyczny obraz wideo. Potok przetwarzania w ISP (ISP Pipeline) obejmuje następujące kluczowe etapy:
 
 \begin{table}[H]
     \centering
@@ -256,7 +249,7 @@ Wszystko zaczyna się w przetworniku obrazu, którym w nowoczesnych kamerach jes
         \midrule
         \textbf{Akwizycja Danych Surowych (\textit{Bayer})} & Otrzymanie zdigitalizowanego, mozaikowego obrazu z matrycy CMOS, gdzie każdy piksel reprezentuje natężenie tylko jednego z trzech kolorów (\textit{R, G lub B}). \\
         \midrule
-        \textbf{Demosaicing (\textit{Interpolacja Kolorów})} & Algorytm rekonstruuje pełną informację o kolorze (\textit{RGB}) dla każdego piksela poprzez interpolację brakujących wartości na podstawie kolorów sąsiednich pikseli. \\
+        \textbf{Interpolacja Kolorów)} & Algorytm rekonstruuje pełną informację o kolorze (\textit{RGB}) dla każdego piksela poprzez interpolację brakujących wartości na podstawie kolorów sąsiednich pikseli. \\
         \midrule
         \textbf{Redukcja Szumów} & Zastosowanie zaawansowanych filtrów w celu usunięcia szumu cyfrowego, który powstaje zwłaszcza przy słabym oświetleniu (\textit{wysokie ISO}). \\
         \midrule
@@ -269,23 +262,17 @@ Wszystko zaczyna się w przetworniku obrazu, którym w nowoczesnych kamerach jes
     \end{tabularx}
 \end{table}
 
-\subparagraph{2. Przetwarzanie w ISP (Image Signal Processor)}
-Surowy, zdigitalizowany obraz w formacie Bayera jest następnie przekazywany do dedykowanego koprocesora – Procesora Sygnału Obrazu (ISP). ISP to potężny, wyspecjalizowany układ, często będący częścią głównego SoC, który w czasie rzeczywistym wykonuje serię skomplikowanych operacji w celu przekształcenia surowych danych w pełnowartościowy, estetyczny obraz wideo. Potok przetwarzania w ISP (ISP Pipeline) obejmuje następujące kluczowe etapy:
-
-
-
 Po przejściu przez potok ISP, mamy do czynienia z pełnokolorowym, skorygowanym, ale wciąż nieskompresowanym strumieniem wideo. Strumień ten, nawet dla rozdzielczości 1080p przy 30 klatkach na sekundę, ma ogromną przepływność (rzędu 1.5 Gb/s), co czyni go niemożliwym do przesłania przez typową sieć domową.
 
 \subparagraph{3. Kompresja Wideo (H.264/H.265)}
-Ostatnim etapem przetwarzania obrazu jest jego drastyczna kompresja. Przetworzony, nieskompresowany strumień wideo (w formacie YCbCr) jest kierowany do kolejnego wyspecjalizowanego bloku sprzętowego w SoC – sprzętowego kodera wideo. W nowoczesnych kamerach są to kodery implementujące standardy H.264 (AVC) lub H.265 (HEVC) \cite{itu_h264, itu_h265}.
+Ostatnim etapem przetwarzania obrazu jest jego drastyczna kompresja. Przetworzony, nieskompresowany strumień wideo (w formacie YCbCr) jest kierowany do kolejnego wyspecjalizowanego bloku sprzętowego w SoC – sprzętowego kodera wideo. W nowoczesnych kamerach są to kodery implementujące standardy H.264 lub H.265. \cite{itu_h264, itu_h265}.
 
 \begin{itemize}
-    \item \textbf{Zasada działania:} Kodery te wykorzystują zaawansowane techniki w celu redukcji redundancji przestrzennej (wewnątrz pojedynczej klatki) i temporalnej (pomiędzy kolejnymi klatkami). Analizują obraz w poszukiwaniu podobnych bloków i zamiast przesyłać pełną informację o każdym z nich, przesyłają tylko informację o różnicach i wektorach ruchu \cite{wiegand2003overview}.
+    \item \textbf{Zasada działania:} Kodery te wykorzystują zaawansowane techniki w celu redukcji redundancji przestrzennej (wewnątrz pojedynczej klatki) i temporalnej (pomiędzy kolejnymi klatkami). Analizują obraz w poszukiwaniu podobnych bloków i zamiast przesyłać pełną informację o każdym z nich, przesyłają tylko informację o różnicach i wektorach ruchu.
     \item \textbf{Sprzęt vs. Oprogramowanie:} Realizacja kompresji H.264 w czasie rzeczywistym jest zadaniem niezwykle wymagającym obliczeniowo. Próba wykonania jej programowo na głównym CPU kamery byłaby zbyt wolna i energochłonna. Dlatego kluczowe jest użycie dedykowanego bloku sprzętowego, który wykonuje te operacje wielokrotnie szybciej i przy znacznie niższym zużyciu energii.
 \end{itemize}
-Na wyjściu z kodera otrzymujemy skompresowany elementarny strumień wideo (elementary stream), którego przepływność jest zredukowana stukrotnie lub więcej (np. do kilku Mb/s), co umożliwia jego efektywną transmisję przez sieć \cite{sullivan2012overview}.
 
-\paragraph{Ścieżka Przetwarzania Dźwięku (Audio Pipeline)}
+\paragraph{Ścieżka Przetwarzania Dźwięku}
 Proces przetwarzania dźwięku jest mniej złożony niż obrazu, ale podąża za podobną logiką konwersji i kompresji.
 
 \subparagraph{1. Akwizycja w Mikrofonie MEMS}
@@ -295,39 +282,40 @@ Dźwięk jest przechwytywany przez mikrofon wykonany w technologii MEMS (Micro-E
 Współczesne mikrofony MEMS są urządzeniami wysoce zintegrowanymi i często zawierają w swojej obudowie przetwornik analogowo-cyfrowy (ADC).
 \begin{itemize}
     \item \textbf{Modulacja Sigma-Delta:} ADC w mikrofonie to zazwyczaj modulator sigma-delta, który z bardzo wysoką częstotliwością (rzędu kilku MHz) próbuje przybliżyć wartość sygnału analogowego, generując na wyjściu jednobitowy strumień danych zwany PDM (Pulse Density Modulation). Gęstość impulsów w tym strumieniu odpowiada amplitudzie oryginalnego sygnału audio.
-    \item \textbf{Konwersja do PCM:} Strumień PDM jest następnie przesyłany do głównego układu SoC. Tam, dedykowany blok cyfrowego przetwarzania sygnałów (DSP) stosuje filtr dolnoprzepustowy (aby usunąć szum kwantyzacji przeniesiony na wysokie częstotliwości przez modulator) i proces decymacji (zmniejszenia częstotliwości próbkowania). W rezultacie jednobitowy strumień PDM o wysokiej częstotliwości jest konwertowany na standardowy, wielobitowy (np. 16-bitowy) strumień PCM (Pulse Code Modulation) o typowej częstotliwości próbkowania dla audio (np. 8, 16 lub 44.1 kHz). PCM to nieskompresowana, cyfrowa reprezentacja dźwięku.
+    \item \textbf{Konwersja do PCM:} Strumień PDM jest następnie przesyłany do głównego układu SoC. Tam, dedykowany blok cyfrowego przetwarzania sygnałów (DSP) stosuje filtr dolnoprzepustowy aby usunąć szum kwantyzacji przeniesiony na wysokie częstotliwości przez modulator i proces decymacji czyli zmniejszenia częstotliwości próbkowania. W rezultacie jednobitowy strumień PDM o wysokiej częstotliwości jest konwertowany na standardowy, wielobitowy strumień PCM (Pulse Code Modulation) o typowej częstotliwości próbkowania dla audio (np. 8, 16 lub 44.1 kHz). PCM to nieskompresowana, cyfrowa reprezentacja dźwięku.
 \end{itemize}
 
 \subparagraph{3. Kompresja Audio (AAC)}
 Podobnie jak w przypadku wideo, surowy strumień audio PCM ma zbyt dużą przepływność do efektywnej transmisji. Jest on więc kierowany do kodera audio, który kompresuje go przy użyciu stratnego kodeka, najczęściej AAC (Advanced Audio Coding).
 \begin{itemize}
-    \item \textbf{Kodowanie percepcyjne:} AAC wykorzystuje model psychoakustyczny do analizy dźwięku i usuwania tych jego składowych, które są niesłyszalne lub maskowane przez inne, głośniejsze dźwięki dla ludzkiego ucha. Pozwala to na znaczną redukcję rozmiaru danych przy minimalnej odczuwalnej utracie jakości. AAC jest standardem w wielu zastosowaniach strumieniowych, w tym na platformach takich jak YouTube czy w urządzeniach Apple, i oferuje lepszą jakość przy tej samej przepływności w porównaniu do starszego formatu MP3.
+    \item \textbf{Kodowanie percepcyjne:} AAC wykorzystuje model psychoakustyczny do analizy dźwięku i usuwania tych jego składowych, które są niesłyszalne lub maskowane przez inne, głośniejsze dźwięki dla ludzkiego ucha. Pozwala to na znaczną redukcję rozmiaru danych przy minimalnej odczuwalnej utracie jakości. AAC jest standardem w wielu zastosowaniach strumieniowych, w tym na platformach takich jak YouTube czy w urządzeniach Apple.
 \end{itemize}
 
 \paragraph{Synchronizacja i Muksowanie}
-Ostatnim krokiem wewnątrz SoC, zanim dane trafią do karty sieciowej, jest połączenie oddzielnych, skompresowanych strumieni wideo (H.264) i audio (AAC) w jeden spójny strumień. Proces ten, zwany multipleksowaniem (muksowaniem), polega na przeplataniu pakietów audio i wideo w ramach jednego kontenera. Kluczowe jest przy tym osadzenie w strumieniu precyzyjnych znaczników czasu (timestamps) dla każdego pakietu, co pozwoli aplikacji klienckiej na idealne zsynchronizowanie odtwarzania obrazu i dźwięku. Po tym etapie, gotowy, zsynchronizowany strumień danych jest przekazywany do interfejsu sieciowego w celu opakowania go w pakiety RTP i wysłania w sieć.
+Ostatnim krokiem wewnątrz SoC, zanim dane trafią do karty sieciowej, jest połączenie oddzielnych, skompresowanych strumieni wideo (H.264) i audio (AAC) w jeden spójny strumień. Proces ten, zwany multipleksowaniem (muksowaniem), polega na przeplataniu pakietów audio i wideo w ramach jednego kontenera. Kluczowe jest przy tym osadzenie w strumieniu precyzyjnych znaczników czasu dla każdego pakietu, co pozwoli aplikacji klienckiej na idealne zsynchronizowanie odtwarzania obrazu i dźwięku. Po tym etapie, gotowy, zsynchronizowany strumień danych jest przekazywany do interfejsu sieciowego w celu opakowania go w pakiety RTP i wysłania w sieć.
 
-\subsubsection{Strumieniowanie: Transmisja Danych w Czasie Rzeczywistym}
+\subsubsection{Transmisja danych w czasie rzeczywistym}
 Po przetworzeniu i skompresowaniu danych audiowizualnych, ostatnim zadaniem kamery jest ich efektywna transmisja do klienta przez sieć. Proces ten, znany jako strumieniowanie (streaming), opiera się na zestawie wyspecjalizowanych protokołów warstwy aplikacji, które zarządzają sesją i transportują dane w sposób zoptymalizowany pod kątem czasu rzeczywistego.
 
 \paragraph{Separacja Sterowania i Danych: Rola RTSP i RTP}
-Fundamentalną zasadą architektoniczną w strumieniowaniu na żywo jest rozdzielenie płaszczyzny sterowania (control plane) od płaszczyzny danych (data plane). Oznacza to, że protokół używany do zarządzania sesją (np. uruchamiania i zatrzymywania strumienia) jest inny niż protokół używany do faktycznego przesyłania pakietów z wideo i audio. To rozdzielenie pozwala na optymalizację każdego z tych zadań z osobna: sterowanie wymaga niezawodności, a przesyłanie danych – szybkości i niskich opóźnień.
-\begin{itemize}
-    \item \textbf{RTSP (Real-Time Streaming Protocol):} Pełni rolę "sieciowego pilota zdalnego sterowania". Jest to protokół warstwy aplikacji, który służy do nawiązywania, kontrolowania i kończenia sesji strumieniowej. Klient używa komend RTSP, aby "powiedzieć" kamerze, co ma robić – np. "zacznij nadawać", "zatrzymaj na chwilę" czy "zakończ transmisję". Ponieważ utrata polecenia sterującego byłaby problematyczna, komunikacja RTSP odbywa się zazwyczaj za pośrednictwem niezawodnego protokołu TCP. Co istotne, RTSP nie transportuje samych danych multimedialnych\cite{rfc2326}.
-    \item \textbf{RTP (Real-time Transport Protocol):} Jest to protokół odpowiedzialny za transport danych. Jego zadaniem jest opakowanie skompresowanych danych wideo (H.264) i audio (AAC) w pakiety RTP i przesłanie ich do klienta. Aby zminimalizować opóźnienia, RTP niemal zawsze działa na bazie szybkiego protokołu UDP. Każdy pakiet RTP zawiera informacje niezbędne do prawidłowego odtworzenia strumienia po stronie klienta.\cite{rfc3550}
-\end{itemize}
+Fundamentalną zasadą architektoniczną w strumieniowaniu na żywo jest rozdzielenie płaszczyzny sterowania od płaszczyzny danych. Oznacza to, że protokół używany do zarządzania sesją, np. uruchamiania i zatrzymywania strumienia, jest inny niż protokół używany do faktycznego przesyłania pakietów z wideo i audio. To rozdzielenie pozwala na optymalizację każdego z tych zadań z osobna: sterowanie wymaga niezawodności, a przesyłanie danych – szybkości i niskich opóźnień.
+W przypadku kamer IP, najczęściej stosowanym zestawem protokołów do strumieniowania jest kombinacja \textbf{RTSP (Real-Time Streaming Protocol)} i \textbf{RTP (Real-time Transport Protocol)}.
+\begin{enumerate}
+    \item \textbf{RTSP (Real-Time Streaming Protocol):} Pełni rolę "sieciowego pilota zdalnego sterowania".\cite{rfc2326} Jest to protokół warstwy aplikacji, który służy do nawiązywania, kontrolowania i kończenia sesji strumieniowej. Klient używa komend RTSP, aby "powiedzieć" kamerze, co ma robić – np. "zacznij nadawać", "zatrzymaj na chwilę" czy "zakończ transmisję". Ponieważ utrata polecenia sterującego byłaby problematyczna, komunikacja RTSP odbywa się zazwyczaj za pośrednictwem niezawodnego protokołu TCP. Co istotne, RTSP nie transportuje samych danych multimedialnych – jego zadaniem jest jedynie zarządzanie sesją.
+    \item \textbf{RTP (Real-time Transport Protocol):} Jest to protokół odpowiedzialny za transport danych. \cite{rfc3550} Jego zadaniem jest opakowanie skompresowanych danych wideo i audio w pakiety RTP i przesłanie ich do klienta. Aby zminimalizować opóźnienia, RTP niemal zawsze działa na bazie szybkiego protokołu UDP. Każdy pakiet RTP zawiera informacje niezbędne do prawidłowego odtworzenia strumienia po stronie klienta, takie jak numery sekwencyjne i znaczniki czasu.
+\end{enumerate}
 
-\paragraph{Nawiązywanie Sesji Strumieniowej: Uścisk Dłoni RTSP}
-Zanim na ekranie klienta pojawi się pierwszy obraz, musi on przeprowadzić z kamerą negocjacje za pomocą protokołu RTSP. Ten proces, często nazywany "uściskiem dłoni" (handshake), przebiega w kilku krokach i jest niezbędny do ustalenia parametrów transmisji.\cite{rfc2326}
+\paragraph{Nawiązywanie Sesji Strumieniowej: RTSP Handshake}
+Zanim na ekranie klienta pojawi się pierwszy obraz, musi on przeprowadzić z kamerą negocjacje za pomocą protokołu RTSP. Ten proces, często nazywany "uściskiem dłoni" (handshake), przebiega w kilku krokach i jest niezbędny do ustalenia parametrów transmisji. Klient wysyła do kamery serię komend RTSP, a kamera odpowiada odpowiednimi komunikatami statusu. Podstawowe komendy używane w tym procesie to:
 
 \begin{table}[H]
     \centering
-    \caption{Podstawowe komendy protokołu RTSP\cite{rfc2326}.}
+    \caption{Podstawowe komendy protokołu RTSP.}
     \label{tab:rtsp_commands}
     \begin{tabularx}{\textwidth}{
         >{\RaggedRight\hsize=6.0\hsize}X % Komenda (waska)
         >{\RaggedRight\hsize=5.0\hsize}X % Nadawca (waska)
-        >{\RaggedRight\hsize=14.2\hsize}X % Cel (szeroki)
+        >{\RaggedRight\hsize=13.0\hsize}X % Cel (szeroki)
     }
         \toprule
         \textbf{Komenda} & \textbf{Nadawca} & \textbf{Cel} \\
@@ -357,15 +345,13 @@ Gdy sesja jest już ustanowiona, kamera zaczyna wysyłać ciągły strumień pak
 \begin{itemize}
     \item \textbf{Payload Type (Typ Ładunku):} 7-bitowe pole, które identyfikuje format danych w pakiecie. Dzięki niemu klient wie, czy dany pakiet zawiera dane wideo H.264, audio AAC, czy inny typ mediów. Pozwala to na skierowanie pakietu do odpowiedniego dekodera.
     \item \textbf{Sequence Number (Numer Sekwencyjny):} 16-bitowy licznik, który jest inkrementowany o jeden dla każdego wysłanego pakietu RTP. To pole jest absolutnie krytyczne. Pozwala klientowi wykryć utratę pakietów (jeśli w sekwencji pojawi się luka) oraz przywrócić prawidłową kolejność pakietów, które mogły dotrzeć do celu w złej kolejności z powodu różnych dróg w sieci.
-    \item \textbf{Timestamp (Znacznik Czasu):} 32-bitowe pole, które odzwierciedla moment próbkowania danych zawartych w pakiecie. Jest ono generowane na podstawie wewnętrznego zegara kamery. Znaczniki czasu są niezbędne do synchronizacji różnych strumieni (np. wideo i audio), do obliczania i kompensowania opóźnień sieciowych (tzw. jitter) oraz do zapewnienia płynnego odtwarzania.\cite{rfc3550}
+    \item \textbf{Timestamp (Znacznik Czasu):} 32-bitowe pole, które odzwierciedla moment próbkowania danych zawartych w pakiecie. Jest ono generowane na podstawie wewnętrznego zegara kamery. Znaczniki czasu są niezbędne do synchronizacji różnych strumieni (np. wideo i audio), do obliczania i kompensowania opóźnień sieciowych (tzw. jitter) oraz do zapewnienia płynnego odtwarzania.
 \end{itemize}
 
-\paragraph{Monitorowanie Jakości Strumienia (RTCP)}
-Równolegle z wysyłaniem danych przez RTP, działa protokół RTCP (Real-time Transport Control Protocol). Jest to protokół towarzyszący RTP, który służy do przesyłania informacji kontrolnych i statystyk dotyczących sesji. W przeciwieństwie do jednokierunkowego przepływu danych RTP (z kamery do klienta), komunikacja RTCP jest dwukierunkowa. Klient okresowo wysyła do kamery raporty (Receiver Reports) zawierające informacje o jakości odbioru, takie jak liczba utraconych pakietów, miara jittera czy czas podróży w obie strony (round-trip time). Te informacje zwrotne są niezwykle cenne. Zaawansowana kamera lub serwer strumieniujący może na ich podstawie dynamicznie dostosowywać parametry transmisji, na przykład obniżając bitrate (jakość) strumienia wideo w odpowiedzi na wykryte przeciążenie sieci, aby zapewnić ciągłość transmisji kosztem jakości obrazu. RTCP jest więc mechanizmem zapewniającym adaptacyjność i odporność strumieniowania na zmienne warunki sieciowe.
 
 \subsection{Funkcje}
 \label{subsec:funkcje}
-Współczesna kamera IP jest czymś znacznie więcej niż pasywnym rejestratorem obrazu. Ewolucja technologiczna przekształciła ją w aktywne, wielofunkcyjne urządzenie sensoryczne, którego możliwości wykraczają daleko poza tradycyjny monitoring. Zdolność do zdalnego sterowania, inteligentnej analizy obrazu i dźwięku, działania w trudnych warunkach oświetleniowych oraz integracji z szerszymi ekosystemami cyfrowymi definiuje jej nowoczesną tożsamość. Niniejszy podrozdział stanowi przegląd kluczowych funkcji, które decydują o wszechstronności i wartości inżynierskiej tych urządzeń.
+Współczesna kamera IP jest czymś znacznie więcej niż pasywnym rejestratorem obrazu. Ewolucja technologiczna przekształciła ją w aktywne, wielofunkcyjne urządzenie sensoryczne, którego możliwości wykraczają daleko poza tradycyjny monitoring. Zdolność do zdalnego sterowania, inteligentnej analizy obrazu i dźwięku, działania w trudnych warunkach oświetleniowych oraz integracji z szerszymi ekosystemami cyfrowymi definiuje jej nowoczesną tożsamość. Niniejszy podrozdział stanowi przegląd kluczowych funkcji, które decydują o wszechstronności tych urządzeń.
 
 \subsubsection{Obrót PTZ}
 \label{subsubsec:obrot_ptz}
@@ -379,13 +365,12 @@ Funkcjonalność PTZ (Pan-Tilt-Zoom) jest jedną z najbardziej charakterystyczny
         \item \textbf{Zoom cyfrowy:} Jest to w rzeczywistości powiększenie fragmentu już przechwyconego obrazu, co prowadzi do interpolacji pikseli i nieuchronnej degradacji jakości.
     \end{itemize}
 \end{itemize}
-Od strony technicznej, mechanizm PTZ opiera się na precyzyjnych, miniaturowych silnikach krokowych, które wykonują polecenia otrzymywane z oprogramowania sterującego. Sterowanie odbywa się zdalnie za pomocą dedykowanych aplikacji, oprogramowania VMS (Video Management System) lub fizycznych kontrolerów z joystickiem. Komunikacja ta jest realizowana za pomocą różnych protokołów, od starszych standardów szeregowych jak RS-485, po nowoczesne protokoły sieciowe, takie jak ONVIF (Open Network Video Interface Forum) czy własnościowe API producenta oparte na HTTP.
 
-\subsubsection{Wykrywanie obiektów i zdarzeń - AI}
+\subsubsection{Wykrywanie obiektów i zdarzeń}
 \label{subsubsec:wykrywanie_obiektow_ai}
 Integracja sztucznej inteligencji (AI) i uczenia maszynowego (ML) bezpośrednio w kamerze (tzw. Edge AI) jest jedną z najważniejszych innowacji w dziedzinie monitoringu. Dzięki potężnym procesorom wbudowanym w układy SoC, kamery zyskały zdolność do analizowania obrazu w czasie rzeczywistym, przekształcając się z pasywnych rejestratorów w inteligentne sensory.
 
-\paragraph{Detekcja i klasyfikacja obiektów} W przeciwieństwie do prostej detekcji ruchu, algorytmy AI oparte na głębokich sieciach neuronowych (np. YOLO, SSD) potrafią identyfikować i klasyfikować konkretne obiekty w polu widzenia kamery. Kamera jest w stanie odróżnić człowieka od pojazdu, zwierzęcia czy poruszającej się na wietrze gałęzi. Główną korzyścią jest drastyczna redukcja fałszywych alarmów, co pozwala operatorom skupić się na realnych zagrożeniach.
+\paragraph{Detekcja i klasyfikacja obiektów} W przeciwieństwie do prostej detekcji ruchu, algorytmy AI oparte na głębokich sieciach neuronowych (np. YOLO) potrafią identyfikować i klasyfikować konkretne obiekty w polu widzenia kamery. Kamera jest w stanie odróżnić człowieka od pojazdu, zwierzęcia czy poruszającej się na wietrze gałęzi. Główną korzyścią jest drastyczna redukcja fałszywych alarmów, co pozwala operatorom skupić się na realnych zagrożeniach.
 
 \paragraph{Wykrywanie zdarzeń i analiza behawioralna} Zaawansowane modele AI idą o krok dalej, rozpoznając nie tylko obiekty, ale również ich zachowania i zdarzenia. Przykłady obejmują:
 \begin{itemize}
@@ -405,27 +390,9 @@ Jest to bardziej podstawowa, ale wciąż fundamentalna funkcja, dostępna w niem
 \end{itemize}
 Wykrycie ruchu jest najczęściej wykorzystywane jako wyzwalacz (trigger) dla innych akcji, takich jak rozpoczęcie nagrywania na karcie SD lub wysłanie powiadomienia push do użytkownika.
 
-\subsubsection{Noktowizja i termowizja}
-\label{subsubsec:noktowizja_termowizja}
-Zdolność do "widzenia" w ciemności jest kluczową funkcją kamer bezpieczeństwa. Realizowana jest ona głównie za pomocą dwóch odrębnych technologii: noktowizji w podczerwieni oraz termowizji.
-
-\paragraph{Noktowizja w podczerwieni (IR Night Vision)} Jest to najpopularniejsza technologia stosowana w kamerach konsumenckich i profesjonalnych. Jej działanie opiera się na oświetleniu sceny za pomocą diod LED emitujących światło w paśmie bliskiej podczerwieni (IR), które jest niewidoczne dla ludzkiego oka, ale doskonale "widziane" przez matrycę kamery. Kluczowym elementem jest tutaj mechaniczny filtr odcinający podczerwień (IR Cut Filter).
-\begin{itemize}
-    \item \textbf{W dzień:} Filtr jest umieszczony między obiektywem a matrycą i blokuje światło podczerwone, które zniekształciłoby kolory. Dzięki temu obraz ma naturalne, wierne barwy.
-    \item \textbf{W nocy:} Gdy czujnik światła wykryje niski poziom oświetlenia, filtr jest mechanicznie odsuwany. Jednocześnie aktywowane są diody IR, a kamera przełącza się w tryb monochromatyczny (czarno-biały), który jest znacznie bardziej czuły na światło podczerwone. Pozwala to na uzyskanie wyraźnego obrazu nawet w całkowitej ciemności.
-\end{itemize}
-
-\paragraph{Termowizja (Thermal Imaging)} Jest to zupełnie inna, bardziej zaawansowana technologia. Kamera termowizyjna nie potrzebuje żadnego źródła światła. Zamiast tego, jej specjalny sensor (mikrobolometr) wykrywa promieniowanie cieplne (daleką podczerwień) emitowane przez wszystkie obiekty, których temperatura jest wyższa od zera absolutnego. Obraz jest tworzony na podstawie różnic temperatur – cieplejsze obiekty, takie jak ludzie czy zwierzęta, są wyraźnie widoczne na tle chłodniejszego otoczenia. Główne zalety termowizji to:
-\begin{itemize}
-    \item Działanie w absolutnej ciemności i trudnych warunkach atmosferycznych (mgła, dym, deszcz).
-    \item Wysoka skuteczność w wykrywaniu intruzów na dużych odległościach i w ukryciu (np. w zaroślach).
-    \item Mniejsza liczba fałszywych alarmów, ponieważ nie reaguje na cienie, odbicia światła czy ruch obiektów nieożywionych.
-\end{itemize}
-Jednak kamery termowizyjne są znacznie droższe i zazwyczaj oferują niższą rozdzielczość, co uniemożliwia identyfikację szczegółów, takich jak rysy twarzy.
-
 \subsubsection{Dwukierunkowe audio}
 \label{subsubsec:dwukierunkowe_audio}
-Funkcja dwukierunkowego audio przekształca kamerę z pasywnego urządzenia nasłuchowego w interaktywny interkom. Dzięki wbudowanemu mikrofonowi i głośnikowi, użytkownik może nie tylko słyszeć dźwięk z otoczenia kamery, ale również mówić przez nią, a jego głos zostanie odtworzony przez głośnik urządzenia.
+Funkcja dwukierunkowego audio przekształca kamerę z pasywnego urządzenia nasłuchowego w interaktywny system. Dzięki wbudowanemu mikrofonowi i głośnikowi, użytkownik może nie tylko słyszeć dźwięk z otoczenia kamery, ale również mówić przez nią, a jego głos zostanie odtworzony przez głośnik urządzenia.
 
 Ta dwukierunkowa komunikacja jest realizowana cyfrowo, a dane audio w obie strony są przesyłane przez tę samą sieć IP, co strumień wideo. Z technicznego punktu widzenia, implementacja tej funkcji często opiera się na protokołach Voice over IP (VoIP), takich jak SIP (Session Initiation Protocol) do nawiązywania i zarządzania sesją oraz RTP (Real-time Transport Protocol) do transportu pakietów audio w czasie rzeczywistym.
 
@@ -452,15 +419,13 @@ Kamery IP oferują kilka elastycznych metod zapisu i archiwizacji materiału wid
 \end{itemize}
 Wadą tego rozwiązania jest uzależnienie od stałego połączenia z internetem, miesięczne koszty subskrypcji oraz potencjalne obawy dotyczące prywatności danych.
 
-\subsubsection{Integracja z Inteligentnymi Systemami}
-\label{subsubsec:integracja_systemy}
-Siła kamer IP leży w ich zdolności do bycia częścią większego, zintegrowanego ekosystemu. Otwartość protokołów sieciowych umożliwia komunikację z szeroką gamą innych urządzeń i platform programistycznych. Kluczowe technologie umożliwiające integrację to:
+\subsubsection{Zdalny dostęp i sterowanie}
+\label{subsubsec:zdolny_dostep_sterowanie}
+Jedną z kluczowych cech kamer IP jest możliwość zdalnego dostępu i sterowania nimi za pośrednictwem sieci komputerowej, w tym internetu. Ta funkcjonalność umożliwia użytkownikom monitorowanie i zarządzanie swoimi kamerami z dowolnego miejsca na świecie, korzystając z różnych urządzeń, takich jak smartfony, tablety czy komputery. Współczesne kamery IP oferują kilka metod zdalnego dostępu:
 \begin{itemize}
-    \item \textbf{RTSP (Real-Time Streaming Protocol):} Standardowy protokół, który pozwala zewnętrznym aplikacjom i urządzeniom (np. odtwarzaczom wideo, systemom NVR) na dostęp do strumienia wideo z kamery. Jest to fundamentalny element interoperacyjności.
-    \item \textbf{ONVIF (Open Network Video Interface Forum):} Globalny standard mający na celu ujednolicenie komunikacji między urządzeniami do nadzoru wideo różnych producentów. Kamera zgodna z ONVIF może być łatwo zintegrowana z systemem VMS lub NVR innej firmy, co daje użytkownikowi swobodę wyboru komponentów systemu.
-    \item \textbf{API (Application Programming Interface):} Wielu producentów udostępnia własne API, które pozwala na programistyczną kontrolę zaawansowanych funkcji kamery, niedostępnych w standardzie ONVIF. To właśnie takie API jest wykorzystywane w niniejszej pracy do sterowania kamerą Tapo.
+    \item \textbf{Aplikacje mobilne:} Producenci kamer często dostarczają dedykowane aplikacje na systemy iOS i Android, które umożliwiają łatwe połączenie z kamerą poprzez chmurę producenta. Aplikacje te oferują funkcje takie jak podgląd na żywo, odtwarzanie nagrań, konfiguracja ustawień kamery oraz otrzymywanie powiadomień o zdarzeniach.
+    \item \textbf{Przeglądarki internetowe:} Wiele kamer IP posiada wbudowany serwer WWW, który pozwala na dostęp do interfejsu zarządzania kamery za pomocą standardowej przeglądarki internetowej. Użytkownicy mogą logować się do kamery, przeglądać strumień wideo i zmieniać ustawienia bez konieczności instalowania dodatkowego oprogramowania.
 \end{itemize}
-Dzięki tym mechanizmom, kamera IP może stać się inteligentnym czujnikiem w systemie automatyki domowej. Przykładowo, wykrycie ruchu przez kamerę w ogrodzie po zmroku może automatycznie włączyć oświetlenie zewnętrzne, a obraz z kamery przy drzwiach może być wyświetlany na inteligentnym ekranie po naciśnięciu dzwonka.
 
 \subsubsection{Powiadomienia push}
 \label{subsubsec:powiadomienia_push}
@@ -478,58 +443,54 @@ Ten mechanizm, oparty na modelu publikacji i subskrypcji, jest niezwykle wydajny
 \label{subsec:ograniczenia}
 Pomimo dynamicznego rozwoju i szerokiego spektrum zastosowań, technologia kamer IP obarczona jest szeregiem fundamentalnych ograniczeń. Wynikają one zarówno z natury samej technologii, jak i z modeli biznesowych przyjętych przez producentów sprzętu. Pełne zrozumienie tych ograniczeń jest kluczowe dla projektowania świadomych inżyniersko, niezależnych i bezpiecznych systemów monitoringu. Niniejszy podrozdział dokonuje systematycznej analizy tych wyzwań, grupując je w trzy wzajemnie powiązane domeny: ograniczenia wynikające z infrastruktury sieciowej, luki w zabezpieczeniach i ryzyka dla prywatności oraz ograniczenia narzucane przez ekosystem producenta.
 
-\subsubsection{Ograniczenia Wynikające z Infrastruktury Sieciowej}
+\subsubsection{Ograniczenia wynikające z infrastruktury sieciowej}
 \label{subsubsec:ograniczenia_sieciowe}
 Podstawową cechą definiującą kamerę IP jest jej funkcjonowanie jako węzła w sieci komputerowej. Ta fundamentalna zależność sprawia, że wydajność i niezawodność kamery są nierozerwalnie związane z jakością i przepustowością infrastruktury sieciowej, w której operuje. Ograniczenia te są szczególnie dotkliwe w typowych wdrożeniach konsumenckich, gdzie sieć domowa rzadko jest optymalizowana pod kątem ciągłej transmisji wideo w czasie rzeczywistym.
 
 \paragraph{Wymagania Dotyczące Przepustowości i Zużycie Danych}
 \label{para:ograniczenia_przepustowosc}
-Transmisja strumienia wideo, zwłaszcza w wysokiej rozdzielczości, jest procesem wysoce zasobochłonnym, który generuje stałe i znaczące obciążenie dla sieci. Wielkość tego obciążenia nie jest stałą wartością, lecz dynamiczną funkcją czterech kluczowych zmiennych: rozdzielczości, liczby klatek na sekundę (FPS), zastosowanego kodeka kompresji oraz złożoności obserwowanej sceny.
-
+Transmisja strumienia wideo, zwłaszcza w wysokiej rozdzielczości, jest procesem wysoce zasobochłonnym, który generuje stałe i znaczące obciążenie dla sieci. Wielkość tego obciążenia nie jest stałą wartością, lecz dynamiczną funkcją czterech kluczowych zmiennych: 
 \begin{itemize}
-    \item \textbf{Rozdzielczość (Resolution):} Wyższa rozdzielczość oznacza większą liczbę pikseli w każdej klatce, co przekłada się na bardziej szczegółowy obraz, ale jednocześnie wykładniczo zwiększa ilość danych do przesłania. Strumień wideo w rozdzielczości 1080p (Full HD) wymaga zazwyczaj przepustowości na poziomie 2-4 Mbps, podczas gdy strumień 4K (Ultra HD) może z łatwością konsumować od 8 do 15 Mbps, a nawet więcej.
-    \item \textbf{Liczba klatek na sekundę (FPS):} Parametr ten definiuje płynność ruchu w nagraniu. Zwiększenie liczby klatek z 15 do 30 FPS podwaja ilość przesyłanych danych, co bezpośrednio przekłada się na proporcjonalny wzrost wymaganego pasma. Redukcja FPS jest skuteczną metodą ograniczenia zużycia pasma, jednak odbywa się kosztem utraty płynności, co może być krytyczne przy analizie szybkich zdarzeń.
-    \item \textbf{Kompresja (Compression):} Wybór kodeka ma fundamentalne znaczenie dla efektywności transmisji. Nowocześniejszy standard H.265 (HEVC) jest w stanie zredukować wymagania dotyczące przepustowości nawet o 50\% w porównaniu do powszechnie stosowanego H.264, przy zachowaniu porównywalnej jakości wizualnej.
-    \item \textbf{Złożoność sceny (Scene Complexity):} Nowoczesne kodeki wideo optymalizują transmisję, kodując głównie zmiany pomiędzy kolejnymi klatkami. W rezultacie, statyczna scena, taka jak pusty korytarz, będzie generować znacznie mniejszy strumień danych niż dynamiczna scena z dużą ilością ruchu, np. wejście do sklepu w godzinach szczytu. Wysoka aktywność w kadrze może nawet podwoić chwilowe zapotrzebowanie na pasmo.
+    \item \textbf{Rozdzielczość:} Wyższa rozdzielczość oznacza większą liczbę pikseli w każdej klatce, co przekłada się na bardziej szczegółowy obraz, ale jednocześnie wykładniczo zwiększa ilość danych do przesłania. Strumień wideo w rozdzielczości 1080p (Full HD) wymaga zazwyczaj przepustowości na poziomie 2-4 Mbps, podczas gdy strumień 4K (Ultra HD) może z łatwością konsumować od 8 do 15 Mbps, a nawet więcej.
+    \item \textbf{Liczba klatek na sekundę:} Parametr ten definiuje płynność ruchu w nagraniu. Zwiększenie liczby klatek z 15 do 30 FPS podwaja ilość przesyłanych danych, co bezpośrednio przekłada się na proporcjonalny wzrost wymaganego pasma. Redukcja FPS jest skuteczną metodą ograniczenia zużycia pasma, jednak odbywa się kosztem utraty płynności, co może być krytyczne przy analizie szybkich zdarzeń.
+    \item \textbf{Kompresja:} Wybór kodeka ma fundamentalne znaczenie dla efektywności transmisji. Nowocześniejszy standard H.265 (HEVC) jest w stanie zredukować wymagania dotyczące przepustowości nawet o 50\% w porównaniu do powszechnie stosowanego H.264, przy zachowaniu porównywalnej jakości wizualnej.
+    \item \textbf{Złożoność sceny:} Nowoczesne kodeki wideo optymalizują transmisję, kodując głównie zmiany pomiędzy kolejnymi klatkami. W rezultacie, statyczna scena, taka jak pusty korytarz, będzie generować znacznie mniejszy strumień danych niż dynamiczna scena z dużą ilością ruchu, np. wejście do sklepu w godzinach szczytu. Wysoka aktywność w kadrze może nawet podwoić chwilowe zapotrzebowanie na pasmo.
 \end{itemize}
-
-Te wymagania stają się szczególnie problematyczne w kontekście zapisu w chmurze. Większość konsumenckich planów internetowych ma charakter asymetryczny, oferując wysoką prędkość pobierania (download), ale znacznie niższą prędkość wysyłania (upload). Ponieważ kamera wysyła strumień wideo do chmury, kluczowa jest właśnie przepustowość wysyłania. Pojedyncza kamera 4K może z łatwością wysycić całe dostępne pasmo wysyłania typowego łącza domowego, uniemożliwiając lub znacznie spowalniając działanie innych usług internetowych, takich jak wideokonferencje czy wysyłanie dużych plików.
 
 \paragraph{Zależność od Stabilności i Jakości Połączenia Sieciowego}
 \label{para:ograniczenia_stabilnosc}
-Protokół transmisji w czasie rzeczywistym (RTP), stanowiący podstawę strumieniowania wideo z kamer IP, jest zoptymalizowany pod kątem minimalizacji opóźnień, a nie gwarancji dostarczenia danych. W praktyce oznacza to, że w przypadku utraty pakietu danych w sieci, nie jest on retransmitowany, aby nie powodować zatrzymania ("zacięcia") obrazu. Ta cecha architektoniczna sprawia, że jakość strumienia jest niezwykle wrażliwa na wszelkie niedoskonałości sieci, które w środowiskach bezprzewodowych (Wi-Fi) są nie wyjątkiem, a regułą.
+Protokół transmisji w czasie rzeczywistym (RTP), stanowiący podstawę strumieniowania wideo z kamer IP, jest zoptymalizowany pod kątem minimalizacji opóźnień, a nie gwarancji dostarczenia danych. W praktyce oznacza to, że w przypadku utraty pakietu danych w sieci, nie jest on retransmitowany, aby nie powodować zatrzymania ("zacięcia") obrazu. Ta cecha architektoniczna sprawia, że jakość strumienia jest niezwykle wrażliwa na wszelkie niedoskonałości sieci, które zdarzają się w środowiskach bezprzewodowych.
 
 \begin{itemize}
     \item \textbf{Utrata pakietów (Packet Loss):} Każdy utracony pakiet to bezpowrotnie utracony fragment informacji o obrazie lub dźwięku. Skutkuje to bezpośrednio widocznymi i słyszalnymi artefaktami: pikselozą (obraz staje się "kwadratowy"), zamrożeniem klatek (stuttering), zniekształconym lub przerywanym dźwiękiem, a także desynchronizacją obrazu i dźwięku. Badania wskazują, że poziom utraty pakietów na poziomie zaledwie 2\% może już poważnie zdegradować jakość rozmowy wideo lub transmisji na żywo.
     \item \textbf{Niestabilność sieci Wi-Fi:} Zdecydowana większość kamer konsumenckich jest instalowana w sieciach Wi-Fi, które z natury są medium współdzielonym i podatnym na zakłócenia. Na jakość połączenia negatywnie wpływają:
     \begin{itemize}
-        \item \textbf{Zakłócenia (Interference):} Sygnały z sąsiednich sieci Wi-Fi, urządzeń Bluetooth, kuchenek mikrofalowych i innych urządzeń działających w zatłoczonym paśmie 2.4 GHz mogą powodować kolizje i utratę pakietów.
+        \item \textbf{Zakłócenia:} Sygnały z sąsiednich sieci Wi-Fi, urządzeń Bluetooth, kuchenek mikrofalowych i innych urządzeń działających w zatłoczonym paśmie 2.4 GHz mogą powodować kolizje i utratę pakietów.
         \item \textbf{Tłumienie sygnału:} Fizyczne przeszkody, takie jak ściany, stropy i meble, osłabiają sygnał Wi-Fi. Im dalej kamera znajduje się od routera, tym słabsze połączenie, niższa przepustowość i większe prawdopodobieństwo utraty pakietów.
-        \item \textbf{Kongestia sieciowa (Network Congestion):} Kamera musi konkurować o dostęp do pasma z każdym innym urządzeniem w sieci domowej (komputerami, smartfonami, telewizorami). W godzinach szczytowego obciążenia, gdy wiele urządzeń aktywnie korzysta z internetu, sieć staje się przeciążona, co prowadzi do opóźnień i odrzucania pakietów.
+        \item \textbf{Konkurowanie:} Kamera musi konkurować o dostęp do pasma z każdym innym urządzeniem w sieci domowej (komputerami, smartfonami, telewizorami). W godzinach szczytowego obciążenia, gdy wiele urządzeń aktywnie korzysta z internetu, sieć staje się przeciążona, co prowadzi do opóźnień i odrzucania pakietów.
     \end{itemize}
     \item \textbf{Opóźnienia (Latency) i Zmienność Opóźnień (Jitter):} Opóźnienie to czas potrzebny na dotarcie pakietu od kamery do odbiorcy, a jitter to miara nieregularności tych opóźnień. Nawet jeśli pakiety nie są gubione, ale docierają w nierównych odstępach czasu, może to zakłócić płynność odtwarzania. Odbiorca (np. aplikacja w telefonie) posiada bufor kompensujący niewielki jitter, ale jego przepełnienie w wyniku dużych wahań opóźnień skutkuje zacinaniem się obrazu, podczas gdy odtwarzacz czeka na spóźnione pakiety.
 \end{itemize}
-W praktyce, te czynniki degradujące jakość nie działają w sposób addytywny, lecz multiplikatywny. Kamera o wysokiej rozdzielczości (generująca duży strumień danych), umieszczona w dużej odległości od routera (słaby sygnał) w zatłoczonej sieci Wi-Fi (wysokie zakłócenia i utrata pakietów), doświadczy katastrofalnego spadku jakości transmisji. To właśnie ten efekt wzmacniający wyjaśnia, dlaczego doświadczenia użytkowników z kamerami IP bywają tak niespójne i trudne do zdiagnozowania – postrzegany problem często jest wynikiem nałożenia się kilku pozornie niewielkich niedoskonałości sieciowych. Paradoksalnie, główna zaleta marketingowa kamer konsumenckich – łatwość instalacji dzięki łączności bezprzewodowej – stoi w bezpośredniej sprzeczności z ich technicznym wymaganiem posiadania stabilnej, wysokoprzepustowej i niskoprzetłoczonej sieci. Użytkownikowi sprzedawany jest produkt o wysokiej rozdzielczości, który w docelowym, typowym środowisku domowej sieci Wi-Fi, rzadko ma szansę osiągnąć swoją nominalną jakość działania.
+W praktyce, te czynniki degradujące jakość nie działają w sposób addytywny, lecz multiplikatywny. Kamera o wysokiej rozdzielczości (generująca duży strumień danych), umieszczona w dużej odległości od routera (słaby sygnał) w zatłoczonej sieci Wi-Fi (wysokie zakłócenia i utrata pakietów), doświadczy katastrofalnego spadku jakości transmisji. To właśnie ten efekt wzmacniający wyjaśnia, dlaczego doświadczenia użytkowników z kamerami IP bywają tak niespójne i trudne do zdiagnozowania – postrzegany problem często jest wynikiem nałożenia się kilku pozornie niewielkich niedoskonałości sieciowych. Paradoksalnie, główna zaleta marketingowa kamer konsumenckich – łatwość instalacji dzięki łączności bezprzewodowej – stoi w bezpośredniej sprzeczności z ich technicznym wymaganiem posiadania stabilnej, wysokoprzepustowej i niskoprzetłoczonej sieci.
 
-\subsubsection{Luki w Zabezpieczeniach i Ryzyka dla Prywatności}
+\subsubsection{Luki w zabezpieczeniach i ryzyka dla prywatności}
 \label{subsubsec:ograniczenia_bezpieczenstwo}
-Jako permanentnie podłączone do sieci, często instalowane i zapominane urządzenia peryferyjne, kamery IP stanowią istotny i unikalny wektor zagrożeń cybernetycznych. Ich umiejscowienie w wrażliwych, prywatnych przestrzeniach sprawia, że konsekwencje udanego ataku wykraczają daleko poza typowe incydenty bezpieczeństwa IT, bezpośrednio naruszając prywatność i fizyczne bezpieczeństwo użytkowników.
+Jako permanentnie podłączone do sieci, często instalowane i zapominane urządzenia peryferyjne, kamery IP stanowią istotny i unikalny wektor zagrożeń. Ich umiejscowienie w wrażliwych, prywatnych przestrzeniach sprawia, że konsekwencje udanego ataku wykraczają daleko poza typowe incydenty bezpieczeństwa IT, bezpośrednio naruszając prywatność i fizyczne bezpieczeństwo użytkowników.
 
 \paragraph{Wektory Ataków i Powszechne Podatności}
 \label{para:ograniczenia_wektory_atakow}
 Połączenie niezabezpieczonych konfiguracji domyślnych, zaniedbań ze strony użytkowników oraz dużej powierzchni ataku czyni kamery IP głównym celem masowych, zautomatyzowanych ataków.
 \begin{itemize}
     \item \textbf{Słabe lub domyślne poświadczenia:} Głównym i najprostszym wektorem ataku jest niezmienienie przez użytkownika fabrycznych, domyślnych danych logowania (nazwy użytkownika i hasła). Atakujący wykorzystują zautomatyzowane skanery, które przeszukują internet w poszukiwaniu urządzeń odpowiadających na standardowych portach, a następnie próbują uzyskać do nich dostęp, używając publicznie znanych, domyślnych poświadczeń dla danego modelu kamery \cite{owasp_iot_top10}.
-    \item \textbf{Ekspozycja w sieci publicznej:} Błędna konfiguracja routera, w szczególności niepotrzebne przekierowanie portów (port forwarding), może wystawić interfejs administracyjny kamery bezpośrednio na publiczny internet. Takie urządzenia stają się łatwo wykrywalne za pomocą wyspecjalizowanych wyszukiwarek, takich jak Shodan, które indeksują podłączone do internetu urządzenia \cite{neshenko2019vulnerability}.
+    \item \textbf{Ekspozycja w sieci publicznej:} Błędna konfiguracja routera, w szczególności niepotrzebne przekierowanie portów, może wystawić interfejs administracyjny kamery bezpośrednio na publiczny internet. Takie urządzenia stają się łatwo wykrywalne za pomocą wyspecjalizowanych wyszukiwarek, takich jak Shodan, które indeksują podłączone do internetu urządzenia \cite{neshenko2019vulnerability}.
     \item \textbf{Wykorzystanie w botnetach:} Przejęte kamery, ze względu na ich liczbę i stałe podłączenie do sieci, są cennym zasobem do tworzenia botnetów. Złowrogi przykład botnetu Mirai pokazał, jak setki tysięcy skompromitowanych urządzeń IoT, w dużej mierze kamer IP, zostały wykorzystane do przeprowadzenia zmasowanych ataków typu DDoS (Distributed Denial of Service), które zakłóciły działanie największych serwisów internetowych \cite{antonakakis2017understanding}. Incydent ten unaocznił, jak indywidualne zaniedbanie bezpieczeństwa może przyczynić się do globalnej destabilizacji internetu.
-    \item \textbf{Wykorzystanie jako proxy do działalności przestępczej:} Nowszym i bardziej podstępnym zagrożeniem jest wykorzystywanie przejętych kamer jako serwerów proxy do anonimizacji działalności przestępczej. Badania naukowe dowodzą, że skompromitowane urządzenia IoT, w tym w dużej mierze kamery, są masowo wykorzystywane w infrastrukturze przestępczej do przeprowadzania ataków na instytucje finansowe, takich jak credential stuffing (automatyczne testowanie skradzionych loginów i haseł), kradzież kryptowalut czy oszustwa z użyciem kart kredytowych \cite{mi2019resident}. Właściciel kamery jest najczęściej nieświadomy, że jego domowe urządzenie zabezpieczające stało się węzłem w globalnej sieci przestępczej.
 \end{itemize}
 
 \paragraph{Ryzyka Związane z Oprogramowaniem Firmware}
 \label{para:ograniczenia_firmware}
-Firmware, czyli oprogramowanie układowe, pełni rolę systemu operacyjnego kamery i stanowi krytyczną, choć często niewidoczną dla użytkownika, granicę bezpieczeństwa. Połączenie zamkniętego, nieaudytowanego kodu z nieregularnym wsparciem ze strony producenta tworzy trwałą i niebezpieczną powierzchnię ataku.
+Firmware, czyli oprogramowanie układowe, pełni rolę systemu operacyjnego kamery i stanowi krytyczną, choć często niewidoczną dla użytkownika, granicę bezpieczeństwa. Powoduje to podatność na wektor ataku i stu procentową zależność od producenta. Oto kluczowe ograniczenia związane z firmware:
 \begin{itemize}
-    \item \textbf{Zamknięty i nieprzejrzysty kod:} W przeciwieństwie do oprogramowania open-source, firmware większości kamer konsumenckich to "czarna skrzynka". Użytkownicy i niezależni badacze bezpieczeństwa nie mają możliwości łatwego audytu kodu w poszukiwaniu luk, tylnych furtek (backdoorów) czy niebezpiecznych praktyk, takich jak zaszyte na stałe w kodzie hasła (hardcoded credentials).
+    \item \textbf{Zamknięty kod:} W przeciwieństwie do oprogramowania open-source, firmware większości kamer konsumenckich to "czarna skrzynka". Użytkownicy i niezależni badacze bezpieczeństwa nie mają możliwości łatwego audytu kodu w poszukiwaniu luk, tylnych furtek (backdoorów) czy niebezpiecznych praktyk, takich jak zaszyte na stałe w kodzie hasła (hardcoded credentials).
     \item \textbf{Brak terminowych aktualizacji:} Producenci często z opóźnieniem publikują łatki bezpieczeństwa dla nowo odkrytych podatności (oznaczonych numerami CVE), a wielu użytkowników nie instaluje dostępnych aktualizacji. Stwarza to szerokie "okno możliwości" dla atakujących, którzy mogą wykorzystywać dobrze znane i opisane luki w zabezpieczeniach.
     \item \textbf{Polityka End-of-Life (EOL):} Jest to krytyczne, niemożliwe do obejścia ograniczenie. W momencie, gdy producent ogłasza, że dany model produktu osiągnął status EOL (koniec życia), zaprzestaje wszelkiego wsparcia, w tym wydawania jakichkolwiek aktualizacji bezpieczeństwa. Każda podatność odkryta po tej dacie staje się permanentnym zagrożeniem typu "zero-day", na które nigdy nie powstanie oficjalna łatka. Biorąc pod uwagę długi cykl życia fizycznego kamer, prowadzi to do powstawania w sieci rosnącej populacji przestarzałych urządzeń, które są tykającymi bombami zegarowymi z punktu widzenia bezpieczeństwa.
 \end{itemize}
@@ -538,59 +499,268 @@ Firmware, czyli oprogramowanie układowe, pełni rolę systemu operacyjnego kame
 \label{para:ograniczenia_prywatnosc}
 Umiejscowienie kamer IP w najbardziej prywatnych przestrzeniach – domach, sypialniach, biurach – sprawia, że naruszenie bezpieczeństwa jest jednocześnie głębokim naruszeniem prywatności. Co więcej, model operacyjny oparty na usługach chmurowych wprowadza dodatkowe ryzyka związane z zarządzaniem i ochroną danych.
 \begin{itemize}
-    \item \textbf{Nieautoryzowana inwigilacja:} Najbardziej bezpośrednim i dotkliwym ryzykiem jest uzyskanie przez atakującego dostępu do transmisji wideo i audio na żywo. Umożliwia to podglądanie i podsłuchiwanie domowników, co prowadziło do udokumentowanych przypadków nękania, szantażu, a nawet szpiegostwa.
+    \item \textbf{Nieautoryzowana inwigilacja:} Najbardziej bezpośrednim i dotkliwym ryzykiem jest uzyskanie przez atakującego dostępu do transmisji wideo i audio na żywo. Umożliwia to podglądanie i podsłuchiwanie domowników, co prowadziło do przypadków nękania, szantażu, a nawet szpiegostwa.
     \item \textbf{Bezpieczeństwo danych w chmurze:} W modelu, w którym nagrania wideo są przechowywane na serwerach producenta, użytkownik traci bezpośrednią kontrolę nad swoimi danymi. Musi on w pełni zaufać praktykom bezpieczeństwa stosowanym przez dostawcę usługi w celu ochrony przed włamaniem do infrastruktury chmurowy. Kwestie takie jak polityka prywatności, jurysdykcja przechowywania danych oraz prawa dostępu do nich stają się kluczowe. Udany atak na serwery producenta może skutkować jednoczesnym wyciekiem prywatnych nagrań tysięcy, a nawet milionów użytkowników.
 \end{itemize}
 Krajobraz zagrożeń IoT charakteryzuje się głęboką asymetrią ryzyka. Wysiłek wymagany od atakującego do masowego skompromitowania kamer jest niezwykle niski (np. zautomatyzowane skanowanie w poszukiwaniu domyślnych haseł), podczas gdy potencjalne konsekwencje dla ofiary są niezwykle wysokie (naruszenie prywatności, straty finansowe, nieświadomy udział w botnecie). Ten wysoce korzystny dla atakujących stosunek ryzyka do zysku gwarantuje, że tego typu ataki będą kontynuowane i będą rosły w skali. Co więcej, problem EOL nie jest jedynie kwestią techniczną, ale bezpośrednią konsekwencją modelu biznesowego, który priorytetyzuje sprzedaż nowego sprzętu nad wspieraniem istniejących produktów. Tworzy to zjawisko "planowanego starzenia się bezpieczeństwa", w którym fizyczna funkcjonalność urządzenia znacznie przeżywa jego cyfrowe bezpieczeństwo. Decyzja biznesowa o zakończeniu wsparcia dla danego modelu przekłada się bezpośrednio na permanentną, niemożliwą do załatania lukę w zabezpieczeniach dla każdego użytkownika, który nie zdecyduje się na wymianę sprzętu.
 
-\subsubsection{Ograniczenia Modelu Biznesowego i Uzależnienie od Producenta}
+\subsubsection{Ograniczenia modelu biznesowego i uzależnienie od producenta}
 \label{subsubsec:ograniczenia_biznesowe}
-Ostatnia kategoria ograniczeń nie wynika z samej technologii, lecz ze strategicznych decyzji producentów, mających na celu stworzenie zamkniętych, własnościowych ekosystemów. Działania te, motywowane biznesowo, w sposób fundamentalny ograniczają prawa użytkownika, interoperacyjność i długoterminowe bezpieczeństwo, co stanowi główną motywację dla projektu badawczego opisanego w niniejszej pracy.
+Ostatnia kategoria ograniczeń nie wynika z samej technologii, lecz ze strategicznych decyzji producentów, mających na celu stworzenie zamkniętych, własnościowych ekosystemów. Działania te, motywowane biznesowo, w sposób fundamentalny ograniczają potencjał technologiczny urządzeń, interoperacyjność i długoterminowe bezpieczeństwo, co stanowi główną motywację niniejszej pracy.
 
-\paragraph{Zjawisko "Vendor Lock-in" w Ekosystemach IoT}
-\label{para:ograniczenia_vendor_lockin}
-Producenci celowo projektują swoje produkty w taki sposób, aby stworzyć wysokie koszty zmiany dostawcy, uzależniając klienta od swojego ekosystemu na cały cykl życia produktu \cite{opara2016vendor}.
+
+\subsubsection{Zjawisko ograniczonego potencjału sprzętowego}
+\label{subsubsec:ograniczony_potencjal}
+Analiza rynku kamer konsumenckich ujawnia istotną dysproporcję między możliwościami technicznymi sprzętu a funkcjonalnością faktycznie udostępnioną użytkownikowi. To celowe ograniczenie potencjału sprzętowego realizowane jest przez producentów poprzez cztery główne mechanizmy:
+
 \begin{itemize}
-    \item \textbf{Definicja i mechanizm:} Zjawisko "vendor lock-in" (uzależnienie od dostawcy) ma miejsce, gdy koszt i wysiłek związany ze zmianą produktu na konkurencyjny są tak znaczące, że klient jest w praktyce "uwięziony" u pierwotnego dostawcy \cite{opara2016vendor}. W przypadku kamer IP jest to realizowane poprzez ścisłe powiązanie sprzętu (kamery) z dedykowanym oprogramowaniem (aplikacją mobilną) i usługami backendowymi (platformą chmurową) producenta. Funkcje kluczowe, takie jak pierwsza konfiguracja, zdalny podgląd, powiadomienia o ruchu czy zapis w chmurze, są dostępne wyłącznie za pośrednictwem tego zamkniętego ekosystemu.
-    \item \textbf{Konsekwencje dla użytkownika:} Użytkownik nie ma możliwości integracji i zarządzania kamerami różnych marek w jednej, wspólnej aplikacji. Jeśli zdecyduje się na zmianę platformy (np. z powodu niezadowolenia z usług lub polityki cenowej), często jest zmuszony do wymiany całego posiadanego sprzętu, nawet jeśli jest on w pełni sprawny technicznie \cite{alfuqaha2015iot}.
+    \item \textbf{Brak interoperacyjności:} Uzależenienie od konkretnej platformy ogranicza możliwość integracji z innymi systemami monitoringu lub oprogramowaniem do zarządzania wideo. 
+    \item \textbf{Własnościowe API sterowania (Proprietary API):} Kluczowe funkcje operacyjne, takie jak sterowanie silnikami PTZ, są ukryte i niedostępne przez otwarte standardy (np. ONVIF). Wymusza to na użytkowniku korzystanie wyłącznie z oficjalnej aplikacji producenta.
+    \item \textbf{Brak suwerenności danych:} Architektura systemu nie zapewnia użytkownikowi pełnej kontroli nad zapisem własnych danych. Jest on zmuszany do korzystania z karty SD (co niesie ryzyko utraty danych wraz z kradzieżą kamery) lub płatnej chmury, zamiast posiadać natywną możliwość łatwego zapisu nagrań na własnym, lokalnym serwerze.
+    \item \textbf{Uzależnienie od infrastruktury chmurowej:} Pełna funkcjonalność sprzętu jest uzależniona od stałego dostępu do Internetu i serwerów producenta. Oznacza to, że w przypadku awarii sieci lub decyzji producenta o wyłączeniu serwerów, kamera traci większość swoich funkcji.
+    \item \textbf{Dalsza integracja wykrywania ruchu i powiadomień:} Zaawansowane funkcje, takie jak wykrywanie twarzy czy analiza zachowań, są często realizowane wyłącznie po stronie chmury producenta. Ogranicza to możliwość lokalnej analizy danych i zwiększa ryzyko naruszenia prywatności.
 \end{itemize}
 
-\paragraph{Konsekwencje Zamkniętych Protokółów i API}
-\label{para:ograniczenia_api}
-Głównym narzędziem technicznym służącym do egzekwowania strategii "vendor lock-in" jest stosowanie zamkniętych, nieudokumentowanych interfejsów programistycznych (API) zamiast otwartych, ustandaryzowanych protokołów.
+Główną motywacją niniejszej pracy jest przełamanie zidentyfikowanych barier poprzez stworzenie oprogramowania Open Source, które zapewnia użytkownikowi pełną kontrolę i odblokowuje rzeczywisty potencjał zakupionego sprzętu.
+
+
+\subsection{Analiza kamery TP-Link Tapo C200}
+\label{sec:analiza_tapo_c200}
+
+\subsubsection{Charakterystyka ogólna}
+\label{subsec:charakterystyka_ogolna}
+
+Kamera TP-Link Tapo C200 jest pozycjonowana na rynku jako flagowy przykład konsumenckiego urządzenia \textbf{Internetu Rzeczy (IoT)} w kategorii \textbf{„Smart Home”}. Jej podstawowym celem rynkowym jest dostarczenie masowemu odbiorcy niedrogiego, łatwego w obsłudze i bogatego w funkcje systemu monitoringu wewnętrznego, który jest w pełni zarządzany za pomocą aplikacji mobilnej. Strategia TP-Link polega na oferowaniu zaawansowanych możliwości sprzętowych w wysoce konkurencyjnej cenie, co ma na celu szybkie zdobycie udziału w rynku i wprowadzenie użytkowników do zamkniętego ekosystemu usług firmy.
+
+Kluczowe funkcje reklamowane w oficjalnej specyfikacji technicznej stanowią fundament jej propozycji wartości:
 \begin{itemize}
-    \item \textbf{Blokowanie interoperacyjności:} Chociaż istnieją globalne standardy, takie jak ONVIF, stworzone w celu zapewnienia współpracy urządzeń różnych producentów, wielu dostawców sprzętu konsumenckiego celowo ich nie implementuje lub oferuje jedynie częściowe, zawodne wsparcie.
-    \item \textbf{Własnościowa kontrola:} Zamiast tego, do sterowania zaawansowanymi funkcjami, takimi jak ruch PTZ, zmiana ustawień czy dostęp do funkcji opartych na AI, wykorzystywane są prywatne, nieudokumentowane API.
-    \item \textbf{Konieczność inżynierii wstecznej:} Aby zintegrować taką kamerę z systemem open-source (np. Home Assistant) lub z autorskim rozwiązaniem, takim jak opracowane w ramach niniejszej pracy, programiści są zmuszeni do prowadzenia złożonego i czasochłonnego procesu inżynierii wstecznej w celu rozszyfrowania działania zamkniętych protokołów. Takie rozwiązanie jest z natury niestabilne, gdyż każda aktualizacja oprogramowania firmware przez producenta może zmienić API i zniszczyć działającą integrację.
+    \item \textbf{Wysoka jakość obrazu:} Kamera oferuje natywną rozdzielczość $1080\text{p Full HD}$ ($1920 \times 1080$ pikseli) przy płynnej prędkości $30 \text{ klatek na sekundę}$. Stanowi to standard rynkowy dla nowoczesnych systemów monitoringu, pozwalający na wyraźną identyfikację szczegółów.
+    \item \textbf{Mechanizm Pan/Tilt:} Urządzenie jest wyposażone w zmotoryzowaną głowicę, umożliwiającą zdalny obrót w poziomie w zakresie $360^{\circ}$ oraz pochylenie w pionie. Ta funkcja eliminuje martwe strefy i pozwala na monitorowanie całego pomieszczenia za pomocą jednego urządzenia.
+    \item \textbf{Tryb nocny (Noktowizja):} Zintegrowane diody LED podczerwieni o długości fali $850 \text{ nm}$ zapewniają widoczność w całkowitej ciemności na deklarowany dystans do $40 \text{ stóp}$ (około $12 \text{ metrów}$).
+    \item \textbf{Dwukierunkowe audio:} Wbudowany mikrofon i głośnik umożliwiają komunikację w czasie rzeczywistym, co przekształca kamerę z pasywnego sensora w interaktywny interkom.
+    \item \textbf{Zaawansowana detekcja:} Poza standardową detekcją ruchu, Tapo C200 reklamuje funkcje oparte na sztucznej inteligencji (AI), w tym \textbf{„Detekcję Osób” (Person Detection)} oraz \textbf{„Detekcję Płaczu Dziecka” (Baby Crying Detection)}.
 \end{itemize}
 
-\subsection{Wnioski - Analiza}
+Pełna funkcjonalność, począwszy od krytycznego procesu pierwszej konfiguracji (provisioningu), aż po dostęp do zaawansowanych funkcji detekcji i zdalnego podglądu, jest nierozerwalnie związana z autorską aplikacją mobilną Tapo oraz infrastrukturą chmurową TP-Link.
+Ten model stanowi centralny problem badawczy niniejszej pracy. Tytułowe \textbf{„Wykorzystanie oprogramowania Open-Source do współpracy z kamerami TP-Link TAPO”} jest bezpośrednią odpowiedzią inżynierską na wyzwanie, jakim jest obejście tych sztucznych ograniczeń. Niniejszy rozdział dokonuje systematycznej dekonstrukcji kamery Tapo C200, aby precyzyjnie zidentyfikować, które jej komponenty są otwarte i możliwe do integracji, a które zostały celowo zamknięte przez producenta w ramach strategii \textbf{„vendor lock-in”}. Analiza ta stanowi techniczne uzasadnienie dla zaprojektowania i implementacji niestandardowego oprogramowania opisanego w kolejnych rozdziałach pracy.
+
+\subsubsection{Architektura sprzętowa}
+\label{subsec:architektura_sprzetowa}
+
+Analiza architektury sprzętowej jest kluczowa dla zrozumienia zarówno potencjału, jak i ograniczeń kamery. Komponenty fizyczne definiują surowe możliwości urządzenia, które oprogramowanie układowe (\textbf{firmware}) następnie eksponuje – lub ukrywa – użytkownikowi.
+
+Poniższa tabela syntetyzuje kluczowe specyfikacje sprzętowe, które stanowią bazę dla dalszej analizy oprogramowania i funkcjonalności.
+
+\begin{table}[H]
+    \centering
+    \caption{Kluczowe Specyfikacje Techniczne TP-Link Tapo C200}
+    \label{tab:spec_tapo_c200}
+    \begin{tabularx}{0.7\textwidth}{L L}
+        \toprule
+        \textbf{Kategoria} & \textbf{Specyfikacja} \\
+        \midrule
+        Przetwornik Obrazu & $1/2.8''$ Progressive Scan CMOS \\
+        \midrule
+        Obiektyw & Ogniskowa: 4 mm, Przysłona: F2.0 \\
+        \midrule
+        Noktowizja & Dioda IR LED 850 nm (zasięg do 40 stóp / 12 m) \\
+        \midrule
+        Rozdzielczość & $1080\text{P HD}$ ($1920 \times 1080 \text{ px}$) \\
+        \midrule
+        Szybkość Klatek & $30 \text{ fps}$ \\
+        \midrule
+        Kompresja Wideo & H.264 \\
+        \midrule
+        System Audio & Wbudowany mikrofon i głośnik \\
+        \midrule
+        Standard Wi-Fi & $IEEE 802.11\text{b/g/n}$, $2.4 \text{ GHz}$ \\
+        \midrule
+        Zapis Lokalny & Gniazdo microSD (do $512 \text{ GB}$) \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+W zakresie systemów peryferyjnych, kamera wyposażona jest w zintegrowany mikrofon i głośnik, co stanowi techniczną podstawę dla funkcji dwukierunkowego audio. Interfejs sieciowy jest ograniczony wyłącznie do komunikacji bezprzewodowej w paśmie $2.4 \text{ GHz}$, obsługując standardy $IEEE 802.11\text{b/g/n}$. Brak portu Ethernet oraz nieobsługiwanie pasma $5 \text{ GHz}$ jednoznacznie pozycjonują C200 jako urządzenie klasy konsumenckiej, gdzie priorytetem jest łatwość instalacji bezprzewodowej, a nie maksymalna stabilność i przepustowość połączenia, jakiej wymagałyby zastosowania profesjonalne.
+
+Centralną jednostką obliczeniową urządzenia jest wysoce zintegrowany układ \textbf{System-on-a-Chip (SoC)}. Chociaż oficjalna specyfikacja nie wymienia konkretnego modelu, analiza typowych architektur dla tego segmentu urządzeń wskazuje na użycie procesora integrującego wiele funkcji w jednym układzie (np. z serii Ingenic T31). Taki SoC łączy w sobie główny procesor (CPU), dedykowany procesor sygnału obrazu (ISP) odpowiedzialny za operacje takie jak demozaikowanie i redukcja szumów, oraz – co najważniejsze – sprzętowy koder wideo H.264.
+
+Wybór takiej architektury SoC jest kluczową decyzją inżynieryjną i biznesową. Z jednej strony, wysoka integracja drastycznie obniża koszty produkcji (\textbf{Bill of Materials - BOM}), co pozwala na oferowanie kamery w atrakcyjnej cenie. Z drugiej strony, taka monolityczna architektura ma głębokie implikacje dla otwartości systemu. Oznacza to, że każda pojedyncza funkcja urządzenia – od ruchu silnikami PTZ, przez odczyt z sensora CMOS, aż po kompresję H.264 i zarządzanie interfejsem sieciowym – jest kontrolowana przez jeden, monolityczny obraz oprogramowania układowego dostarczany i podpisywany cyfrowo przez TP-Link. Ten wybór sprzętowy jest technicznym fundamentem, który umożliwia skuteczną implementację biznesowego modelu \textbf{„vendor lock-in”}, który zostanie szczegółowo omówiony w sekcji 2.5.
+
+\subsubsection{Architektura oprogramowania i protokoły komunikacyjne}
+\label{subsec:architektura_oprogramowania}
+
+Warstwa oprogramowania jest miejscem, w którym realizowana jest strategia producenta. To tutaj potencjał sprzętowy jest albo udostępniany poprzez otwarte standardy, albo celowo ograniczany przez zamknięte protokoły. Analiza Tapo C200 ujawnia świadome i celowe rozdzielenie tych dwóch podejść.
+
+\paragraph*{Oprogramowanie Układowe (Firmware)}
+
+Urządzenie działa pod kontrolą zamkniętego oprogramowania układowego, bazującego najprawdopodobniej na zmodyfikowanej dystrybucji Linuksa, co jest powszechną praktyką w urządzeniach IoT. Ten firmware stanowi \textbf{„czarną skrzynkę”}, która zarządza całym sprzętem i udostępnia wszystkie usługi sieciowe. Aktualizacje firmware'u są dostarczane przez producenta w formie binarnych plików, które są cyfrowo podpisywane, co uniemożliwia użytkownikom instalację zmodyfikowanych wersji. Ta praktyka jest kluczowym elementem strategii zabezpieczeń TP-Link, ale jednocześnie stanowi barierę dla społeczności open-source, która chciałaby wprowadzać własne modyfikacje lub poprawki bezpieczeństwa.
+
+\paragraph*{Standardowy Stos Sieciowy}
+
+Na poziomie sieciowym, kamera implementuje standardowy stos TCP/IP, aby móc funkcjonować w typowej sieci domowej. Obejmuje to podstawowe usługi, takie jak DHCP do automatycznej konfiguracji adresu IP, DNS do rozwiązywania nazw oraz NTP do synchronizacji czasu. Ponadto, kamera wykorzystuje HTTPS, co wskazuje na szyfrowaną komunikację, jednak ta komunikacja jest przeznaczona wyłącznie dla serwerów chmurowych TP-Link.
+
+Prawdziwa analiza pod kątem integracji open-source zaczyna się od protokołów warstwy aplikacji, gdzie obserwujemy dychotomię:
+
+\begin{description}
+    \item[RTSP (Real-Time Streaming Protocol):] Specyfikacja techniczna potwierdza wsparcie dla RTSP. Jest to absolutnie kluczowy, otwarty i ustandaryzowany protokół, który pozwala na dostęp do surowego, skompresowanego strumienia wideo i audio. Dostępność strumienia RTSP jest fundamentalnym umożliwiaczem dla całego projektu niniejszej pracy.
+    
+    \item[ONVIF (Open Network Video Interface Forum):] Specyfikacja również deklaruje zgodność z ONVIF. Jest to jednak przykład strategicznego \textbf{„open-washingu”} – marketingowego wykorzystania otwartego standardu w sposób, który sugeruje interoperacyjność, jednocześnie jej nie dostarczając. Ogranicza się ona w najlepszym razie do minimalnego zestawu funkcji (np. Profile S, co oznacza jedynie możliwość udostępniania strumienia wideo, co i tak jest już realizowane przez RTSP). Co najważniejsze, implementacja ta nie udostępnia kluczowej funkcjonalności sterowania PTZ.
+    
+    \item[Rzeczywisty Mechanizm Sterowania: Własnościowe API]
+    Skoro ONVIF nie pozwala na sterowanie kamerą, powstaje pytanie, w jaki sposób realizuje to oficjalna aplikacja Tapo. Odpowiedź leży w istnieniu nieudokumentowanego, własnościowego protokołu sterowania. Aplikacja mobilna Tapo komunikuje się z kamerą w sieci lokalnej za pomocą niestandardowego, API. Analiza aplikacji wykryła zaszyfrowane lub zakodowane żądania w celu wykonania operacji takich jak ruch Pan/Tilt, włączenie trybu nocnego, czy zmiana ustawień detekcji.
+
+\end{description}
+
+Poniższa tabela podsumowuje analizę protokołów komunikacyjnych kamery.
+
+\begin{table}[H]
+    \centering
+    \caption{Analiza Protokołów Komunikacyjnych Tapo C200 pod kątem Integracji Open-Source}
+    \label{tab:protokoly_tapo_c200}
+    \begin{tabularx}{\textwidth}{
+        >{\RaggedRight\hsize=0.7\hsize}X % Protokol (waski)
+        >{\RaggedRight\hsize=1.1\hsize}X % Cel (sredni)
+        >{\RaggedRight\hsize=0.8\hsize}X % Status (waski)
+        >{\RaggedRight\hsize=0.8\hsize}X % Dostepnosc (waski)
+        >{\RaggedRight\hsize=1.6\hsize}X % Uzytecznosc (szeroki)
+    }
+        \toprule
+        \textbf{Protokół} & \textbf{Cel} & \textbf{Status} & \textbf{Dostępność} & \textbf{Użyteczność dla Projektu} \\
+        \midrule
+        RTSP & Dostęp do strumienia \textit{A/V} & Otwarty Standard & Tak & Kluczowa. Stanowi podstawę do przechwytywania i analizy wideo (\textit{FFmpeg/OpenCV}). \\
+        \midrule
+        ONVIF & Interoperacyjność (\textit{Stream} + Sterowanie) & Otwarty Standard & Pozornie Tak & Znikoma. Implementacja jest okrojona i nie udostępnia sterowania \textit{PTZ}. Nazywana \enquote{open-washingiem}. \\
+        \midrule
+        API & Pełne sterowanie urządzeniem (\textit{PTZ}, ustawienia) & Zamknięty / Własnościowy & Brak informacji & Kluczowa (Pośrednio). Wymaga \textbf{inżynierii wstecznej}. Projekt wykorzystuje \textit{PyTapo} do obsługi tego API. \\
+        \midrule
+        Protokół Chmurowy (\textit{HTTPS}) & Zdalny dostęp, alerty, \textit{provisioning} & Zamknięty / Własnościowy & Brak informacji & Brak. Jest to mechanizm, który projekt ma na celu ominąć, aby \textbf{uniezależnić się od producenta}. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsubsection{Analiza możliwości funkcjonalnych}
+\label{subsec:analiza_funkcjonalna}
+
+Sekcja ta dokonuje ponownej oceny funkcji reklamowanych w sekcji 2.1, tym razem przez pryzmat inżynierski, oceniając ich rzeczywistą dostępność dla dewelopera open-source, w przeciwieństwie do ich teoretycznej obecności w urządzeniu.
+
+\paragraph*{Przetwarzanie i Strumieniowanie Wideo}
+
+Ta funkcja jest w pełni dostępna. Kamera niezawodnie dostarcza wysokiej jakości strumień H.264 ($1080\text{p}$ przy $30 \text{ fps}$) poprzez otwarty protokół RTSP. Z punktu widzenia projektu, jest to solidny i wystarczający fundament. Pozwala na pobranie „surowca” (danych wideo), który następnie może być przetwarzany lokalnie przez autorskie algorytmy. Dostępność ta jest warunkiem koniecznym dla powodzenia całego projektu.
+
+\paragraph*{Funkcjonalność PTZ (Pan/Tilt/Zoom)}
+
+W tym przypadku obserwujemy fundamentalne rozłączenie między możliwością sprzętową a dostępnością programową. Mechanizmy (silniki) do obrotu i pochylenia są fizycznie obecne w urządzeniu. Jednak, jak ustalono w sekcji 2.3, są one niedostępne przez jakikolwiek otwarty standard, taki jak ONVIF.
+
+W konsekwencji, z perspektywy dewelopera open-source, kamera Tapo C200 bez dodatkowej inżynierii wstecznej jest funkcjonalnie kamerą statyczną. Dopiero zastosowanie biblioteki PyTapo „odblokowuje” tę natywną funkcję sprzętową, co jest jednym z głównych celów implementacyjnych niniejszej pracy.
+
+\paragraph*{Wbudowane Funkcje AI}
+
+Najbardziej złożona sytuacja dotyczy wbudowanych funkcji „AI Detection”, takich jak wykrywanie osób i płaczu dziecka. Problem nie polega na tym, że te funkcje nie działają. Można założyć, że algorytmy uczenia maszynowego (prawdopodobnie uruchamiane na wyspecjalizowanym koprocesorze w ramach SoC) skutecznie analizują obraz i generują zdarzenia. Problem polega na niedostępności wyjścia tych algorytmów.
+
+Model operacyjny TP-Link dla tych zdarzeń jest następujący:
+\begin{enumerate}
+    \item Wbudowany algorytm AI na kamerze wykrywa zdarzenie (np. „osoba”).
+    \item Kamera nie emituje tego zdarzenia w sieci lokalnej (LAN) w formie otwartego komunikatu (np. przez MQTT, ONVIF Events, czy nawet prosty webhook).
+    \item Zamiast tego, kamera wysyła zaszyfrowany komunikat o zdarzeniu wyłącznie do serwerów chmurowych TP-Link.
+    \item Serwery TP-Link przetwarzają ten komunikat i wysyłają powiadomienie push do aplikacji mobilnej użytkownika.
+\end{enumerate}
+
+Ten model, w którym metadane zdarzeń są „brane jako zakładnik” (\textbf{„data hostage”}) przez infrastrukturę chmurową, czyni całą zaawansowaną, wbudowaną analitykę AI całkowicie bezużyteczną dla lokalnych systemów automatyki. Niemożliwe jest stworzenie w prosty sposób automatyzacji w systemie Home Assistant typu: „JEŻELI kamera Tapo wykryje osobę, TO włącz światło w korytarzu”.
+
+Ta celowa blokada dostępu do danych o zdarzeniach ma kluczową implikację dla niniejszej pracy: zmusza ona do \textbf{reimplementacji} funkcjonalności, która już istnieje w urządzeniu. Skoro nie można odczytać zdarzenia „detekcja ruchu” z kamery, projekt musi sam pobrać surowy strumień wideo (przez RTSP) i przeprowadzić własną, serwerową analizę detekcji ruchu.
+
+\subsubsection{Ograniczenia i zjawisko „vendor lock-in”}
+\label{subsec:vendor_lock_in}
+
+Synteza analizy sprzętu, oprogramowania i funkcjonalności prowadzi do jednoznacznego wniosku: ograniczenia kamery Tapo C200 nie są wynikiem braków technicznych, lecz świadomą strategią biznesową ograniczenia potencjału sprzętowego znaną jako \textbf{„vendor lock-in”} (uzależnienie od dostawcy).
+
+Z technicznego punktu widzenia, strategia „vendor lock-in” w przypadku Tapo C200 opiera się na trzech filarach:
+\begin{enumerate}
+    \item \textbf{Zamknięte API Sterowania (Proprietary Control API):} Jak omówiono w sekcji 2.3, brak otwartego standardu sterowania PTZ zmusza użytkowników do korzystania wyłącznie z oficjalnej aplikacji lub polegania na niestabilnych, reverse-engineeryjnych rozwiązaniach, takich jak PyTapo.
+    \item \textbf{Uchwycenie Metadanych AI (AI Metadata Capture):} Jak omówiono w sekcji 2.4, przesyłanie zdarzeń detekcji wyłącznie do chmury uniemożliwia lokalną automatyzację i wymusza na użytkowniku poleganie na infrastrukturze producenta w zakresie otrzymywania alertów.
+    \item \textbf{Szyfrowany i Chmurowy Provisioning:} Jest to pierwszy i najbardziej fundamentalny zamek. Proces inicjalizacji kamery i jej podłączenia do sieci Wi-Fi (provisioning) jest nieudokumentowany, szyfrowany i wymaga obowiązkowej weryfikacji po stronie chmury TP-Link. Oznacza to, że kamery nie można nawet uruchomić w sieci lokalnej bez użycia oficjalnej aplikacji mobilnej i aktywnego połączenia z internetem. Jest to tak złożona bariera, że niniejsza praca musi ją zaakceptować jako ograniczenie: w założeniach projektu stwierdza się, że „praca zakłada, że kamera została jednorazowo skonfigurowana w sieci Wi-Fi przy użyciu oficjalnej aplikacji mobilnej”.
+\end{enumerate}
+
+Wniosek z tej analizy jest jasny: „Wyzwanie Open Source” nie jest przypadkowym niedopatrzeniem inżynierów TP-Link. Jest to precyzyjnie zaprojektowany zestaw barier technicznych, których celem jest ochrona modelu biznesowego firmy. Praktyczna implementacja opisana w Rozdziale 3 niniejszej pracy jest zatem w swojej istocie aktem inżynierii obchodzenia (\textbf{bypass engineering}) tych celowo narzuconych ograniczeń.
+
+\subsubsection{Aspekty bezpieczeństwa i prywatności}
+\label{subsec:bezpieczenstwo}
+
+Ostatnia warstwa analizy dotyczy bezpieczeństwa i prywatności. Jest to najważniejszy argument przemawiający za koniecznością stworzenia otwartego, lokalnego rozwiązania. Model „vendor lock-in” nie tylko ogranicza funkcjonalność, ale także generuje poważne i udokumentowane zagrożenia dla użytkowników.
+
+\paragraph*{Ryzyka dla Prywatności}
+
+Model operacyjny oparty na subskrypcji zapisu nagrań w chmurze zachęca do fundamentalnego kompromisu w zakresie prywatności. Wymaga on przesyłania wrażliwych danych – materiału audio i wideo z wnętrza prywatnego domu – na serwery firmy trzeciej. Taka architektura generuje trzy ryzyka:
+\begin{itemize}
+    \item \textbf{Ryzyko wycieku danych:} Pomyślny atak na infrastrukturę chmurową TP-Link mógłby skutkować masowym wyciekiem prywatnych nagrań tysięcy użytkowników.
+    \item \textbf{Ryzyko nadużycia:} Użytkownik traci suwerenność nad swoimi danymi i musi ufać, że pracownicy dostawcy lub jego podwykonawcy nie uzyskają nieautoryzowanego dostępu do jego danych.
+    \item \textbf{Ryzyko prawne:} Dane przechowywane w chmurze podlegają jurysdykcji prawnej kraju, w którym znajdują się serwery, i mogą być przedmiotem żądań organów ścigania bez wiedzy użytkownika.
+\end{itemize}
+
+Lokalne rozwiązanie, do którego dąży niniejsza praca, całkowicie eliminuje te ryzyka, ponieważ dane nigdy nie opuszczają sieci lokalnej użytkownika.
+
+\paragraph*{Zidentyfikowane Luki w Zabezpieczeniach}
+
+Zamknięty, nieaudytowalny firmware kamery Tapo C200 okazał się być podatny na krytyczne luki bezpieczeństwa. Nie jest to już teoretyczne ryzyko; jest to udokumentowany fakt.
+\begin{enumerate}
+    \item \textbf{CVE-2021-4045: Krytyczna Luka RCE}
+    
+    Najpoważniejszą znaną luką jest CVE-2021-4045, której przyznano ocenę $9.8$ w skali CVSS \cite{hacefresko:rce}.
+    \begin{itemize}
+        \item \textbf{Problem:} Luka typu „unauthenticated Remote Code Execution” (nieuwierzytelnione zdalne wykonanie kodu).
+        \item \textbf{Wektor:} Luka znajdowała się w binarnym pliku uhttpd – tym samym wbudowanym serwerze WWW, który był używany do obsługi własnościowego API sterującego.
+        \item \textbf{Wpływ:} Serwer uhttpd działał z uprawnieniami użytkownika root (najwyższymi możliwymi). Oznacza to, że nieuwierzytelniony atakujący w tej samej sieci mógł zdalnie przejąć całkowitą kontrolę nad kamerą. Mógł ją wyłączyć, podsłuchiwać, podglądać, a także – co być może najgroźniejsze – wykorzystać ją do ataku na inne urządzenia w sieci lokalnej użytkownika.
+        \item \textbf{Zasięg:} Luka dotyczyła oprogramowania w wersji 1.1.15 i starszych.
+    \end{itemize}
+    
+    \item \textbf{Inne Wyniki Testów Penetracyjnych}
+        
+    Niezależne badania bezpieczeństwa potwierdziły istnienie wielu innych słabości:
+    \begin{itemize}
+        \item Badanie autorstwa Bella, Biondi et al. \cite{Bella:2023:PETIoT}, w ramach którego opracowano metodykę PETIoT, wykorzystało Tapo C200 jako studium przypadku. Zidentyfikowano w nim trzy nieznane wcześniej (zero-day) luki:
+        \begin{itemize}
+            \item Możliwość awarii kamery w wyniku intensywnego skanowania portów czyli Denial of Service(DoS).
+            \item Przechwytywanie nieszyfrowanego strumienia wideo H.264 podczas korzystania z oprogramowania firm trzecich (np. przez RTSP).
+            \item  Możliwość odgadnięcia, czy kamera wykryła ruch, na podstawie stałego rozmiaru szyfrowanych powiadomień, co stanowiło wyciek informacji.
+        \end{itemize}
+        \item Ogólnym zagrożeniem dla wszystkich słabo zabezpieczonych urządzeń IoT, w tym kamer, jest ryzyko rekrutacji do botnetu (np. Mirai), który wykorzystuje ich moc obliczeniową do przeprowadzania zmasowanych ataków DDoS.
+    \end{itemize}
+\end{enumerate}
+
+\paragraph*{Ostateczne Uzasadnienie dla Projektu}
+
+Powyższa analiza bezpieczeństwa i prywatności stanowi ostateczne i najsilniejsze uzasadnienie dla celu niniejszej pracy. Projektowane rozwiązanie open-source nie jest jedynie ćwiczeniem z inżynierii wstecznej w celu odblokowania funkcji PTZ. Jest to fundamentalna interwencja w zakresie bezpieczeństwa.
+
+Tworząc w pełni funkcjonalny, lokalny serwer sterujący, rozwiązanie to daje użytkownikowi możliwość wykonania kluczowego kroku hardeningu: całkowitego zablokowania kamerze dostępu do Internetu na poziomie routera (firewalla).
+
+Taka konfiguracja, niemożliwa przy korzystaniu z oficjalnej aplikacji, natychmiast:
+\begin{itemize}
+    \item Rozwiązuje problem prywatności: Dane audio/wideo nigdy nie opuszczają sieci lokalnej.
+    \item Neutralizuje ryzyko botnetu: Kamera nie może komunikować się z serwerami zewnetrznymi, więc nie może zostać zrekrutowana do botnetu.
+    \item Omija podatny na ataki serwer: Użytkownik komunikuje się z bezpiecznym, audytowalnym serwerem Python hostowanym lokalnie, zamiast z zamkniętym firmwarem kamery.
+\end{itemize}
+
+Rozdział ten udowodnił, że TP-Link Tapo C200 jest idealnym studium przypadku konfliktu IoT. Stanowi on techniczne uzasadnienie, dlaczego proponowana w niniejszej pracy architektura – lokalna, oparta na otwartym oprogramowaniu i przywracająca użytkownikowi kontrolę – jest nie tylko pożądana z punktu widzenia funkcjonalności, ale wręcz konieczna z punktu widzenia prywatności i cyberbezpieczeństwa.
+
+\subsection{Wnioski i analiza}
 \label{subsec:wnioski_analiza}
 
 Przeprowadzona w niniejszym rozdziale analiza technologiczna systemów monitoringu IP, ze szczególnym uwzględnieniem ekosystemu TP-Link Tapo, pozwala na sformułowanie kluczowych \textbf{wniosków} determinujących kierunek prac inżynierskich opisanych w kolejnych częściach dyplomu. Kamera IP, będąca w istocie złożonym \textbf{systemem wbudowanym} (\textit{SoC}) integrującym optykę, przetwarzanie sygnału i stos protokołów sieciowych, posiada potencjał wykraczający poza funkcjonalności udostępniane fabrycznie przez producenta. Jednakże, pełne wykorzystanie tego potencjału w otwartych systemach informatycznych napotyka na szereg barier technicznych i biznesowych.
 
-\subsubsection*{}
-
 Zidentyfikowano fundamentalną niezgodność standardów transmisji wideo z technologiami webowymi. Mimo że protokół \textbf{RTSP} (\textit{Real-Time Streaming Protocol}) stanowi przemysłowy standard przesyłania mediów w kamerach IP, współczesne \textbf{przeglądarki internetowe nie posiadają natywnego wsparcia} dla tego protokołu ani dla surowych strumieni \textit{H.264} transportowanych przez \textit{UDP/TCP}. 
 
-Oznacza to, że bezpośrednia wizualizacja obrazu z kamery Tapo C200 w aplikacji internetowej, bez zastosowania pośredniczącej \textbf{warstwy transkodującej} (\textit{middleware}), jest niemożliwa. Wymusza to zaprojektowanie autorskiego \textbf{potoku przetwarzania} (\textit{pipeline}), który w czasie rzeczywistym dokona translacji strumieni do formatów kompatybilnych z technologiami takimi jak \textbf{WebSockets} czy \textbf{HTML5 Canvas}.
+Oznacza to, że bezpośrednia wizualizacja obrazu z kamery Tapo C200 w aplikacji internetowej, bez zastosowania pośredniczącej \textbf{warstwy transkodującej} (\textit{middleware}), jest niemożliwa. Wymusza to zaprojektowanie autorskiego \textbf{potoku przetwarzania}, który w czasie rzeczywistym dokona translacji strumieni do formatów kompatybilnych ze współczesnymi technologiami.
 
-\subsubsection*{}
-
-Analiza modelu biznesowego producenta ujawniła zjawisko \textbf{\textit{Vendor Lock-in}}, które sztucznie ogranicza funkcjonalność urządzenia w środowisku lokalnym. Kluczowe funkcje sprzętowe, takie jak sterowanie mechaniką \textbf{PTZ} (\textit{Pan-Tilt-Zoom}) czy zaawansowana detekcja zdarzeń, są dostępne wyłącznie poprzez \textbf{zamknięte, własnościowe API} lub infrastrukturę chmurową producenta.
+Analiza modelu biznesowego producenta ujawniła zjawisko \textbf{\textit{Vendor Lock-in}}, które sztucznie ogranicza funkcjonalność urządzenia w środowisku lokalnym. Kluczowe funkcje sprzętowe, takie jak sterowanie mechaniką \textbf{PTZ} (\textit{Pan-Tilt-Zoom}) czy zapis nagrań, są dostępne wyłącznie poprzez \textbf{zamknięte, własnościowe API} lub infrastrukturę chmurową producenta.
 
 Brak implementacji pełnego standardu \textbf{ONVIF} w modelach konsumenckich sprawia, że integracja z systemami zewnętrznymi wymaga \textbf{inżynierii wstecznej} i emulacji protokołów sterujących, co uzasadnia wykorzystanie bibliotek takich jak \textbf{PyTapo} w warstwie abstrakcji sprzętowej projektowanego rozwiązania.
-
-\subsubsection*{}
-
 
 Finalnie, wdrożenie rozwiązania opartego na \textbf{oprogramowaniu Open Source} (Python, OpenCV, Docker) stanowi kluczowy czynnik uwalniający potencjał integracyjny urządzenia. Przełamanie barier producenta przekształca zamkniętą kamerę konsumencką w \textbf{programowalny sensor IoT}.
 
 Umożliwia to jej zastosowanie w zaawansowanych scenariuszach, takich jak:
 \begin{itemize}
     \item systemy kontroli dostępu,
-    \item lokalna analiza danych przy użyciu sztucznej inteligencji (\textit{AI}),
+    \item lokalna analiza danych przy użyciu sztucznej inteligencji,
     \item integracja z systemami \textit{Smart Home},
 \end{itemize}
 wszystko to bez narażania prywatności użytkownika na ryzyka związane z przetwarzaniem danych w chmurze publicznej.
-

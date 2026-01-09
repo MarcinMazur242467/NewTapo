@@ -1,4 +1,4 @@
-\section{Testowanie i Analiza wyników}
+\section{Testowanie i analiza wyników}
 \label{sec:testowanie_i_analiza}
 
 Niniejszy rozdział stanowi kluczowy etap weryfikacji opracowanego rozwiązania programistycznego. Po fazie projektowania i implementacji, niezbędne jest poddanie systemu rygorystycznym testom, które pozwolą ocenić stopień realizacji postawionych celów inżynierskich. 
@@ -18,7 +18,7 @@ W ramach przeprowadzonych badań zweryfikowano następujące obszary funkcjonaln
 
 Poprzez kwantyfikację tych parametrów, możliwe będzie obiektywne stwierdzenie, w jakim stopniu autorskie rozwiązanie oparte na oprogramowaniu \textbf{Open Source} stanowi skuteczną i bezpieczną alternatywę dla zamkniętego ekosystemu producenta.
 
-\subsection{Środowisko Testowe}
+\subsection{Środowisko testowe}
 \label{subsec:srodowisko_testowe}
 
 W celu weryfikacji wydajności potoków multimedialnych oraz stabilności sterowania PTZ, przygotowano dedykowane środowisko badawcze. 
@@ -110,6 +110,8 @@ W trakcie testu monitorowano dwa kluczowe wskaźniki inżynierskie:
     \end{itemize}
 \end{itemize}
 
+
+
 \subsubsection{Test T02: Stabilność i płynność strumieniowania wideo}
 \label{subsubsec:test_t02}
 
@@ -157,9 +159,11 @@ Na podstawie 11 prób kontrolnych wyznaczono charakterystykę opóźnienia syste
     \item \textbf{Zmienność opóźnienia (Jitter):} 57 ms.
 \end{itemize}
 
+
+
 Uzyskane wyniki pozwalają na ocenę responsywności systemu, co jest kluczowe w kontekście zdalnego sterowania mechaniką PTZ kamery oraz interakcji użytkownika z systemem.
 
-\subsubsection{Test T03: Wpływ procesu rejestracji na zasoby pamięci operacyjnej}
+\subsubsection{Test T03: Wpływ procesu rejestracji na zasoby}
 \label{subsubsec:test_t03}
 
 Ostatni etap testów koncentrował się na analizie obciążenia pamięci RAM podczas procesu zapisu materiału wideo. Badanie to miało na celu zweryfikowanie skalowalności przyjętej architektury nagrywania, opartej na strategii odroczonego zapisu (ang. \textit{Deferred Writing}).
@@ -185,9 +189,9 @@ Gdzie:
     \item $a \approx 148,3$ MB/s – współczynnik przyrostu wynikający z rozmiaru nieskompresowanych klatek w pamięci.
 \end{itemize}
 
-\subsection{Wnioski i Analiza}
+\subsection{Wnioski i analiza}
 \label{subsec:wnioski_z_testów}
-\subsubsection{Analiza wydajności algorytmu detekcji ruchu (Wnioski z testu T01)}
+\subsubsection{Algorytm detekcji ruchu}
 \label{subsubsec:wnioski_t01}
 
 Na podstawie przeprowadzonych pomiarów wydajnościowych sformułowano następujące wnioski dotyczące działania modułu detekcji:
@@ -207,10 +211,25 @@ Badanie potwierdziło stabilność działania aplikacji w środowisku wirtualizo
 \paragraph*{Narzut interpretacyjny języka Python}
 Zidentyfikowano ograniczenia wydajnościowe wynikające z wybranego języka programowania. W celu zwiększenia efektywności algorytmu i uzyskania większego marginesu bezpieczeństwa FPS, rekomendowane jest przeniesienie obliczeń macierzowych na procesor graficzny (GPU/CUDA) lub przepisanie krytycznych sekcji kodu (ang. \textit{hot paths}) do języka kompilowanego, takiego jak C++.
 
-\subsubsection{Analiza stabilności i płynności strumieniowania wideo (Wnioski z testu T02)}
+\subsubsection{Stabilność i płynność strumieniowania}
 \label{subsubsec:wnioski_t02}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{./Sources/latency_plot_updated.png}
+    \caption{ Wykres opóźnienia end-to-end podczas testu T02.}
+    \label{fig:wykres_opoznienia}
+\end{figure}
+
 Na podstawie danych zgromadzonych podczas testu strumieniowania, sformułowano wnioski dotyczące trzech kluczowych aspektów działania systemu: wydajności przetwarzania, opóźnień transmisji oraz stabilności obrazu.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{./Sources/wykres_stabilnosci_fps_aktualizacja.png}
+    \caption{ Wykres stabilności FPS podczas testu T02.}
+    \label{fig:wykres_stabilnosci_fps}
+\end{figure}
+
 
 \paragraph*{Pełna przepustowość przetwarzania (Wydajność FPS)}
 Pomiary wykazały, że system osiągnął średnią prędkość odświeżania na poziomie \textbf{15,7 FPS} przy źródle nadającym nominalnie 15 FPS. Oznacza to, że aplikacja skutecznie przetwarza 100\% dostarczonego materiału wideo, a niewielka nadwyżka wynika z różnic w taktowaniu zegarów systemowych. Badanie potwierdziło brak występowania zjawiska ,,wąskiego gardła'' (ang. \textit{bottleneck}) zarówno po stronie serwera aplikacyjnego, jak i klienta webowego, co świadczy o efektywnej implementacji potoku \textit{Video Pipeline}.
@@ -224,10 +243,17 @@ Zmierzone średnie opóźnienie typu \textit{end-to-end} na poziomie \textbf{728
 \paragraph*{Stabilność transmisji i wrażliwość kodeka H.264}
 Zaobserwowane podczas testów artefakty wizualne (błędy dekodowania) potwierdziły specyfikę pracy z protokołem UDP w środowisku sieci bezprzewodowych. Choć protokół ten zapewnia szybszą transmisję niż TCP, brak mechanizmu retransmisji pakietów w połączeniu z charakterystyką kodeka H.264 (wysoka kompresja międzyklatkowa) sprawia, że nawet minimalna utrata danych w sieci Wi-Fi skutkuje widocznymi błędami w obrazie. Jest to akceptowalny kompromis projektowy na rzecz utrzymania charakterystyki czasu rzeczywistego.
 
-\subsubsection{Analiza wpływu procesu rejestracji na zasoby (Wnioski z testu T03)}
+\subsubsection{Analiza wpływu procesu rejestracji na zasoby}
 \label{subsubsec:wnioski_t03}
 
 Test obciążeniowy pamięci operacyjnej (T03) dostarczył kluczowych danych dotyczących skalowalności modułu rejestracji (\texttt{Recorder}). Na podstawie zaobserwowanej charakterystyki zużycia zasobów sformułowano następujące wnioski krytyczne:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{./Sources/wykres_zuzycia_ram.png}
+    \caption{ Wykres zużycia pamięci RAM podczas testu T03.}
+    \label{fig:wykres_zuzycia_ram}
+\end{figure}
 
 \paragraph*{Dyskwalifikacja metody „Odroczonego Zapisu” w zastosowaniach ciągłych}
 Zastosowana strategia buforowania całego materiału wideo w pamięci RAM (ang. \textit{In-Memory Buffering}), opisana w sekcji 3.5.11, okazała się nieprzydatna w warunkach produkcyjnych wymagających ciągłości działania. Przy odnotowanym tempie konsumpcji pamięci na poziomie \textbf{148,3 MB/s}, rozwiązanie to jest ograniczone funkcjonalnie wyłącznie do rejestracji bardzo krótkich sekwencji zdarzeń (ang. \textit{Short Clips}), takich jak kilkusekundowe klipy z detekcji ruchu. Metoda ta nie może być stosowana do monitoringu ciągłego (24/7).
