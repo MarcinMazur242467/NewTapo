@@ -42,11 +42,22 @@ Niniejsza praca udowadnia, że możliwe jest zbudowanie profesjonalnej bramy IoT
 
 Głównym wnioskiem płynącym z realizacji pracy jest fakt, że „uwolnienie” sprzętu od producenta wiąże się z koniecznością przejęcia przez programistę odpowiedzialności za optymalizację niskopoziomową. Wybór wysokopoziomowych narzędzi (Python/OpenCV), choć przyspieszył proces prototypowania (ang. \textit{Rapid Prototyping}), ujawnił swoje ograniczenia wydajnościowe przy przetwarzaniu strumieni HD w czasie rzeczywistym. Mimo to, stworzony system stanowi funkcjonalną, bezpieczną i prywatną alternatywę dla rozwiązań chmurowych.
 
+\subsection*{Analiza technologii i narzędzi}
+\label{subsec:Analiza_technologii_narzedzi}
+Wybór języka programowania Python oraz użyte biblioteki okazały się trafny z punktu widzenia dostępności zaawansowanych algorytmów przetwarzania obrazu. Python, jako język interpretowany, umożliwił szybkie iteracje kodu i łatwą integrację z istniejącymi bibliotekami. OpenCV dostarczyło bogaty zestaw narzędzi do analizy wideo, co znacząco skróciło czas potrzebny na rozwój funkcji wykrywania ruchu. Są to aspekty szczególnie istotne w kontekście prototypowania aplikacji badawczo-rozwojowych.
+
+Jednakże, wybór Pythona wiązał się z pewnymi kompromisami wydajnościowymi, zwłaszcza w kontekście intensywnego przetwarzania strumieni wideo. W przyszłości, dla zastosowań wymagających większej wydajności, warto rozważyć \textbf{reimplementację krytycznych komponentów} w językach kompilowanych, takich jak C++ lub Rust.
+
+Zarządzanie zależnościami za pomocą narzędzia \texttt{uv} okazało się skuteczne w utrzymaniu spójności środowiska programistycznego. Umożliwiło to łatwe odtwarzanie konfiguracji na różnych maszynach developerskich oraz stanowiskach testowych.
+
+Konteneryzacja za pomocą Dockera okazała się kluczowa dla zapewnienia przenośności i izolacji środowiska uruchomieniowego. Umożliwiła łatwe wdrożenie aplikacji na różnych platformach bez konieczności ręcznej konfiguracji zależności. 
+
+\newpage
 \section*{Kierunki dalszego rozwoju}
 \label{sec:kierunki_rozwoju}
 \addcontentsline{toc}{section}{Kierunki dalszego rozwoju}
 
-Zrealizowany w ramach niniejszej pracy projekt inżynierski stanowi funkcjonalny prototyp (ang. \textit{Proof of Concept}), który skutecznie demonstruje możliwość przełamania bariery \textit{vendor lock-in} w konsumenckich kamerach IoT. Przeprowadzona w Rozdziale 4 analiza wydajnościowa zidentyfikowała jednak szereg ograniczeń architektury, które wyznaczają ścieżkę dalszej ewolucji oprogramowania. Rozwój systemu powinien koncentrować się na optymalizacji zarządzania zasobami, skalowalności oraz implementacji zaawansowanych mechanizmów analitycznych i bezpieczeństwa.
+Zrealizowany w ramach niniejszej pracy projekt inżynierski stanowi funkcjonalny prototyp (ang. \textit{Proof of Concept}), który skutecznie demonstruje możliwość przełamania bariery \textit{vendor lock-in} w konsumenckich kamerach IoT. Przeprowadzona w Rozdziale 3 analiza wydajnościowa zidentyfikowała jednak szereg ograniczeń architektury, które wyznaczają ścieżkę dalszej ewolucji oprogramowania. Rozwój systemu powinien koncentrować się na optymalizacji zarządzania zasobami, skalowalności oraz implementacji zaawansowanych mechanizmów analitycznych i bezpieczeństwa.
 
 \subsection*{Optymalizacja podsystemu rejestracji: Przejście na Zapis Strumieniowy}
 Najpilniejszym wyzwaniem inżynierskim, wynikającym bezpośrednio z krytycznych wniosków testu T03 (saturacja pamięci RAM), jest fundamentalna przebudowa modułu \texttt{Recorder}. Obecna strategia \textit{Deferred Writing} (odroczonego zapisu), polegająca na buforowaniu pełnych sesji nagraniowych w pamięci operacyjnej, jest nieakceptowalna w środowisku produkcyjnym.

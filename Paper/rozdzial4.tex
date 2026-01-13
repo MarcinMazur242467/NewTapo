@@ -204,10 +204,10 @@ Gdzie:
 Na podstawie przeprowadzonych pomiarów wydajnościowych sformułowano następujące wnioski dotyczące działania modułu detekcji:
 
 \paragraph*{Potwierdzenie pracy w czasie rzeczywistym}
-Wyniki testów wykazały, że system osiągnął średnią wydajność przetwarzania na poziomie \textbf{15,36 FPS}. Wartość ta przewyższa nominalną prędkość nadawania strumienia przez kamerę, wynoszącą 15 FPS. Oznacza to, że nadrzędny cel inżynierski został spełniony – zaimplementowany algorytm jest w stanie przetwarzać obraz na bieżąco (ang. \textit{on-the-fly}), nie wprowadzając opóźnień w procesie przesyłu wideo, co jest kluczowe dla systemów monitoringu.
+Wyniki testów wykazały, że system osiągnął średnią wydajność przetwarzania na poziomie \textbf{15,36 FPS}. Wartość ta przewyższa nominalną prędkość nadawania strumienia przez kamerę, wynoszącą 15 FPS. Oznacza to, że nadrzędny cel inżynierski został spełniony – zaimplementowany algorytm jest w stanie przetwarzać obraz na bieżąco, nie wprowadzając opóźnień w procesie przesyłu wideo, co jest kluczowe dla systemów monitoringu. Anomalia w postaci nadmiarowości wydajności stanowi prawdopodobnie o rezultat różnic w taktowaniu zegarów w momenci inicializacji i dezaktywacji aplikacji.
 
 \paragraph*{Wysoki koszt obliczeniowy dla rozdzielczości Full HD}
-Zauważono istotne obciążenie zasobów przy pracy z obrazem o wysokiej rozdzielczości. Mimo wykorzystania wydajnej jednostki centralnej (Intel Core i7), zarejestrowany zapas mocy obliczeniowej jest minimalny i wynosi zaledwie \textbf{0,36 FPS} powyżej wymaganego progu płynności. Wskazuje to jednoznacznie, że proces analizy każdej pojedynczej klatki w pełnej rozdzielczości 1920x1080 pikseli jest operacją wysoce wymagającą dla skryptu realizowanego w języku Python.
+Zauważono istotne obciążenie zasobów przy pracy z obrazem o wysokiej rozdzielczości. Wskazuje to jednoznacznie, że proces analizy każdej pojedynczej klatki w pełnej rozdzielczości 1920x1080 pikseli jest operacją wysoce wymagającą dla skryptu realizowanego w języku Python. W ramach późniejszego wdrożenia systemu na platformach o niższej mocy obliczeniowej (np. Raspberry Pi), konieczne będzie rozważenie optymalizacji algorytmu i przeniesienie krytycznych sekcji kodu do języków kompilowanych.
 
 \paragraph*{Skuteczność symulacji obciążenia granicznego}
 Zastosowana metodyka testowa polegająca na wprowadzaniu sztucznego szumu cyfrowego (z wykorzystaniem funkcji \texttt{cv2.add}) okazała się skuteczna. Zabieg ten wymusił na algorytmie pracę w najtrudniejszych warunkach obliczeniowych. Uzyskany wynik testu można zatem uznać za miarodajny dla scenariusza typu ,,najgorszy przypadek'' (ang. \textit{worst-case scenario}), obejmującego nagłe zmiany oświetlenia lub wystąpienie silnych zakłóceń obrazu.
@@ -263,7 +263,7 @@ Test obciążeniowy pamięci operacyjnej (T03) dostarczył kluczowych danych dot
 \end{figure}
 
 \paragraph*{Dyskwalifikacja metody „Odroczonego Zapisu” w zastosowaniach ciągłych}
-Zastosowana strategia buforowania całego materiału wideo w pamięci RAM (ang. \textit{In-Memory Buffering}), opisana w sekcji 3.5.11, okazała się nieprzydatna w warunkach produkcyjnych wymagających ciągłości działania. Przy odnotowanym tempie konsumpcji pamięci na poziomie \textbf{148,3 MB/s}, rozwiązanie to jest ograniczone funkcjonalnie wyłącznie do rejestracji bardzo krótkich sekwencji zdarzeń (ang. \textit{Short Clips}), takich jak kilkusekundowe klipy z detekcji ruchu. Metoda ta nie może być stosowana do monitoringu ciągłego (24/7).
+Zastosowana strategia buforowania całego materiału wideo w pamięci RAM (ang. \textit{In-Memory Buffering}), opisana w sekcji 2.5.11, okazała się nieprzydatna w warunkach produkcyjnych wymagających ciągłości działania. Przy odnotowanym tempie konsumpcji pamięci na poziomie \textbf{148,3 MB/s}, rozwiązanie to jest ograniczone funkcjonalnie wyłącznie do rejestracji bardzo krótkich sekwencji zdarzeń (ang. \textit{Short Clips}), takich jak kilkusekundowe klipy z detekcji ruchu. Metoda ta nie może być stosowana do monitoringu ciągłego (24/7).
 
 \paragraph*{Istotny narzut technologiczny środowiska uruchomieniowego (Overhead)}
 Analiza porównawcza wykazała znaczącą nieefektywność strukturalną wybranego stosu technologicznego w kontekście przechowywania dużych wolumenów danych binarnych.
@@ -289,12 +289,12 @@ Przeprowadzone w niniejszym rozdziale badania wydajnościowe oraz testy weryfika
     \item \textbf{Stopień realizacji celu głównego i celów szczegółowych} \\
     Należy uznać, że cel inżynierski został osiągnięty. Zbudowano i wdrożono funkcjonalny, skonteneryzowany system, który skutecznie uniezależnia użytkownika od infrastruktury chmurowej producenta, rozwiązując problem \textit{vendor lock-in}.
     \begin{itemize}
-        \item \textbf{Płynność obrazu:} System osiągnął pełną wydajność przetwarzania (średnio 15,7 FPS przy nadawaniu 15 FPS), co potwierdza weryfikację pozytywną założenia o możliwości pracy w czasie rzeczywistym.
+        \item \textbf{Płynność obrazu:} System osiągnął pełną wydajność przetwarzania (średnio 15,7 FPS), co potwierdza weryfikację pozytywną założenia o możliwości pracy w czasie rzeczywistym.
         \item \textbf{Skalowalność i stabilność:} Środowisko kontenerowe Docker wykazało pełną stabilność operacyjną, nie generując mierzalnych błędów narzutowych, co spełnia postulat dotyczący modułowości i przenośności systemu.
     \end{itemize}
 
     \item \textbf{Ograniczenia wydajnościowe (CPU i narzut środowiska Python)} \\
-    Analiza wyników testu T01 na platformie referencyjnej (Intel Core i7-11370H) wykazała, że interpretowany język Python stanowi istotne wąskie gardło (ang. \textit{bottleneck}) dla przetwarzania obrazu o wysokiej rozdzielczości (Full HD $1920 \times 1080$ px). Mimo wykorzystania jednostki CPU o wysokim taktowaniu (do 4.8 GHz), zarejestrowany zapas mocy obliczeniowej był marginalny (zaledwie 0,36 FPS powyżej progu płynności).
+    Analiza wyników testu T01 na platformie referencyjnej (Intel Core i7-11370H) wykazała, że interpretowany język Python stanowi istotne wąskie gardło (ang. \textit{bottleneck}) dla przetwarzania obrazu o wysokiej rozdzielczości (Full HD $1920 \times 1080$ px). 
     Obserwacja ta potwierdza słuszność decyzji projektowej o wyłączeniu z zakresu pracy implementacji zaawansowanych modeli głębokiego uczenia (np. YOLO). Skoro podstawowa detekcja różnicowa utylizuje niemal pełne zasoby wątku procesora, wdrożenie złożonej analityki AI wymagałoby zastosowania akceleracji sprzętowej (GPU) lub migracji krytycznych sekcji kodu do języka kompilowanego (C++).
 
     \item \textbf{Wpływ opóźnień na sterowanie mechaniką PTZ} \\
